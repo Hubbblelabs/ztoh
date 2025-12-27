@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ModalProvider } from "@/components/providers/ModalProvider";
@@ -45,7 +46,7 @@ export default function RootLayout({
             <Chatbot />
           </ModalProvider>
         </ToastProvider>
-
+        <SpeedInsights />
       </body>
     </html>
   );
