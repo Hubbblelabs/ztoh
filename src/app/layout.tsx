@@ -42,7 +42,6 @@ export default function RootLayout({
             <LayoutContent>
               {children}
             </LayoutContent>
-            <Chatbot />
           </ModalProvider>
         </ToastProvider>
 

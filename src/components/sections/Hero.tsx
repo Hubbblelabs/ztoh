@@ -52,7 +52,7 @@ export default function Hero() {
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
                                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-secondary"></span>
                             </span>
-                            Accepting New Students for 2025
+                            Accepting New Students for {new Date().getFullYear()}
                         </motion.div>
 
                         <motion.h1 variants={fadeInUp} className="text-5xl md:text-6xl lg:text-7xl font-bold font-heading text-slate-900 leading-[1.1] mb-6 tracking-tight">
