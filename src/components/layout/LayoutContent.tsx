@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import WhatsAppIcon from "@/components/ui/WhatsAppIcon";
+import Chatbot from "@/components/Chatbot";
 
 export default function LayoutContent({
     children,
@@ -12,16 +13,18 @@ export default function LayoutContent({
     children: React.ReactNode;
 }) {
     const pathname = usePathname();
-    const isAdminPage = pathname?.startsWith('/admin');
+    // Hide header/footer/WhatsApp icon/Chatbot for admin, staff, and login pages
+    const isPortalPage = pathname?.startsWith('/admin') || pathname?.startsWith('/staff') || pathname === '/login';
 
     return (
         <>
-            {!isAdminPage && <Header />}
+            {!isPortalPage && <Header />}
             <main className="flex-grow">
                 {children}
             </main>
-            {!isAdminPage && <WhatsAppIcon />}
-            {!isAdminPage && <Footer />}
+            {!isPortalPage && <WhatsAppIcon />}
+            {!isPortalPage && <Chatbot />}
+            {!isPortalPage && <Footer />}
         </>
     );
 }

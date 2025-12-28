@@ -1,251 +1,219 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Check, X, Settings } from 'lucide-react';
-import AdminHeader from './components/AdminHeader';
-import AdminList from './components/AdminList';
-import RequestList from './components/RequestList';
-import SettingsTab from './components/SettingsTab';
+import Link from 'next/link';
+import {
+    UserPlus,
+    MessageSquare,
+    Users,
+    Clock,
+    FileText,
+    ArrowUpRight,
+    TrendingUp,
+    Calendar
+} from 'lucide-react';
+
+interface DashboardStats {
+    joinRequests: number;
+    contactRequests: number;
+    totalStaff: number;
+    totalHoursThisMonth: number;
+    reportsGenerated: number;
+}
 
 export default function AdminDashboard() {
-    const router = useRouter();
-    const [activeTab, setActiveTab] = useState<'join' | 'contact' | 'admins' | 'settings'>('join');
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [adminEmail, setAdminEmail] = useState('');
-    const [triggerAddAdmin, setTriggerAddAdmin] = useState(false);
-
-    // Global Toast
-    const [toast, setToast] = useState<{ message: string, type: 'success' | 'error' } | null>(null);
-
-    // Global Modals
-    const [showPasswordModal, setShowPasswordModal] = useState(false);
-
-    // Password Change State
-    const [currentPassword, setCurrentPassword] = useState('');
-    const [newPassword, setNewPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [passwordError, setPasswordError] = useState('');
-    const [passwordSuccess, setPasswordSuccess] = useState('');
+    const [stats, setStats] = useState<DashboardStats>({
+        joinRequests: 0,
+        contactRequests: 0,
+        totalStaff: 0,
+        totalHoursThisMonth: 0,
+        reportsGenerated: 0
+    });
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (toast) {
-            const timer = setTimeout(() => setToast(null), 3000);
-            return () => clearTimeout(timer);
-        }
-    }, [toast]);
-
-    const showToast = (message: string, type: 'success' | 'error') => {
-        setToast({ message, type });
-    };
-
-    useEffect(() => {
-        const fetchMe = async () => {
+        const fetchStats = async () => {
             try {
-                const res = await fetch('/api/admin/me');
-                if (res.ok) {
-                    const data = await res.json();
-                    setAdminEmail(data.email);
-                    setIsAuthenticated(true);
-                } else {
-                    router.push('/admin/login');
+                // Fetch various stats
+                const [requestsRes, staffRes] = await Promise.all([
+                    fetch('/api/admin/requests'),
+                    fetch('/api/admin/staff')
+                ]);
+
+                let joinCount = 0, contactCount = 0, staffCount = 0;
+
+                if (requestsRes.ok) {
+                    const data = await requestsRes.json();
+                    joinCount = data.requests?.filter((r: any) => r.type === 'join').length || 0;
+                    contactCount = data.requests?.filter((r: any) => r.type === 'contact').length || 0;
                 }
+
+                if (staffRes.ok) {
+                    const data = await staffRes.json();
+                    staffCount = data.staff?.length || 0;
+                }
+
+                setStats({
+                    joinRequests: joinCount,
+                    contactRequests: contactCount,
+                    totalStaff: staffCount,
+                    totalHoursThisMonth: 0,
+                    reportsGenerated: 0
+                });
             } catch (error) {
-                router.push('/admin/login');
+                console.error('Error fetching stats:', error);
+            } finally {
+                setLoading(false);
             }
         };
-        fetchMe();
-    }, [router]);
 
-    const handleLogout = async () => {
-        await fetch('/api/admin/logout', { method: 'POST' });
-        router.push('/admin/login');
-    };
+        fetchStats();
+    }, []);
 
-    const handleChangePassword = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setPasswordError('');
-        setPasswordSuccess('');
-
-        if (newPassword !== confirmPassword) {
-            setPasswordError('New passwords do not match');
-            return;
+    const statCards = [
+        {
+            title: 'Join Requests',
+            value: stats.joinRequests,
+            icon: UserPlus,
+            href: '/admin/requests',
+            color: 'from-blue-500 to-indigo-600',
+            bgColor: 'bg-blue-50',
+            textColor: 'text-blue-600'
+        },
+        {
+            title: 'Contact Requests',
+            value: stats.contactRequests,
+            icon: MessageSquare,
+            href: '/admin/contacts',
+            color: 'from-emerald-500 to-teal-600',
+            bgColor: 'bg-emerald-50',
+            textColor: 'text-emerald-600'
+        },
+        {
+            title: 'Staff Members',
+            value: stats.totalStaff,
+            icon: Users,
+            href: '/admin/staff',
+            color: 'from-violet-500 to-purple-600',
+            bgColor: 'bg-violet-50',
+            textColor: 'text-violet-600'
+        },
+        {
+            title: 'Hours This Month',
+            value: stats.totalHoursThisMonth,
+            icon: Clock,
+            href: '/admin/hours',
+            color: 'from-amber-500 to-orange-600',
+            bgColor: 'bg-amber-50',
+            textColor: 'text-amber-600'
         }
+    ];
 
-        try {
-            const res = await fetch('/api/admin/change-password', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: adminEmail, currentPassword, newPassword }),
-            });
-
-            const data = await res.json();
-
-            if (res.ok) {
-                setPasswordSuccess('Password updated successfully');
-                setCurrentPassword('');
-                setNewPassword('');
-                setConfirmPassword('');
-                setTimeout(() => setShowPasswordModal(false), 2000);
-            } else {
-                setPasswordError(data.error || 'Failed to update password');
-            }
-        } catch (error) {
-            setPasswordError('An error occurred');
-        }
-    };
-
-    const handleAddAdminClick = () => {
-        setActiveTab('admins');
-        setTriggerAddAdmin(true);
-    };
-
-    // Toast Component
-    const Toast = () => {
-        if (!toast) return null;
-        return (
-            <div className={`fixed bottom-4 right-4 z-[60] px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3 animate-in slide-in-from-bottom-5 fade-in duration-300 ${toast.type === 'success' ? 'bg-slate-900 text-white' : 'bg-red-50 text-white'}`}>
-                {toast.type === 'success' ? <Check size={18} /> : <X size={18} />}
-                <span className="font-medium text-sm">{toast.message}</span>
-            </div>
-        );
-    };
-
-    if (!isAuthenticated) return null;
+    const quickLinks = [
+        { title: 'View Join Requests', href: '/admin/requests', icon: UserPlus },
+        { title: 'Manage Staff', href: '/admin/staff', icon: Users },
+        { title: 'Teaching Hours', href: '/admin/hours', icon: Clock },
+        { title: 'Monthly Reports', href: '/admin/reports', icon: FileText },
+    ];
 
     return (
-        <div className="space-y-8 relative">
-            <Toast />
-
-            <AdminHeader
-                onAddAdmin={handleAddAdminClick}
-                onChangePassword={() => setShowPasswordModal(true)}
-                onLogout={handleLogout}
-            />
-
-            {/* Main Content */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                {/* Tabs */}
-                <div className="p-6 border-b border-slate-100">
-                    <div className="flex flex-wrap gap-2 p-1 bg-slate-100 rounded-xl self-start sm:inline-flex">
-                        <button
-                            onClick={() => setActiveTab('join')}
-                            className={`px-6 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'join'
-                                ? 'bg-white text-slate-900 shadow-sm'
-                                : 'text-slate-500 hover:text-slate-700'
-                                }`}
-                        >
-                            Join Requests
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('contact')}
-                            className={`px-6 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'contact'
-                                ? 'bg-white text-slate-900 shadow-sm'
-                                : 'text-slate-500 hover:text-slate-700'
-                                }`}
-                        >
-                            Contact Requests
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('admins')}
-                            className={`px-6 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'admins'
-                                ? 'bg-white text-slate-900 shadow-sm'
-                                : 'text-slate-500 hover:text-slate-700'
-                                }`}
-                        >
-                            Admins
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('settings')}
-                            className={`flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'settings'
-                                ? 'bg-white text-slate-900 shadow-sm'
-                                : 'text-slate-500 hover:text-slate-700'
-                                }`}
-                        >
-                            <Settings size={16} />
-                            Settings
-                        </button>
-                    </div>
-                </div>
-
-                {/* Tab Content */}
-                <div className="p-6">
-                    {activeTab === 'join' && <RequestList activeTab="join" showToast={showToast} />}
-                    {activeTab === 'contact' && <RequestList activeTab="contact" showToast={showToast} />}
-                    {activeTab === 'admins' && (
-                        <AdminList
-                            triggerAddAdmin={triggerAddAdmin}
-                            onAddAdminClosed={() => setTriggerAddAdmin(false)}
-                        />
-                    )}
-                    {activeTab === 'settings' && <SettingsTab />}
-                </div>
+        <div className="space-y-8">
+            {/* Header */}
+            <div>
+                <h1 className="text-3xl font-bold text-slate-900">Dashboard</h1>
+                <p className="text-slate-500 mt-1">Welcome back! Here&apos;s an overview of your platform.</p>
             </div>
 
-            {/* Change Password Modal */}
-            {showPasswordModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
-                        <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-                            <h3 className="text-xl font-bold text-slate-900">Change Password</h3>
-                            <button onClick={() => setShowPasswordModal(false)} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
-                                <X size={20} className="text-slate-500" />
-                            </button>
+            {/* Stats Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {statCards.map((card) => (
+                    <Link
+                        key={card.title}
+                        href={card.href}
+                        className="group bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:shadow-lg hover:border-slate-300 transition-all duration-300"
+                    >
+                        <div className="flex items-start justify-between mb-4">
+                            <div className={`p-3 rounded-xl ${card.bgColor}`}>
+                                <card.icon className={`w-6 h-6 ${card.textColor}`} />
+                            </div>
+                            <ArrowUpRight className="w-5 h-5 text-slate-400 group-hover:text-slate-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                         </div>
-                        <form onSubmit={handleChangePassword} className="p-6 space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Current Password</label>
-                                <input
-                                    type="password"
-                                    required
-                                    value={currentPassword}
-                                    onChange={(e) => setCurrentPassword(e.target.value)}
-                                    className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">New Password</label>
-                                <input
-                                    type="password"
-                                    required
-                                    value={newPassword}
-                                    onChange={(e) => setNewPassword(e.target.value)}
-                                    className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Confirm New Password</label>
-                                <input
-                                    type="password"
-                                    required
-                                    value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}
-                                    className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-                                />
-                            </div>
+                        <div>
+                            <p className="text-3xl font-bold text-slate-900">
+                                {loading ? (
+                                    <span className="inline-block w-12 h-8 bg-slate-200 rounded animate-pulse" />
+                                ) : (
+                                    card.value
+                                )}
+                            </p>
+                            <p className="text-sm text-slate-500 mt-1">{card.title}</p>
+                        </div>
+                    </Link>
+                ))}
+            </div>
 
-                            {passwordError && <div className="text-sm text-red-600 bg-red-50 p-2 rounded-lg text-center">{passwordError}</div>}
-                            {passwordSuccess && <div className="text-sm text-green-600 bg-green-50 p-2 rounded-lg text-center">{passwordSuccess}</div>}
-
-                            <div className="pt-4 flex justify-end gap-3">
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPasswordModal(false)}
-                                    className="px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-xl text-sm font-semibold hover:bg-slate-50 transition-colors"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="px-4 py-2 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-primary/90 transition-colors"
-                                >
-                                    Update Password
-                                </button>
-                            </div>
-                        </form>
+            {/* Quick Actions */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Quick Links */}
+                <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                    <h2 className="text-lg font-semibold text-slate-900 mb-4">Quick Actions</h2>
+                    <div className="space-y-3">
+                        {quickLinks.map((link) => (
+                            <Link
+                                key={link.title}
+                                href={link.href}
+                                className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors group"
+                            >
+                                <div className="p-2 bg-white rounded-lg shadow-sm">
+                                    <link.icon className="w-5 h-5 text-slate-600" />
+                                </div>
+                                <span className="font-medium text-slate-700 group-hover:text-slate-900">{link.title}</span>
+                                <ArrowUpRight className="w-4 h-4 text-slate-400 ml-auto group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                            </Link>
+                        ))}
                     </div>
                 </div>
-            )}
+
+                {/* Recent Activity */}
+                <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                    <h2 className="text-lg font-semibold text-slate-900 mb-4">Platform Overview</h2>
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-sky-50 to-indigo-50 border border-sky-100">
+                            <div className="p-3 bg-white rounded-xl shadow-sm">
+                                <TrendingUp className="w-6 h-6 text-sky-600" />
+                            </div>
+                            <div>
+                                <p className="font-medium text-slate-900">Staff Management</p>
+                                <p className="text-sm text-slate-500">
+                                    {stats.totalStaff} active staff members
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-100">
+                            <div className="p-3 bg-white rounded-xl shadow-sm">
+                                <Calendar className="w-6 h-6 text-emerald-600" />
+                            </div>
+                            <div>
+                                <p className="font-medium text-slate-900">Monthly Reports</p>
+                                <p className="text-sm text-slate-500">
+                                    Automated at month end
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-violet-50 to-purple-50 border border-violet-100">
+                            <div className="p-3 bg-white rounded-xl shadow-sm">
+                                <MessageSquare className="w-6 h-6 text-violet-600" />
+                            </div>
+                            <div>
+                                <p className="font-medium text-slate-900">Pending Requests</p>
+                                <p className="text-sm text-slate-500">
+                                    {stats.joinRequests + stats.contactRequests} total requests
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

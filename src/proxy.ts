@@ -7,21 +7,24 @@ export async function proxy(request: NextRequest) {
 
     // Only protect /admin routes
     if (pathname.startsWith('/admin')) {
-        // Allow access to login page
-        if (pathname === '/admin/login') {
-            return NextResponse.next();
-        }
-
-        const token = request.cookies.get('adminToken')?.value;
+        // Check for authToken (unified) or adminToken (legacy)
+        const authToken = request.cookies.get('authToken')?.value;
+        const adminToken = request.cookies.get('adminToken')?.value;
+        const token = authToken || adminToken;
 
         if (!token) {
-            return NextResponse.redirect(new URL('/admin/login', request.url));
+            return NextResponse.redirect(new URL('/login', request.url));
         }
 
         const payload = await verifyToken(token);
 
         if (!payload) {
-            return NextResponse.redirect(new URL('/admin/login', request.url));
+            return NextResponse.redirect(new URL('/login', request.url));
+        }
+
+        // Verify the user is an admin
+        if (payload.role && payload.role !== 'admin') {
+            return NextResponse.redirect(new URL('/login', request.url));
         }
     }
 
@@ -32,7 +35,9 @@ export async function proxy(request: NextRequest) {
             return NextResponse.next();
         }
 
-        const token = request.cookies.get('adminToken')?.value;
+        const authToken = request.cookies.get('authToken')?.value;
+        const adminToken = request.cookies.get('adminToken')?.value;
+        const token = authToken || adminToken;
 
         if (!token) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
