@@ -6,7 +6,7 @@ import ScrollAnimation from "@/components/animations/ScrollAnimation";
 
 const stats = [
     { label: "Courses", value: 25, suffix: "+" },
-    { label: "Expert Tutors", value: 20, suffix: "+" },
+    { label: "Expert Tutors", value: 60, suffix: "+" },
     { label: "Cities", value: 5, suffix: "+" },
     { label: "Countries", value: 6, suffix: "+" },
 ];
