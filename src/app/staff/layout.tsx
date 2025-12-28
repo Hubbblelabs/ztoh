@@ -8,11 +8,10 @@ import {
     Clock, 
     FileText, 
     LogOut, 
-    Menu, 
-    X, 
     Key,
-    ChevronRight,
-    GraduationCap
+    GraduationCap,
+    User,
+    ChevronDown
 } from 'lucide-react';
 
 interface StaffData {
@@ -29,7 +28,7 @@ export default function StaffLayout({
 }) {
     const pathname = usePathname();
     const router = useRouter();
-    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
     const [staff, setStaff] = useState<StaffData | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -60,6 +59,17 @@ export default function StaffLayout({
         fetchStaff();
     }, [router]);
 
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as HTMLElement;
+            if (dropdownOpen && !target.closest('.user-dropdown')) {
+                setDropdownOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [dropdownOpen]);
+
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-slate-100">
@@ -89,176 +99,119 @@ export default function StaffLayout({
 
     return (
         <div className="min-h-screen bg-slate-100 font-sans">
-            {/* Mobile Header */}
-            <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-200">
-                <div className="flex items-center justify-between px-4 py-3">
-                    <div className="flex items-center gap-3">
-                        <button
-                            onClick={() => setSidebarOpen(true)}
-                            className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
-                        >
-                            <Menu size={20} className="text-slate-600" />
-                        </button>
-                        <span className="text-lg font-bold text-slate-900">Staff Portal</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <span className="px-2 py-1 rounded-full bg-teal-100 text-teal-700 text-xs font-semibold">
-                            Staff
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            {/* Mobile Sidebar Overlay */}
-            {sidebarOpen && (
-                <div className="lg:hidden fixed inset-0 z-50">
-                    <div className="absolute inset-0 bg-black/50" onClick={() => setSidebarOpen(false)} />
-                    <div className="absolute left-0 top-0 bottom-0 w-72 bg-gradient-to-b from-teal-700 via-teal-700 to-teal-800 shadow-xl">
-                        <div className="p-6">
-                            <div className="flex items-center justify-between mb-8">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur flex items-center justify-center">
-                                        <GraduationCap className="w-6 h-6 text-white" />
-                                    </div>
-                                    <div>
-                                        <span className="text-lg font-bold text-white">Zero to Hero</span>
-                                        <span className="block text-teal-200 text-xs">Staff Portal</span>
-                                    </div>
-                                </div>
-                                <button
-                                    onClick={() => setSidebarOpen(false)}
-                                    className="p-2 hover:bg-white/10 rounded-lg transition-colors"
-                                >
-                                    <X size={20} className="text-white" />
-                                </button>
-                            </div>
-
-                            <nav className="space-y-1">
-                                {navItems.map((item) => (
-                                    <Link
-                                        key={item.href}
-                                        href={item.href}
-                                        onClick={() => setSidebarOpen(false)}
-                                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-                                            isActive(item.href, item.exact)
-                                                ? 'bg-white text-teal-700 shadow-lg'
-                                                : 'text-teal-100 hover:bg-white/10 hover:text-white'
-                                        }`}
-                                    >
-                                        <item.icon size={20} />
-                                        <span className="font-medium">{item.label}</span>
-                                        {isActive(item.href, item.exact) && (
-                                            <ChevronRight size={16} className="ml-auto" />
-                                        )}
-                                    </Link>
-                                ))}
-                            </nav>
-                        </div>
-
-                        <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-teal-600/50">
-                            <div className="mb-4">
-                                <p className="text-white font-medium truncate">{staff?.name}</p>
-                                <p className="text-teal-200 text-sm truncate">{staff?.email}</p>
-                            </div>
-                            <div className="flex gap-2">
-                                <Link
-                                    href="/staff/password"
-                                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors text-sm font-medium"
-                                >
-                                    <Key size={14} />
-                                    Password
-                                </Link>
-                                <button
-                                    onClick={handleLogout}
-                                    className="flex items-center justify-center gap-2 px-3 py-2 bg-red-500/20 text-red-200 rounded-lg hover:bg-red-500/30 transition-colors text-sm font-medium"
-                                >
-                                    <LogOut size={14} />
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Desktop Sidebar */}
-            <div className="hidden lg:flex lg:w-72 lg:flex-col lg:fixed lg:inset-y-0">
-                <div className="flex flex-col flex-grow bg-gradient-to-b from-teal-700 via-teal-700 to-teal-800 overflow-y-auto">
-                    {/* Logo */}
-                    <div className="h-16 flex items-center px-6 border-b border-teal-600/50">
+            {/* Top Navigation Bar */}
+            <header className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-teal-700 to-teal-600 shadow-lg">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex items-center justify-between h-16">
+                        {/* Logo and Brand */}
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur flex items-center justify-center">
                                 <GraduationCap className="w-6 h-6 text-white" />
                             </div>
                             <div>
                                 <span className="text-lg font-bold text-white">Zero to Hero</span>
-                                <span className="block text-teal-200 text-xs">Staff Portal</span>
+                                <span className="hidden sm:block text-teal-200 text-xs">Staff Portal</span>
                             </div>
                         </div>
-                    </div>
 
-                    {/* Navigation */}
-                    <nav className="flex-1 px-4 py-6 space-y-1">
-                        {navItems.map((item) => (
-                            <Link
-                                key={item.href}
-                                href={item.href}
-                                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-                                    isActive(item.href, item.exact)
-                                        ? 'bg-white text-teal-700 shadow-lg'
-                                        : 'text-teal-100 hover:bg-white/10 hover:text-white'
-                                }`}
-                            >
-                                <item.icon size={20} />
-                                <span className="font-medium">{item.label}</span>
-                                {isActive(item.href, item.exact) && (
-                                    <ChevronRight size={16} className="ml-auto" />
-                                )}
-                            </Link>
-                        ))}
-                    </nav>
+                        {/* Navigation Links - Desktop */}
+                        <nav className="hidden md:flex items-center gap-2">
+                            {navItems.map((item) => (
+                                <Link
+                                    key={item.href}
+                                    href={item.href}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                                        isActive(item.href, item.exact)
+                                            ? 'bg-white text-teal-700 shadow-md'
+                                            : 'text-teal-50 hover:bg-white/10 hover:text-white'
+                                    }`}
+                                >
+                                    <item.icon size={18} />
+                                    <span className="font-medium">{item.label}</span>
+                                </Link>
+                            ))}
+                        </nav>
 
-                    {/* User Section */}
-                    <div className="p-4 border-t border-teal-600/50">
-                        <div className="p-4 bg-white/10 rounded-xl mb-3">
-                            <p className="text-white font-medium truncate">{staff?.name || 'Loading...'}</p>
-                            <p className="text-teal-200 text-sm truncate">{staff?.email || ''}</p>
-                        </div>
-                        <div className="flex gap-2">
-                            <Link
-                                href="/staff/password"
-                                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors text-sm font-medium"
-                            >
-                                <Key size={14} />
-                                Password
-                            </Link>
+                        {/* User Menu */}
+                        <div className="relative user-dropdown">
                             <button
-                                onClick={handleLogout}
-                                className="flex items-center justify-center gap-2 px-4 py-2 bg-red-500/20 text-red-200 rounded-lg hover:bg-red-500/30 transition-colors text-sm font-medium"
+                                onClick={() => setDropdownOpen(!dropdownOpen)}
+                                className="flex items-center gap-2 px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
                             >
-                                <LogOut size={14} />
-                                Logout
+                                <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
+                                    <User size={18} className="text-white" />
+                                </div>
+                                <div className="hidden sm:block text-left">
+                                    <p className="text-white text-sm font-medium truncate max-w-32">
+                                        {staff?.name || 'Staff'}
+                                    </p>
+                                </div>
+                                <ChevronDown size={16} className={`text-white transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
                             </button>
+
+                            {/* Dropdown Menu */}
+                            {dropdownOpen && (
+                                <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden">
+                                    <div className="p-4 border-b border-slate-100">
+                                        <p className="text-slate-900 font-medium truncate">{staff?.name}</p>
+                                        <p className="text-slate-500 text-sm truncate">{staff?.email}</p>
+                                        <span className="inline-block mt-2 px-2 py-1 bg-teal-100 text-teal-700 text-xs font-semibold rounded">
+                                            Staff Member
+                                        </span>
+                                    </div>
+                                    
+                                    {/* Mobile Navigation */}
+                                    <div className="md:hidden border-b border-slate-100">
+                                        {navItems.map((item) => (
+                                            <Link
+                                                key={item.href}
+                                                href={item.href}
+                                                onClick={() => setDropdownOpen(false)}
+                                                className={`flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors ${
+                                                    isActive(item.href, item.exact) ? 'bg-teal-50 text-teal-700' : 'text-slate-700'
+                                                }`}
+                                            >
+                                                <item.icon size={18} />
+                                                <span className="font-medium">{item.label}</span>
+                                            </Link>
+                                        ))}
+                                    </div>
+
+                                    <div className="p-2">
+                                        <Link
+                                            href="/staff/password"
+                                            onClick={() => setDropdownOpen(false)}
+                                            className="flex items-center gap-3 px-4 py-2 text-slate-700 hover:bg-slate-50 rounded-lg transition-colors"
+                                        >
+                                            <Key size={18} />
+                                            <span className="font-medium">Change Password</span>
+                                        </Link>
+                                        <button
+                                            onClick={() => {
+                                                setDropdownOpen(false);
+                                                handleLogout();
+                                            }}
+                                            className="w-full flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                        >
+                                            <LogOut size={18} />
+                                            <span className="font-medium">Logout</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
-            </div>
+            </header>
 
             {/* Main Content */}
-            <div className="lg:pl-72">
-                {/* Top header for desktop */}
-                <header className="hidden lg:flex h-16 bg-white border-b border-slate-200 items-center justify-end px-8 sticky top-0 z-30">
-                    <span className="px-3 py-1 bg-teal-100 text-teal-700 text-xs font-semibold rounded-full">
-                        Staff Member
-                    </span>
-                </header>
-                <main className="p-4 sm:px-6 lg:px-8 pt-20 lg:pt-6">
-                    {isAuthenticated ? children : (
-                        <div className="flex items-center justify-center min-h-[60vh]">
-                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
-                        </div>
-                    )}
-                </main>
-            </div>
+            <main className="pt-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto pb-8">
+                {isAuthenticated ? children : (
+                    <div className="flex items-center justify-center min-h-[60vh]">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
+                    </div>
+                )}
+            </main>
         </div>
     );
 }
