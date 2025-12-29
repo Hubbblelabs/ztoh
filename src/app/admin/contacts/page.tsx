@@ -24,8 +24,8 @@ export default function ContactsPage() {
 
             {/* Header */}
             <div className="flex items-center gap-4">
-                <div className="p-3 bg-emerald-100 rounded-xl">
-                    <MessageSquare className="w-6 h-6 text-emerald-600" />
+                <div className="p-3 bg-amber-100 rounded-xl">
+                    <MessageSquare className="w-6 h-6 text-amber-600" />
                 </div>
                 <div>
                     <h1 className="text-2xl font-bold text-slate-900">Contact Requests</h1>

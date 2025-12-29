@@ -24,8 +24,8 @@ export default function StaffPage() {
 
             {/* Header */}
             <div className="flex items-center gap-4">
-                <div className="p-3 bg-violet-100 rounded-xl">
-                    <Users className="w-6 h-6 text-violet-600" />
+                <div className="p-3 bg-slate-100 rounded-xl">
+                    <Users className="w-6 h-6 text-slate-600" />
                 </div>
                 <div>
                     <h1 className="text-2xl font-bold text-slate-900">Staff Management</h1>

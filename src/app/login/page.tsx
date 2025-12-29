@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Lock, Mail, Loader2, ArrowRight, GraduationCap } from 'lucide-react';
+import Loader from '@/components/ui/Loader';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
@@ -58,17 +59,13 @@ export default function LoginPage() {
     };
 
     if (checkingAuth) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-slate-100">
-                <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
-            </div>
-        );
+        return <Loader fullScreen />;
     }
 
     return (
         <div className="min-h-screen flex bg-slate-100">
             {/* Left Panel - Branding */}
-            <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 p-12 flex-col justify-between relative overflow-hidden">
+            <div className="hidden lg:flex lg:w-1/2 bg-slate-900 p-12 flex-col justify-between relative overflow-hidden">
                 {/* Background Pattern */}
                 <div className="absolute inset-0 opacity-10">
                     <div className="absolute top-0 left-0 w-full h-full" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.4\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }} />
@@ -76,12 +73,12 @@ export default function LoginPage() {
                 
                 <div className="relative z-10">
                     <div className="flex items-center gap-3 mb-2">
-                        <div className="w-12 h-12 bg-white/10 backdrop-blur rounded-xl flex items-center justify-center">
+                        <div className="w-12 h-12 bg-sky-500 rounded-xl flex items-center justify-center">
                             <GraduationCap className="w-7 h-7 text-white" />
                         </div>
                         <span className="text-2xl font-bold text-white">Zero to Hero</span>
                     </div>
-                    <p className="text-blue-200 text-sm ml-15">Education Management System</p>
+                    <p className="text-slate-400 text-sm ml-15">Education Management System</p>
                 </div>
 
                 <div className="relative z-10 space-y-8">
@@ -89,14 +86,14 @@ export default function LoginPage() {
                         <h2 className="text-4xl font-bold text-white leading-tight mb-4">
                             Empowering Education,<br />One Step at a Time
                         </h2>
-                        <p className="text-blue-200 text-lg max-w-md">
+                        <p className="text-slate-400 text-lg max-w-md">
                             Streamlined management for administrators and staff. Track progress, manage hours, and generate reports effortlessly.
                         </p>
                     </div>
                 </div>
 
                 <div className="relative z-10">
-                    <p className="text-blue-300 text-sm">
+                    <p className="text-slate-500 text-sm">
                         © 2025 Zero to Hero. All rights reserved.
                     </p>
                 </div>

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { FileText, Mail, RefreshCw, Send, ChevronLeft, ChevronRight } from 'lucide-react';
+import Loader from '@/components/ui/Loader';
 
 interface SubjectBreakdown {
     subject: string;
@@ -181,7 +182,7 @@ export default function ReportsTab({ showToast }: ReportsTabProps) {
     if (loading) {
         return (
             <div className="flex items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                <Loader />
             </div>
         );
     }

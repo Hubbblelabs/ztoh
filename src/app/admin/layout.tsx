@@ -14,10 +14,10 @@ import {
     LogOut,
     Menu,
     X,
-    ChevronRight,
     GraduationCap,
     Shield
 } from 'lucide-react';
+import Loader from '@/components/ui/Loader';
 
 interface User {
     _id: string;
@@ -96,14 +96,7 @@ export default function AdminLayout({
     };
 
     if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-slate-100">
-                <div className="flex flex-col items-center gap-4">
-                    <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
-                    <p className="text-slate-500">Loading...</p>
-                </div>
-            </div>
-        );
+        return <Loader fullScreen />;
     }
 
     return (
@@ -120,77 +113,73 @@ export default function AdminLayout({
                 {/* Sidebar */}
                 <aside className={`
                     fixed inset-y-0 left-0 z-50
-                    w-72 bg-gradient-to-b from-blue-900 via-blue-900 to-indigo-900 flex flex-col
+                    w-64 bg-slate-900 text-slate-400 flex flex-col
                     transform transition-transform duration-300 ease-in-out
                     ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
                 `}>
                     {/* Logo */}
-                    <div className="h-16 flex items-center justify-between px-6 border-b border-blue-800/50">
-                        <Link href="/admin" className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-white/10 backdrop-blur rounded-xl flex items-center justify-center">
-                                <GraduationCap className="w-6 h-6 text-white" />
+                    <div className="flex items-center justify-between w-full px-3 mt-3 h-16">
+                         <Link href="/admin" className="flex items-center w-full px-3 gap-2">
+                            <div className="w-8 h-8 bg-sky-500 rounded-lg flex items-center justify-center">
+                                <GraduationCap className="w-5 h-5 text-white" />
                             </div>
-                            <div>
-                                <h1 className="text-white font-bold text-lg">Zero to Hero</h1>
-                                <p className="text-xs text-blue-300">Admin Portal</p>
-                            </div>
+                            <span className="text-lg font-bold text-slate-100">Zero to Hero</span>
                         </Link>
                         <button
                             onClick={() => setSidebarOpen(false)}
-                            className="lg:hidden p-2 text-blue-300 hover:text-white"
+                            className="lg:hidden p-2 text-slate-400 hover:text-white"
                         >
                             <X className="w-5 h-5" />
                         </button>
                     </div>
 
                     {/* Navigation */}
-                    <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
-                        {navItems.map((item) => {
-                            const active = isActive(item.href, item.exact);
-                            return (
-                                <Link
-                                    key={item.href}
-                                    href={item.href}
-                                    onClick={() => setSidebarOpen(false)}
-                                    className={`
-                                        flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all
-                                        ${active
-                                            ? 'bg-white text-blue-900 shadow-lg'
-                                            : 'text-blue-100 hover:text-white hover:bg-white/10'
-                                        }
-                                    `}
-                                >
-                                    <item.icon className="w-5 h-5" />
-                                    <span>{item.label}</span>
-                                    {active && <ChevronRight className="w-4 h-4 ml-auto" />}
-                                </Link>
-                            );
-                        })}
-                    </nav>
+                    <div className="w-full px-2 flex-1 overflow-y-auto">
+                        <div className="flex flex-col items-center w-full mt-3 border-t border-slate-800">
+                            {navItems.map((item) => {
+                                const active = isActive(item.href, item.exact);
+                                return (
+                                    <Link
+                                        key={item.href}
+                                        href={item.href}
+                                        onClick={() => setSidebarOpen(false)}
+                                        className={`
+                                            flex items-center w-full h-12 px-3 mt-2 rounded transition-colors
+                                            ${active
+                                                ? 'bg-slate-800 text-sky-400'
+                                                : 'hover:bg-slate-800 hover:text-slate-100'
+                                            }
+                                        `}
+                                    >
+                                        <item.icon className="w-6 h-6 stroke-current" />
+                                        <span className="ml-2 text-sm font-medium">{item.label}</span>
+                                    </Link>
+                                );
+                            })}
+                        </div>
+                    </div>
 
                     {/* User section */}
-                    <div className="p-4 border-t border-blue-800/50">
-                        <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/10">
-                            <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
-                                {user?.name?.charAt(0) || 'A'}
+                    <div className="mt-auto w-full bg-slate-950 hover:bg-slate-800 transition-colors">
+                         <div className="flex items-center justify-between w-full h-16 px-4">
+                            <div className="flex items-center gap-3 overflow-hidden">
+                                <div className="w-8 h-8 bg-sky-600 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0">
+                                    {user?.name?.charAt(0) || 'A'}
+                                </div>
+                                <div className="flex flex-col min-w-0">
+                                    <span className="text-sm font-medium text-slate-200 truncate">{user?.name}</span>
+                                    <span className="text-xs text-slate-500 truncate">Admin</span>
+                                </div>
                             </div>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-white font-medium truncate">{user?.name || 'Admin'}</p>
-                                <p className="text-xs text-blue-300 truncate">{user?.email}</p>
-                            </div>
+                            <button onClick={logout} className="text-slate-400 hover:text-white">
+                                <LogOut className="w-5 h-5" />
+                            </button>
                         </div>
-                        <button
-                            onClick={logout}
-                            className="w-full mt-3 flex items-center justify-center gap-2 px-4 py-3 text-red-300 hover:text-white hover:bg-red-500/20 rounded-xl transition-colors"
-                        >
-                            <LogOut className="w-5 h-5" />
-                            <span>Sign Out</span>
-                        </button>
                     </div>
                 </aside>
 
                 {/* Main content */}
-                <div className="flex-1 flex flex-col min-w-0 lg:ml-72">
+                <div className="flex-1 flex flex-col min-w-0 lg:ml-64">
                     {/* Top header */}
                     <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-30">
                         <button

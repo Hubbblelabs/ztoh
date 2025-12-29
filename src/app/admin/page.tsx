@@ -76,27 +76,27 @@ export default function AdminDashboard() {
             value: stats.joinRequests,
             icon: UserPlus,
             href: '/admin/requests',
-            color: 'from-blue-500 to-indigo-600',
-            bgColor: 'bg-blue-50',
-            textColor: 'text-blue-600'
+            color: 'from-sky-500 to-sky-600',
+            bgColor: 'bg-sky-50',
+            textColor: 'text-sky-600'
         },
         {
             title: 'Contact Requests',
             value: stats.contactRequests,
             icon: MessageSquare,
             href: '/admin/contacts',
-            color: 'from-emerald-500 to-teal-600',
-            bgColor: 'bg-emerald-50',
-            textColor: 'text-emerald-600'
+            color: 'from-amber-500 to-amber-600',
+            bgColor: 'bg-amber-50',
+            textColor: 'text-amber-600'
         },
         {
             title: 'Staff Members',
             value: stats.totalStaff,
             icon: Users,
             href: '/admin/staff',
-            color: 'from-violet-500 to-purple-600',
-            bgColor: 'bg-violet-50',
-            textColor: 'text-violet-600'
+            color: 'from-slate-700 to-slate-800',
+            bgColor: 'bg-slate-100',
+            textColor: 'text-slate-700'
         },
         {
             title: 'Hours This Month',

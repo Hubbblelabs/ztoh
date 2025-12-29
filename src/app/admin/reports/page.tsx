@@ -24,8 +24,8 @@ export default function ReportsPage() {
 
             {/* Header */}
             <div className="flex items-center gap-4">
-                <div className="p-3 bg-indigo-100 rounded-xl">
-                    <FileText className="w-6 h-6 text-indigo-600" />
+                <div className="p-3 bg-sky-100 rounded-xl">
+                    <FileText className="w-6 h-6 text-sky-600" />
                 </div>
                 <div>
                     <h1 className="text-2xl font-bold text-slate-900">Monthly Reports</h1>

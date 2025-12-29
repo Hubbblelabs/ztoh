@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Plus, Edit2, Trash2, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import Loader from '@/components/ui/Loader';
 
 interface TeachingHour {
     _id: string;
@@ -205,7 +206,7 @@ export default function TeachingHoursTab({ showToast }: TeachingHoursTabProps) {
     if (loading) {
         return (
             <div className="flex items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                <Loader />
             </div>
         );
     }

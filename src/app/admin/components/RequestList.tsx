@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, Loader2, Eye, Trash2, X, Plus, Check } from 'lucide-react';
 import { JoinRequest, ContactRequest } from './types';
+import Loader from '@/components/ui/Loader';
 
 interface RequestListProps {
     activeTab: 'join' | 'contact';
@@ -410,8 +411,7 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
             <div className="overflow-x-auto">
                 {loading ? (
                     <div className="flex flex-col items-center justify-center py-20">
-                        <Loader2 className="animate-spin text-primary mb-2" size={32} />
-                        <p className="text-slate-500">Loading requests...</p>
+                        <Loader text="Loading requests..." />
                     </div>
                 ) : displayedRequests.length === 0 ? (
                     <div className="text-center py-20 text-slate-500">
