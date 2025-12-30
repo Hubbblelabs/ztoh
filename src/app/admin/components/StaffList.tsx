@@ -37,7 +37,9 @@ export default function StaffList({ showToast }: StaffListProps) {
 
     const fetchStaff = async () => {
         try {
-            const res = await fetch(`/api/admin/staff?includeInactive=${includeInactive}`);
+            const res = await fetch(`/api/admin/staff?includeInactive=${includeInactive}`, {
+                credentials: 'include'
+            });
             if (res.ok) {
                 const data = await res.json();
                 setStaff(data.staff || []);
@@ -106,6 +108,7 @@ export default function StaffList({ showToast }: StaffListProps) {
             const res = await fetch(url, {
                 method: editingStaff ? 'PUT' : 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
                 body: JSON.stringify(body),
             });
 
@@ -130,6 +133,7 @@ export default function StaffList({ showToast }: StaffListProps) {
         try {
             const res = await fetch(`/api/admin/staff/${id}`, {
                 method: 'DELETE',
+                credentials: 'include',
             });
 
             if (res.ok) {

@@ -2,10 +2,12 @@ import { NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
 import dbConnect from '@/lib/db';
 import Admin from '@/models/Admin';
+import { cookies } from 'next/headers';
 
 export async function GET(request: Request) {
     try {
-        const token = request.headers.get('cookie')?.split('; ').find(row => row.startsWith('adminToken='))?.split('=')[1];
+        const cookieStore = await cookies();
+        const token = cookieStore.get('adminToken')?.value;
 
         if (!token) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

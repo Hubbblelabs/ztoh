@@ -18,7 +18,9 @@ export default function LoginPage() {
         // Check if already logged in
         const checkAuth = async () => {
             try {
-                const res = await fetch('/api/auth/me');
+                const res = await fetch('/api/auth/me', {
+                    credentials: 'include'
+                });
                 if (res.ok) {
                     const data = await res.json();
                     router.push(data.role === 'admin' ? '/admin' : '/staff');
@@ -41,6 +43,7 @@ export default function LoginPage() {
             const res = await fetch('/api/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
                 body: JSON.stringify({ email, password }),
             });
 

@@ -3,19 +3,21 @@ import { verifyToken } from '@/lib/auth';
 import dbConnect from '@/lib/db';
 import Admin from '@/models/Admin';
 import Staff from '@/models/Staff';
+import { cookies } from 'next/headers';
 
 export async function GET(request: Request) {
     try {
+        const cookieStore = await cookies();
+        
         // Check for unified token first, then legacy tokens
-        const cookies = request.headers.get('cookie') || '';
-        let token = cookies.split('; ').find(row => row.startsWith('authToken='))?.split('=')[1];
+        let token = cookieStore.get('authToken')?.value;
         
         // Fallback to legacy tokens
         if (!token) {
-            token = cookies.split('; ').find(row => row.startsWith('adminToken='))?.split('=')[1];
+            token = cookieStore.get('adminToken')?.value;
         }
         if (!token) {
-            token = cookies.split('; ').find(row => row.startsWith('staffToken='))?.split('=')[1];
+            token = cookieStore.get('staffToken')?.value;
         }
 
         if (!token) {

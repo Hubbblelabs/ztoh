@@ -2,14 +2,15 @@ import { NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
 import dbConnect from '@/lib/db';
 import Staff from '@/models/Staff';
+import { cookies } from 'next/headers';
 
 export async function GET(request: Request) {
     try {
-        const cookies = request.headers.get('cookie') || '';
+        const cookieStore = await cookies();
         // Check authToken first (unified login), then legacy staffToken
-        let token = cookies.split('; ').find(row => row.startsWith('authToken='))?.split('=')[1];
+        let token = cookieStore.get('authToken')?.value;
         if (!token) {
-            token = cookies.split('; ').find(row => row.startsWith('staffToken='))?.split('=')[1];
+            token = cookieStore.get('staffToken')?.value;
         }
 
         if (!token) {

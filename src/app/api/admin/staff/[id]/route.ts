@@ -4,10 +4,16 @@ import dbConnect from '@/lib/db';
 import Staff from '@/models/Staff';
 import TeachingHours from '@/models/TeachingHours';
 import bcrypt from 'bcryptjs';
+import { cookies } from 'next/headers';
 
 // Helper to verify admin token
-async function verifyAdmin(request: Request) {
-    const token = request.headers.get('cookie')?.split('; ').find(row => row.startsWith('adminToken='))?.split('=')[1];
+async function verifyAdmin() {
+    const cookieStore = await cookies();
+    // Check for authToken first (unified login), then adminToken (legacy)
+    let token = cookieStore.get('authToken')?.value;
+    if (!token) {
+        token = cookieStore.get('adminToken')?.value;
+    }
     
     if (!token) {
         return null;
@@ -23,7 +29,7 @@ export async function GET(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const payload = await verifyAdmin(request);
+        const payload = await verifyAdmin();
         
         if (!payload) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -72,7 +78,7 @@ export async function PUT(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const payload = await verifyAdmin(request);
+        const payload = await verifyAdmin();
         
         if (!payload) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -133,7 +139,7 @@ export async function DELETE(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const payload = await verifyAdmin(request);
+        const payload = await verifyAdmin();
         
         if (!payload) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

@@ -64,7 +64,9 @@ export default function AdminLayout({
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                const res = await fetch('/api/auth/me');
+                const res = await fetch('/api/auth/me', {
+                    credentials: 'include'
+                });
                 if (res.ok) {
                     const data = await res.json();
                     if (data.role === 'admin') {
@@ -86,7 +88,7 @@ export default function AdminLayout({
     }, [router]);
 
     const logout = async () => {
-        await fetch('/api/auth/logout', { method: 'POST' });
+        await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
         router.push('/login');
     };
 
@@ -181,7 +183,7 @@ export default function AdminLayout({
                 {/* Main content */}
                 <div className="flex-1 flex flex-col min-w-0 lg:ml-64">
                     {/* Top header */}
-                    <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-30">
+                    <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-30 lg:hidden">
                         <button
                             onClick={() => setSidebarOpen(true)}
                             className="lg:hidden p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg"

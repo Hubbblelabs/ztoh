@@ -37,7 +37,9 @@ export default function StaffLayout({
     useEffect(() => {
         const fetchStaff = async () => {
             try {
-                const res = await fetch('/api/auth/me');
+                const res = await fetch('/api/auth/me', {
+                    credentials: 'include'
+                });
                 if (res.ok) {
                     const data = await res.json();
                     // Check if user is staff
@@ -76,7 +78,7 @@ export default function StaffLayout({
     }
 
     const handleLogout = async () => {
-        await fetch('/api/auth/logout', { method: 'POST' });
+        await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
         router.push('/login');
     };
 

@@ -61,46 +61,59 @@ const services = [
 
 const courseOfferings = [
     {
-        category: "CBSE",
-        courses: ["Class 9", "Class 10", "Class 11", "Class 12"]
+        title: "School Curriculum",
+        icon: <School className="w-6 h-6 text-secondary" />,
+        groups: [
+            {
+                name: "Boards",
+                items: ["CBSE", "State Board", "IGCSE"]
+            },
+            {
+                name: "Classes",
+                items: ["Class 9", "Class 10", "Class 11", "Class 12", "Diploma"]
+            },
+            {
+                name: "IB / A & AS Subjects",
+                items: ["Mathematics", "Physics", "Chemistry", "Computer Science", "Economics", "Accounts", "Management"]
+            }
+        ]
     },
     {
-        category: "State Board",
-        courses: ["Class 9", "Class 10", "Class 11", "Class 12"]
+        title: "Competitive Exams",
+        icon: <GraduationCap className="w-6 h-6 text-secondary" />,
+        groups: [
+            {
+                name: "Entrance Tests",
+                items: ["JEE", "CAT", "MAT", "TANCET", "CUCET JAM"]
+            },
+            {
+                name: "Study Abroad",
+                items: ["SAT", "GRE"]
+            },
+            {
+                name: "Others",
+                items: ["Deemed Universities Exams"]
+            }
+        ]
     },
     {
-        category: "IGCSE",
-        courses: ["Class 9", "Class 10", "Diploma"]
-    },
-    {
-        category: "Entrance Exams",
-        courses: ["JEE", "CAT", "MAT", "TANCET", "CUCET JAM", "Deemed Universities Entrance Exams"]
-    },
-    {
-        category: "A & AS",
-        courses: ["Management", "Mathematics", "Physics", "Chemistry", "Computer Science", "Accounts", "Economics"]
-    },
-    {
-        category: "SAT",
-        courses: ["SAT", "GRE"]
-    },
-    {
-        category: "IB",
-        courses: ["Mathematics", "Physics", "Chemistry", "Computer Science", "Accounts", "Economics", "Management"]
-    },
-    {
-        category: "Spoken English",
-        courses: ["Spoken English"]
-    },
-    {
-        category: "Interview Preparation",
-        courses: ["Aptitude", "Logical Thinking", "Programming"]
+        title: "Skill Development",
+        icon: <TrendingUp className="w-6 h-6 text-secondary" />,
+        groups: [
+            {
+                name: "Language",
+                items: ["Spoken English"]
+            },
+            {
+                name: "Interview Prep",
+                items: ["Aptitude", "Logical Thinking", "Programming"]
+            }
+        ]
     }
 ];
 
 import { useState } from "react";
 import ServiceModal from "@/components/ui/ServiceModal";
-import ScrollHint from "@/components/ui/ScrollHint";
 
 export default function Services() {
     const [selectedService, setSelectedService] = useState<{
@@ -195,33 +208,39 @@ export default function Services() {
                             <p className="text-slate-400 text-lg">Explore our wide range of subjects and classes</p>
                         </div>
 
-                        <div className="flex overflow-x-auto pb-6 gap-6 snap-x snap-mandatory -mx-4 px-4 md:mx-0 md:px-0 lg:grid lg:grid-cols-3 lg:gap-6 lg:pb-0 lg:h-[500px] lg:overflow-y-auto lg:content-start scrollbar-hide lg:scrollbar-default">
-                            {courseOfferings.map((category, index) => (
-                                <ScrollAnimation
-                                    key={index}
-                                    delay={index * 0.05}
-                                    className="h-full min-w-[85vw] sm:min-w-[350px] snap-center lg:min-w-0 lg:h-auto"
-                                >
-                                    <div className="glass-dark p-6 rounded-2xl hover:bg-white/10 transition-colors group h-full border border-white/5 hover:border-white/20">
-                                        <div className="flex items-center gap-4 mb-6">
-                                            <div className="p-3 rounded-xl bg-white/5 group-hover:bg-secondary/20 transition-colors">
-                                                <GraduationCap className="text-secondary" size={24} />
+                        <div className="glass-dark p-6 md:p-10 rounded-3xl border border-white/5">
+                            <div className="grid md:grid-cols-3 gap-8">
+                                {courseOfferings.map((section, index) => (
+                                    <div key={index} className="space-y-6">
+                                        <div className="flex items-center gap-3 mb-6">
+                                            <div className="p-2 rounded-lg bg-white/5">
+                                                {section.icon}
                                             </div>
-                                            <h4 className="text-xl font-bold group-hover:text-secondary transition-colors">{category.category}</h4>
+                                            <h4 className="text-xl font-bold text-white">
+                                                {section.title}
+                                            </h4>
                                         </div>
-                                        <ul className="space-y-3">
-                                            {category.courses.map((course, idx) => (
-                                                <li key={idx} className="flex items-center gap-3 text-slate-300 text-sm group/item">
-                                                    <ArrowRight size={12} className="text-slate-500 group-hover/item:text-secondary transition-colors" />
-                                                    {course}
-                                                </li>
+                                        
+                                        <div className="space-y-6">
+                                            {section.groups.map((group, idx) => (
+                                                <div key={idx}>
+                                                    <h5 className="text-secondary font-semibold text-sm mb-3 uppercase tracking-wider">
+                                                        {group.name}
+                                                    </h5>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {group.items.map((item, i) => (
+                                                            <span key={i} className="px-3 py-1 rounded-full bg-white/5 text-slate-300 text-sm border border-white/5 hover:bg-white/10 hover:border-white/10 transition-colors cursor-default">
+                                                                {item}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                </div>
                                             ))}
-                                        </ul>
+                                        </div>
                                     </div>
-                                </ScrollAnimation>
-                            ))}
+                                ))}
+                            </div>
                         </div>
-                        <ScrollHint className="lg:hidden" />
                     </div>
                 </div>
 

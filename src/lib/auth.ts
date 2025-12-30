@@ -18,6 +18,7 @@ export async function verifyToken(token: string) {
         });
         return payload;
     } catch (error) {
+        console.error('Token verification failed:', error);
         return null;
     }
 }

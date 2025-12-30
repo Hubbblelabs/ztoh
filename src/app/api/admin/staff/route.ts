@@ -2,26 +2,37 @@ import { NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
 import dbConnect from '@/lib/db';
 import Staff from '@/models/Staff';
+import { cookies } from 'next/headers';
 
 // Helper to verify admin token
-async function verifyAdmin(request: Request) {
-    const token = request.headers.get('cookie')?.split('; ').find(row => row.startsWith('adminToken='))?.split('=')[1];
+async function verifyAdmin() {
+    const cookieStore = await cookies();
+    // Check for authToken first (unified login), then adminToken (legacy)
+    let token = cookieStore.get('authToken')?.value;
+    if (!token) {
+        token = cookieStore.get('adminToken')?.value;
+    }
     
     if (!token) {
-        return null;
+        return { error: 'No token found' };
     }
     
     const payload = await verifyToken(token);
+    
+    if (!payload) {
+        return { error: 'Invalid token' };
+    }
+
     return payload;
 }
 
 // GET - List all staff members
 export async function GET(request: Request) {
     try {
-        const payload = await verifyAdmin(request);
+        const result = await verifyAdmin();
         
-        if (!payload) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        if ('error' in result) {
+            return NextResponse.json({ error: `Unauthorized: ${result.error}` }, { status: 401 });
         }
 
         await dbConnect();
@@ -42,10 +53,10 @@ export async function GET(request: Request) {
 // POST - Create a new staff member
 export async function POST(request: Request) {
     try {
-        const payload = await verifyAdmin(request);
+        const result = await verifyAdmin();
         
-        if (!payload) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        if ('error' in result) {
+            return NextResponse.json({ error: `Unauthorized: ${result.error}` }, { status: 401 });
         }
 
         await dbConnect();
