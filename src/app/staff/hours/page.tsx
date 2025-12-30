@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Clock, TrendingUp, Calendar, CalendarDays, BookOpen } from 'lucide-react';
+import { Clock, TrendingUp, Calendar, CalendarDays, BookOpen, Plus, X } from 'lucide-react';
+import Loader from '@/components/ui/Loader';
 
 interface TeachingHoursData {
     records: any[];
@@ -25,23 +26,61 @@ interface TeachingHoursData {
 export default function StaffHoursPage() {
     const [teachingData, setTeachingData] = useState<TeachingHoursData | null>(null);
     const [loading, setLoading] = useState(true);
+    const [showModal, setShowModal] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
+    const [formData, setFormData] = useState({
+        date: new Date().toISOString().split('T')[0],
+        hours: '',
+        subject: '',
+        course: '',
+        description: ''
+    });
+
+    const fetchData = async () => {
+        try {
+            const hoursRes = await fetch('/api/staff/teaching-hours');
+            if (hoursRes.ok) {
+                const hoursData = await hoursRes.json();
+                setTeachingData(hoursData);
+            }
+        } catch (error) {
+            console.error('Failed to fetch data:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const hoursRes = await fetch('/api/staff/teaching-hours');
-                if (hoursRes.ok) {
-                    const hoursData = await hoursRes.json();
-                    setTeachingData(hoursData);
-                }
-            } catch (error) {
-                console.error('Failed to fetch data:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchData();
     }, []);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSubmitting(true);
+        try {
+            const res = await fetch('/api/staff/teaching-hours', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            if (res.ok) {
+                setShowModal(false);
+                setFormData({
+                    date: new Date().toISOString().split('T')[0],
+                    hours: '',
+                    subject: '',
+                    course: '',
+                    description: ''
+                });
+                fetchData();
+            }
+        } catch (error) {
+            console.error('Error submitting hours:', error);
+        } finally {
+            setSubmitting(false);
+        }
+    };
 
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString('en-US', {
@@ -54,7 +93,7 @@ export default function StaffHoursPage() {
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-[60vh]">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+                <Loader />
             </div>
         );
     }
@@ -62,14 +101,23 @@ export default function StaffHoursPage() {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="flex items-center gap-4">
-                <div className="p-3 bg-blue-100 rounded-xl">
-                    <Clock className="w-6 h-6 text-blue-600" />
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                    <div className="p-3 bg-blue-100 rounded-xl">
+                        <Clock className="w-6 h-6 text-blue-600" />
+                    </div>
+                    <div>
+                        <h1 className="text-2xl font-bold text-slate-900">My Teaching Hours</h1>
+                        <p className="text-slate-500">Track your teaching activity</p>
+                    </div>
                 </div>
-                <div>
-                    <h1 className="text-2xl font-bold text-slate-900">My Teaching Hours</h1>
-                    <p className="text-slate-500">Track your teaching activity</p>
-                </div>
+                <button
+                    onClick={() => setShowModal(true)}
+                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                    <Plus size={20} />
+                    Log Hours
+                </button>
             </div>
 
             {/* Stats */}
@@ -195,6 +243,100 @@ export default function StaffHoursPage() {
                     </div>
                 )}
             </div>
+
+            {/* Add Hours Modal */}
+            {showModal && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-2xl w-full max-w-md p-6">
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-xl font-bold text-slate-900">Log Teaching Hours</h2>
+                            <button 
+                                onClick={() => setShowModal(false)}
+                                className="p-2 hover:bg-slate-100 rounded-full transition-colors"
+                            >
+                                <X size={20} className="text-slate-500" />
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Date</label>
+                                <input
+                                    type="date"
+                                    required
+                                    value={formData.date}
+                                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                                    className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Hours</label>
+                                <input
+                                    type="number"
+                                    step="0.5"
+                                    min="0.5"
+                                    required
+                                    value={formData.hours}
+                                    onChange={(e) => setFormData({ ...formData, hours: e.target.value })}
+                                    className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                                    placeholder="e.g. 2.5"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Subject</label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={formData.subject}
+                                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                                    className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                                    placeholder="e.g. Mathematics"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Course (Optional)</label>
+                                <input
+                                    type="text"
+                                    value={formData.course}
+                                    onChange={(e) => setFormData({ ...formData, course: e.target.value })}
+                                    className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                                    placeholder="e.g. Grade 10"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Description (Optional)</label>
+                                <textarea
+                                    value={formData.description}
+                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                    className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-none h-24"
+                                    placeholder="Brief description of topics covered..."
+                                />
+                            </div>
+
+                            <div className="flex gap-3 pt-4">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowModal(false)}
+                                    className="flex-1 px-4 py-2 border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={submitting}
+                                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {submitting ? 'Saving...' : 'Save Hours'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

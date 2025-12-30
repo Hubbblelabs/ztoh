@@ -131,3 +131,47 @@ export async function GET(request: Request) {
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }
+
+export async function POST(request: Request) {
+    try {
+        const cookieStore = await cookies();
+        let token = cookieStore.get('authToken')?.value;
+        if (!token) {
+            token = cookieStore.get('staffToken')?.value;
+        }
+
+        if (!token) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        const payload = await verifyToken(token);
+
+        if (!payload || payload.role !== 'staff') {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        await dbConnect();
+
+        const body = await request.json();
+        const { date, hours, subject, course, description } = body;
+
+        if (!date || !hours || !subject) {
+            return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+        }
+
+        const newRecord = await TeachingHours.create({
+            staffId: payload.id,
+            date: new Date(date),
+            hours: Number(hours),
+            subject,
+            course,
+            description
+        });
+
+        return NextResponse.json(newRecord, { status: 201 });
+
+    } catch (error) {
+        console.error('Error adding teaching hours:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
+}
