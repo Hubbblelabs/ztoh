@@ -2,6 +2,7 @@
 
 import { CheckCircle2, Star, Users, ArrowRight } from "lucide-react";
 import ScrollAnimation from "@/components/animations/ScrollAnimation";
+import ScrollHint from "@/components/ui/ScrollHint";
 
 const whyChooseUs = [
     "We firmly believe in the saying, 'The method of teaching and learning determines a student's knowledge and skills, not just their grades.'",
@@ -43,11 +44,11 @@ const whoCanJoin = [
 
 export default function Features() {
     return (
-        <section id="features" className="py-24 bg-slate-50 relative overflow-hidden">
+        <section id="features" className="py-10 bg-white border-t border-slate-200 relative overflow-hidden">
             {/* Background Decoration */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
                 <div className="absolute top-[10%] -left-[5%] w-[30%] h-[30%] rounded-full bg-secondary/5 blur-3xl" />
-                <div className="absolute bottom-[10%] -right-[5%] w-[30%] h-[30%] rounded-full bg-primary/5 blur-3xl" />
+                <div className="absolute bottom-[10%] -right-[5%] w-[30%] h-[30%] rounded-full bg-secondary/5 blur-3xl" />
             </div>
 
             <div className="container mx-auto px-4 md:px-6 relative z-10">
@@ -69,12 +70,12 @@ export default function Features() {
                     </ScrollAnimation>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                <div className="flex overflow-x-auto pb-8 gap-6 snap-x snap-mandatory -mx-4 px-4 lg:mx-0 lg:px-0 lg:grid lg:grid-cols-3 lg:gap-8 lg:pb-0 lg:overflow-visible scrollbar-hide items-start pt-10">
 
                     {/* Why Choose Us */}
                     <ScrollAnimation
                         delay={0.2}
-                        className="h-full"
+                        className="h-full min-w-[85vw] md:min-w-[400px] lg:min-w-0 snap-center"
                     >
                         <div className="bg-white p-8 rounded-[2rem] shadow-xl shadow-slate-200/50 border border-slate-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 h-full">
                             <div className="flex items-center gap-4 mb-8">
@@ -97,7 +98,7 @@ export default function Features() {
                     {/* Features (Center Highlight) */}
                     <ScrollAnimation
                         delay={0.3}
-                        className="h-full"
+                        className="h-full min-w-[85vw] md:min-w-[400px] lg:min-w-0 snap-center"
                     >
                         <div className="bg-slate-900 p-8 rounded-[2rem] text-white shadow-2xl shadow-primary/30 relative overflow-hidden transform lg:-translate-y-6 lg:scale-105 z-10 h-full">
                             <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-primary to-slate-800" />
@@ -137,7 +138,7 @@ export default function Features() {
                     {/* Who Can Join */}
                     <ScrollAnimation
                         delay={0.2}
-                        className="h-full"
+                        className="h-full min-w-[85vw] md:min-w-[400px] lg:min-w-0 snap-center"
                     >
                         <div className="bg-white p-8 rounded-[2rem] shadow-xl shadow-slate-200/50 border border-slate-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 h-full">
                             <div className="flex items-center gap-4 mb-8">
@@ -158,6 +159,7 @@ export default function Features() {
                     </ScrollAnimation>
 
                 </div>
+                <ScrollHint />
             </div>
         </section>
     );

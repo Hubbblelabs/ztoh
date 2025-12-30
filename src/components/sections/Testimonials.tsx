@@ -130,7 +130,7 @@ export default function Testimonials() {
     const secondRow = testimonials.slice(Math.ceil(testimonials.length / 2));
 
     return (
-        <section id="testimonials" className="py-24 bg-slate-50 relative overflow-hidden">
+        <section id="testimonials" className="py-10 bg-slate-100 border-t border-slate-200 relative overflow-hidden">
             {/* Background Decoration */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-0 left-1/4 w-full h-full bg-[radial-gradient(circle_at_50%_50%,_rgba(14,165,233,0.05),_transparent_40%)]"></div>

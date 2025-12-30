@@ -214,14 +214,10 @@ export default function JoinUsModal({ isOpen, onClose }: JoinUsModalProps) {
                         animate={{ x: 0, opacity: 1 }}
                         exit={{ x: "100%", opacity: 0.5 }}
                         transition={{ type: "spring", damping: 30, stiffness: 300 }}
-                        className="fixed inset-y-0 right-0 z-50 w-full max-w-2xl bg-gradient-to-b from-white to-slate-50/95 shadow-2xl overflow-y-auto"
+                        className="fixed inset-y-0 right-0 z-50 w-full max-w-2xl bg-white shadow-2xl overflow-y-auto"
                     >
                         {/* Decorative Header Gradient */}
                         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-secondary via-accent to-secondary" style={{ backgroundSize: '200% 100%', animation: 'gradient-flow 3s ease infinite' }} />
-
-                        {/* Floating Decorations */}
-                        <div className="absolute top-20 right-10 w-32 h-32 bg-secondary/10 rounded-full blur-3xl pointer-events-none" />
-                        <div className="absolute bottom-40 left-5 w-24 h-24 bg-accent/10 rounded-full blur-2xl pointer-events-none" />
 
                         <div className="p-6 md:p-8 relative">
                             {/* Header */}
@@ -296,15 +292,15 @@ export default function JoinUsModal({ isOpen, onClose }: JoinUsModalProps) {
                                         className="relative flex p-1.5 bg-slate-100/80 backdrop-blur-sm rounded-2xl mb-8 border border-slate-200/50"
                                     >
                                         <motion.div
-                                            className="absolute inset-y-1.5 rounded-xl bg-white shadow-lg"
+                                            className="absolute inset-y-1.5 w-[calc(50%-6px)] rounded-xl bg-white shadow-lg"
                                             initial={false}
                                             animate={{
                                                 left: activeTab === "student" ? "6px" : "50%",
-                                                right: activeTab === "student" ? "50%" : "6px"
                                             }}
                                             transition={{ type: "spring", stiffness: 400, damping: 30 }}
                                         />
                                         <button
+                                            type="button"
                                             onClick={() => setActiveTab("student")}
                                             className={`relative flex-1 py-3.5 text-sm font-semibold rounded-xl transition-colors duration-200 z-10 flex items-center justify-center gap-2 ${activeTab === "student" ? "text-slate-900" : "text-slate-500 hover:text-slate-700"
                                                 }`}
@@ -313,6 +309,7 @@ export default function JoinUsModal({ isOpen, onClose }: JoinUsModalProps) {
                                             Student
                                         </button>
                                         <button
+                                            type="button"
                                             onClick={() => setActiveTab("teacher")}
                                             className={`relative flex-1 py-3.5 text-sm font-semibold rounded-xl transition-colors duration-200 z-10 flex items-center justify-center gap-2 ${activeTab === "teacher" ? "text-slate-900" : "text-slate-500 hover:text-slate-700"
                                                 }`}
@@ -321,16 +318,20 @@ export default function JoinUsModal({ isOpen, onClose }: JoinUsModalProps) {
                                             Teacher
                                         </button>
                                     </motion.div>
-
+                                    
+                                    {/* Removed old tabs and form wrapper */}
                                     <form onSubmit={handleSubmit}>
-                                        <motion.div
-                                            variants={containerVariants}
-                                            initial="hidden"
-                                            animate="visible"
-                                            className="space-y-5"
-                                        >
-                                            {/* Common Fields */}
-                                            <motion.div variants={itemVariants} className="space-y-5">
+                                        <AnimatePresence mode="wait">
+                                            <motion.div
+                                                key={activeTab}
+                                                initial={{ opacity: 0, x: 20 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                exit={{ opacity: 0, x: -20 }}
+                                                transition={{ duration: 0.2 }}
+                                                className="space-y-5"
+                                            >
+                                                {/* Common Fields */}
+                                                <div className="space-y-5">
                                                 <div className="relative group">
                                                     <label className="block text-sm font-semibold text-slate-700 mb-2">
                                                         Name <span className="text-secondary">*</span>
@@ -463,7 +464,7 @@ export default function JoinUsModal({ isOpen, onClose }: JoinUsModalProps) {
                                                         placeholder="Enter your full address"
                                                     />
                                                 </div>
-                                            </motion.div>
+                                            </div>
 
                                             {/* Student Specific Fields */}
                                             <AnimatePresence mode="wait">
@@ -759,6 +760,7 @@ export default function JoinUsModal({ isOpen, onClose }: JoinUsModalProps) {
                                                 )}
                                             </motion.button>
                                         </motion.div>
+                                        </AnimatePresence>
                                     </form>
                                 </>
                             )}

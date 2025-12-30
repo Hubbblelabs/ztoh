@@ -323,4 +323,21 @@ body {
   .animate-fade-in-up {
     animation: fade-in-up 0.4s ease-out forwards;
   }
+
+  /* Hide Scrollbar */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-default::-webkit-scrollbar {
+    display: block;
+  }
+  .scrollbar-default {
+    -ms-overflow-style: auto;
+    scrollbar-width: auto;
+  }
 }

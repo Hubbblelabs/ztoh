@@ -48,7 +48,7 @@ export default function FAQ() {
     const [openIndex, setOpenIndex] = useState<number | null>(0);
 
     return (
-        <section id="faq" className="py-20 bg-slate-50">
+        <section id="faq" className="py-8 bg-white border-t border-slate-200">
             <div className="container mx-auto px-4 md:px-6">
                 <div className="text-center max-w-3xl mx-auto mb-16">
                     <ScrollAnimation>
@@ -63,33 +63,63 @@ export default function FAQ() {
                     </ScrollAnimation>
                 </div>
 
-                <div className="max-w-3xl mx-auto space-y-4">
-                    {faqs.map((faq, index) => (
-                        <ScrollAnimation
-                            key={index}
-                            delay={index * 0.05}
-                            className="bg-white rounded-2xl border border-slate-100 overflow-hidden"
-                        >
-                            <button
-                                onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                                className="w-full flex items-center justify-between p-6 text-left hover:bg-slate-50 transition-colors"
+                <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                    <div className="space-y-4">
+                        {faqs.filter((_, i) => i % 2 === 0).map((faq, index) => (
+                            <ScrollAnimation
+                                key={index * 2}
+                                delay={index * 0.05}
+                                className="bg-white rounded-2xl border border-slate-100 overflow-hidden"
                             >
-                                <span className="font-semibold text-slate-900 pr-8">{faq.question}</span>
-                                <div className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-colors ${openIndex === index ? "bg-primary text-white" : "bg-slate-100 text-slate-500"}`}>
-                                    {openIndex === index ? <Minus size={16} /> : <Plus size={16} />}
-                                </div>
-                            </button>
-                            <motion.div
-                                initial={false}
-                                animate={{ height: openIndex === index ? "auto" : 0 }}
-                                className="overflow-hidden"
+                                <button
+                                    onClick={() => setOpenIndex(openIndex === index * 2 ? null : index * 2)}
+                                    className="w-full flex items-center justify-between p-6 text-left hover:bg-slate-50 transition-colors"
+                                >
+                                    <span className="font-semibold text-slate-900 pr-8">{faq.question}</span>
+                                    <div className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-colors ${openIndex === index * 2 ? "bg-primary text-white" : "bg-slate-100 text-slate-500"}`}>
+                                        {openIndex === index * 2 ? <Minus size={16} /> : <Plus size={16} />}
+                                    </div>
+                                </button>
+                                <motion.div
+                                    initial={false}
+                                    animate={{ height: openIndex === index * 2 ? "auto" : 0 }}
+                                    className="overflow-hidden"
+                                >
+                                    <div className="p-6 pt-0 text-slate-600 leading-relaxed border-t border-slate-50">
+                                        {faq.answer}
+                                    </div>
+                                </motion.div>
+                            </ScrollAnimation>
+                        ))}
+                    </div>
+                    <div className="space-y-4">
+                        {faqs.filter((_, i) => i % 2 !== 0).map((faq, index) => (
+                            <ScrollAnimation
+                                key={index * 2 + 1}
+                                delay={index * 0.05}
+                                className="bg-white rounded-2xl border border-slate-100 overflow-hidden"
                             >
-                                <div className="p-6 pt-0 text-slate-600 leading-relaxed border-t border-slate-50">
-                                    {faq.answer}
-                                </div>
-                            </motion.div>
-                        </ScrollAnimation>
-                    ))}
+                                <button
+                                    onClick={() => setOpenIndex(openIndex === index * 2 + 1 ? null : index * 2 + 1)}
+                                    className="w-full flex items-center justify-between p-6 text-left hover:bg-slate-50 transition-colors"
+                                >
+                                    <span className="font-semibold text-slate-900 pr-8">{faq.question}</span>
+                                    <div className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-colors ${openIndex === index * 2 + 1 ? "bg-primary text-white" : "bg-slate-100 text-slate-500"}`}>
+                                        {openIndex === index * 2 + 1 ? <Minus size={16} /> : <Plus size={16} />}
+                                    </div>
+                                </button>
+                                <motion.div
+                                    initial={false}
+                                    animate={{ height: openIndex === index * 2 + 1 ? "auto" : 0 }}
+                                    className="overflow-hidden"
+                                >
+                                    <div className="p-6 pt-0 text-slate-600 leading-relaxed border-t border-slate-50">
+                                        {faq.answer}
+                                    </div>
+                                </motion.div>
+                            </ScrollAnimation>
+                        ))}
+                    </div>
                 </div>
             </div>
         </section>

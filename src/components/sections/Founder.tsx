@@ -3,10 +3,11 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Quote, Target, Eye } from "lucide-react";
+import ScrollHint from "@/components/ui/ScrollHint";
 
 export default function Founder() {
     return (
-        <section className="py-20 bg-slate-50">
+        <section className="py-8 bg-slate-100 border-t border-slate-200">
             <div className="container mx-auto px-4 md:px-6">
                 <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 items-start">
 
@@ -61,85 +62,88 @@ export default function Founder() {
                             </div>
                         </motion.div>
 
-                        {/* Vision */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: 0.1 }}
-                            className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100"
-                        >
-                            <div className="flex items-center gap-4 mb-6">
-                                <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600">
-                                    <Eye size={24} />
+                        <div className="flex overflow-x-auto gap-6 snap-x snap-mandatory -mx-4 px-4 lg:mx-0 lg:px-0 lg:flex-col lg:overflow-visible lg:gap-12 scrollbar-hide pb-4 lg:pb-0">
+                            {/* Vision */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.1 }}
+                                className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 min-w-[85vw] snap-center lg:min-w-0"
+                            >
+                                <div className="flex items-center gap-4 mb-6">
+                                    <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600">
+                                        <Eye size={24} />
+                                    </div>
+                                    <h3 className="text-2xl font-bold text-slate-900">Our Vision</h3>
                                 </div>
-                                <h3 className="text-2xl font-bold text-slate-900">Our Vision</h3>
-                            </div>
-                            <ul className="space-y-3 text-slate-600">
-                                <li className="flex gap-3">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2.5 shrink-0"></span>
-                                    Revolutionize the education system by focusing on understanding, personalized learning, and practical application.
-                                </li>
-                                <li className="flex gap-3">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2.5 shrink-0"></span>
-                                    Create a dynamic learning environment that ignites curiosity and passion.
-                                </li>
-                                <li className="flex gap-3">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2.5 shrink-0"></span>
-                                    Move away from rote memorization and cultivate a deep understanding of subjects.
-                                </li>
-                                <li className="flex gap-3">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2.5 shrink-0"></span>
-                                    Employ skilled teachers who encourage critical thinking and practical skills for student development.
-                                </li>
-                                <li className="flex gap-3">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2.5 shrink-0"></span>
-                                    Foster holistic learning to equip students for success in a rapidly changing world.
-                                </li>
-                            </ul>
-                        </motion.div>
+                                <ul className="space-y-3 text-slate-600">
+                                    <li className="flex gap-3">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2.5 shrink-0"></span>
+                                        Revolutionize the education system by focusing on understanding, personalized learning, and practical application.
+                                    </li>
+                                    <li className="flex gap-3">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2.5 shrink-0"></span>
+                                        Create a dynamic learning environment that ignites curiosity and passion.
+                                    </li>
+                                    <li className="flex gap-3">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2.5 shrink-0"></span>
+                                        Move away from rote memorization and cultivate a deep understanding of subjects.
+                                    </li>
+                                    <li className="flex gap-3">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2.5 shrink-0"></span>
+                                        Employ skilled teachers who encourage critical thinking and practical skills for student development.
+                                    </li>
+                                    <li className="flex gap-3">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2.5 shrink-0"></span>
+                                        Foster holistic learning to equip students for success in a rapidly changing world.
+                                    </li>
+                                </ul>
+                            </motion.div>
 
-                        {/* Mission */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: 0.2 }}
-                            className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100"
-                        >
-                            <div className="flex items-center gap-4 mb-6">
-                                <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center text-green-600">
-                                    <Target size={24} />
+                            {/* Mission */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.2 }}
+                                className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 min-w-[85vw] snap-center lg:min-w-0"
+                            >
+                                <div className="flex items-center gap-4 mb-6">
+                                    <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center text-green-600">
+                                        <Target size={24} />
+                                    </div>
+                                    <h3 className="text-2xl font-bold text-slate-900">Our Mission</h3>
                                 </div>
-                                <h3 className="text-2xl font-bold text-slate-900">Our Mission</h3>
-                            </div>
-                            <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 text-slate-600">
-                                <li className="flex gap-3">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 mt-2.5 shrink-0"></span>
-                                    Make education affordable and accessible to everyone.
-                                </li>
-                                <li className="flex gap-3">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 mt-2.5 shrink-0"></span>
-                                    Foster interest in subjects through real-life application-based teaching methods.
-                                </li>
-                                <li className="flex gap-3">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 mt-2.5 shrink-0"></span>
-                                    Ensure equal educational opportunities to all individuals.
-                                </li>
-                                <li className="flex gap-3">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 mt-2.5 shrink-0"></span>
-                                    Deliver high-quality teachers directly to your location or through device.
-                                </li>
-                                <li className="flex gap-3">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 mt-2.5 shrink-0"></span>
-                                    Offer a standardized syllabus for similar exams.
-                                </li>
-                                <li className="flex gap-3">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 mt-2.5 shrink-0"></span>
-                                    Boost confidence and improve academic grades.
-                                </li>
-                            </ul>
-                        </motion.div>
+                                <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 text-slate-600">
+                                    <li className="flex gap-3">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-green-500 mt-2.5 shrink-0"></span>
+                                        Make education affordable and accessible to everyone.
+                                    </li>
+                                    <li className="flex gap-3">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-green-500 mt-2.5 shrink-0"></span>
+                                        Foster interest in subjects through real-life application-based teaching methods.
+                                    </li>
+                                    <li className="flex gap-3">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-green-500 mt-2.5 shrink-0"></span>
+                                        Ensure equal educational opportunities to all individuals.
+                                    </li>
+                                    <li className="flex gap-3">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-green-500 mt-2.5 shrink-0"></span>
+                                        Deliver high-quality teachers directly to your location or through device.
+                                    </li>
+                                    <li className="flex gap-3">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-green-500 mt-2.5 shrink-0"></span>
+                                        Offer a standardized syllabus for similar exams.
+                                    </li>
+                                    <li className="flex gap-3">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-green-500 mt-2.5 shrink-0"></span>
+                                        Boost confidence and improve academic grades.
+                                    </li>
+                                </ul>
+                            </motion.div>
+                        </div>
+                        <ScrollHint className="lg:hidden" />
 
                     </div>
                 </div>

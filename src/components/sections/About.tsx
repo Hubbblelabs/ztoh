@@ -4,7 +4,7 @@ import ScrollAnimation from "@/components/animations/ScrollAnimation";
 
 export default function About() {
     return (
-        <section id="about" className="py-20 bg-white">
+        <section id="about" className="py-8 bg-white border-t border-slate-200">
             <div className="container mx-auto px-4 md:px-6">
                 <div className="max-w-4xl mx-auto">
                     <div className="text-center mb-16">

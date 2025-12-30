@@ -29,7 +29,7 @@ export default function Hero() {
     const { openJoinUsModal } = useJoinUsModal();
 
     return (
-        <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden bg-slate-50 selection:bg-secondary/30">
+        <section className="relative min-h-[100dvh] flex items-center pt-20 pb-10 md:pt-32 md:pb-16 overflow-hidden bg-slate-50 selection:bg-secondary/30">
 
             {/* Dynamic Background */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -116,7 +116,7 @@ export default function Hero() {
                                     <div className="absolute bottom-0 left-0 w-64 h-64 bg-accent/10 rounded-full blur-3xl transform -translate-x-1/3 translate-y-1/3" />
                                 </div>
 
-                                <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-8">
+                                <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-8 pt-12">
                                     <motion.div
                                         animate={{ y: [0, -10, 0] }}
                                         transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}

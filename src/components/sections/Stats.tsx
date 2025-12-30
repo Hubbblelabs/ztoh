@@ -13,7 +13,7 @@ const stats = [
 
 function Counter({ value, suffix }: { value: number; suffix: string }) {
     const ref = useRef<HTMLSpanElement>(null);
-    const inView = useInView(ref, { once: true, margin: "-100px" });
+    const inView = useInView(ref, { once: true });
     const spring = useSpring(0, { mass: 0.8, stiffness: 75, damping: 15 });
     const display = useTransform(spring, (current) => Math.round(current));
 
@@ -33,7 +33,7 @@ function Counter({ value, suffix }: { value: number; suffix: string }) {
 
 export default function Stats() {
     return (
-        <section className="py-20 bg-primary relative overflow-hidden">
+        <section className="py-8 bg-primary relative overflow-hidden">
             {/* Background Pattern */}
             <div className="absolute inset-0 opacity-10">
                 <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-secondary blur-3xl" />

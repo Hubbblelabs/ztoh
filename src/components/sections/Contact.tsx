@@ -146,7 +146,7 @@ export default function Contact() {
     const inputClasses = "w-full px-5 py-4 rounded-2xl border-2 border-slate-200/80 bg-white/90 backdrop-blur-sm focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all duration-300 hover:border-slate-300 hover:shadow-sm placeholder:text-slate-400 text-slate-800";
 
     return (
-        <section id="contact" className="py-28 bg-gradient-to-b from-slate-50 via-white to-slate-50 relative overflow-hidden">
+        <section id="contact" className="pt-6 pb-12 bg-white border-t border-slate-200 relative overflow-hidden">
             {/* Enhanced Background Decoration */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-20 right-20 w-96 h-96 bg-secondary/5 rounded-full blur-3xl animate-pulse-slow" />

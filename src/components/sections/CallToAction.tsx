@@ -8,10 +8,10 @@ import { motion } from "framer-motion";
 export default function CallToAction() {
     const { openJoinUsModal } = useJoinUsModal();
     return (
-        <section id="cta" className="py-28 relative overflow-hidden">
+        <section id="cta" className="py-28 relative overflow-hidden bg-slate-100 border-t border-slate-200">
             <div className="container mx-auto px-4 md:px-6 relative z-10">
                 <ScrollAnimation
-                    className="relative rounded-[3rem] overflow-hidden bg-gradient-to-br from-primary via-slate-900 to-slate-800 px-6 py-20 md:px-20 md:py-28 text-center shadow-2xl"
+                    className="relative rounded-[3rem] overflow-hidden bg-gradient-to-br from-primary via-slate-900 to-slate-800 px-6 py-10 md:px-20 md:py-16 text-center shadow-2xl"
                 >
                     {/* Enhanced Background Effects */}
                     <div className="absolute inset-0 overflow-hidden pointer-events-none">

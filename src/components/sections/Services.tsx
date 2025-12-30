@@ -100,6 +100,7 @@ const courseOfferings = [
 
 import { useState } from "react";
 import ServiceModal from "@/components/ui/ServiceModal";
+import ScrollHint from "@/components/ui/ScrollHint";
 
 export default function Services() {
     const [selectedService, setSelectedService] = useState<{
@@ -110,7 +111,7 @@ export default function Services() {
     } | null>(null);
 
     return (
-        <section id="services" className="py-24 bg-slate-50 relative">
+        <section id="services" className="py-10 bg-white border-t border-slate-200 relative">
             <ServiceModal
                 isOpen={!!selectedService}
                 onClose={() => setSelectedService(null)}
@@ -194,12 +195,12 @@ export default function Services() {
                             <p className="text-slate-400 text-lg">Explore our wide range of subjects and classes</p>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="flex overflow-x-auto pb-6 gap-6 snap-x snap-mandatory -mx-4 px-4 md:mx-0 md:px-0 lg:grid lg:grid-cols-3 lg:gap-6 lg:pb-0 lg:h-[500px] lg:overflow-y-auto lg:content-start scrollbar-hide lg:scrollbar-default">
                             {courseOfferings.map((category, index) => (
                                 <ScrollAnimation
                                     key={index}
                                     delay={index * 0.05}
-                                    className="h-full"
+                                    className="h-full min-w-[85vw] sm:min-w-[350px] snap-center lg:min-w-0 lg:h-auto"
                                 >
                                     <div className="glass-dark p-6 rounded-2xl hover:bg-white/10 transition-colors group h-full border border-white/5 hover:border-white/20">
                                         <div className="flex items-center gap-4 mb-6">
@@ -220,6 +221,7 @@ export default function Services() {
                                 </ScrollAnimation>
                             ))}
                         </div>
+                        <ScrollHint className="lg:hidden" />
                     </div>
                 </div>
 
