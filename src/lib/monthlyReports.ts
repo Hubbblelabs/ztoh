@@ -219,7 +219,7 @@ export async function sendMonthlyReportEmails(reports?: any[]) {
             const html = generateEmailHtml(report);
 
             const data = await resend.emails.send({
-                from: fromEmail,
+                from: `Zero To Hero <${fromEmail}>`,
                 to: report.staffEmail,
                 subject,
                 html,

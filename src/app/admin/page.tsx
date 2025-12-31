@@ -44,8 +44,8 @@ export default function AdminDashboard() {
 
                 if (requestsRes.ok) {
                     const data = await requestsRes.json();
-                    joinCount = data.requests?.filter((r: any) => r.type === 'join').length || 0;
-                    contactCount = data.requests?.filter((r: any) => r.type === 'contact').length || 0;
+                    joinCount = data.join?.length || 0;
+                    contactCount = data.contact?.length || 0;
                 }
 
                 if (staffRes.ok) {
