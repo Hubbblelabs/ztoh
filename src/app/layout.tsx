@@ -7,6 +7,8 @@ import { ModalProvider } from "@/components/providers/ModalProvider";
 import { ToastProvider } from "@/components/providers/ToastProvider";
 import LayoutContent from "@/components/layout/LayoutContent";
 import Chatbot from "@/components/Chatbot";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -44,7 +46,8 @@ export default function RootLayout({
             </LayoutContent>
           </ModalProvider>
         </ToastProvider>
-
+        <Analytics />
+        <SpeedInsights/>
       </body>
     </html>
   );
