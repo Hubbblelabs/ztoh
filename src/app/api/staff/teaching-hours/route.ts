@@ -49,7 +49,7 @@ export async function GET(request: Request) {
 
         await dbConnect();
         
-        const staff = await Staff.findById(payload.id);
+        const staff = await Staff.findById(payload.id as string);
         if (!staff || !staff.isActive) {
             return NextResponse.json({ error: 'Staff not found or inactive' }, { status: 404 });
         }
@@ -73,7 +73,7 @@ export async function GET(request: Request) {
             dateFilter = { $gte: new Date(startDate), $lte: new Date(endDate) };
         }
 
-        const query: any = { staffId: payload.id };
+        const query: any = { staffId: payload.id as string };
         if (Object.keys(dateFilter).length > 0) {
             query.date = dateFilter;
         }
@@ -160,7 +160,7 @@ export async function POST(request: Request) {
         }
 
         const newRecord = await TeachingHours.create({
-            staffId: payload.id,
+            staffId: payload.id as string,
             date: new Date(date),
             hours: Number(hours),
             subject,
