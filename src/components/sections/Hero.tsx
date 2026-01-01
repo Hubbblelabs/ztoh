@@ -15,8 +15,17 @@ const fadeInUp: Variants = {
     },
 };
 
+const fadeInUpImmediate: Variants = {
+    hidden: { opacity: 1, y: 0 },
+    visible: {
+        opacity: 1,
+        y: 0,
+        transition: { duration: 0 }
+    },
+};
+
 const staggerContainer: Variants = {
-    hidden: { opacity: 0 },
+    hidden: { opacity: 1 },
     visible: {
         opacity: 1,
         transition: {
@@ -55,7 +64,7 @@ export default function Hero() {
                             Accepting New Students for {new Date().getFullYear()}
                         </motion.div>
 
-                        <motion.h1 variants={fadeInUp} className="text-5xl md:text-6xl lg:text-7xl font-bold font-heading text-slate-900 leading-[1.1] mb-6 tracking-tight">
+                        <motion.h1 variants={fadeInUpImmediate} className="text-5xl md:text-6xl lg:text-7xl font-bold font-heading text-slate-900 leading-[1.1] mb-6 tracking-tight">
                             Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-700 to-slate-900">Zero</span> to{" "}
                             <span className="relative inline-block">
                                 <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-secondary to-primary">Hero</span>
