@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
 import dbConnect from '@/lib/db';
 import MonthlyReport from '@/models/MonthlyReport';
-import { generateMonthlyReports, sendMonthlyReportEmails, generateAndSendMonthlyReports } from '@/lib/monthlyReports';
+import { generateMonthlyReports, generateAndSendMonthlyReports } from '@/lib/monthlyReports';
 import { cookies } from 'next/headers';
 
 // Helper to verify admin token
