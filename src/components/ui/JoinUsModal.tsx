@@ -136,6 +136,11 @@ export default function JoinUsModal({ isOpen, onClose }: JoinUsModalProps) {
             setVerificationMessage('Please enter an email address');
             return;
         }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            setVerificationMessage('Please enter a valid email address');
+            return;
+        }
         setIsVerifying(true);
         setVerificationMessage('');
         try {
