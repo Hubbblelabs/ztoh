@@ -78,7 +78,7 @@ export default function Footer() {
                                 <div className="p-2 rounded-lg bg-slate-800 group-hover:bg-secondary/20 transition-colors">
                                     <Mail size={18} className="text-secondary" />
                                 </div>
-                                <span className="text-sm text-slate-400 group-hover:text-white transition-colors">mathsmuthu.j@gmail.com</span>
+                                <span className="text-sm text-slate-400 group-hover:text-white transition-colors">reachus@ztoh.org</span>
                             </li>
                         </ul>
                     </div>

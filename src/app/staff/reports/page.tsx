@@ -104,12 +104,6 @@ export default function StaffReportsPage() {
                                         </p>
                                         <p className="text-sm text-slate-500">total hours</p>
                                     </div>
-                                    {report.emailSentAt && (
-                                        <div className="flex items-center gap-2 px-3 py-2 bg-green-50 rounded-lg">
-                                            <Mail className="w-4 h-4 text-green-600" />
-                                            <span className="text-xs text-green-700">Email sent</span>
-                                        </div>
-                                    )}
                                 </div>
                             </div>
 

@@ -21,7 +21,7 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Zero to Hero | ",
+  title: "Zero to Hero",
   description: "Join Zero to Hero for top-tier tutoring and mentorship. Transform your potential into success with our expert-led courses.",
 };
 

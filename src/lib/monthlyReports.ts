@@ -100,41 +100,19 @@ function getMonthName(month: number): string {
     return months[month - 1] || '';
 }
 
-function formatDate(date: Date): string {
-    return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    });
-}
-
-function generateEmailHtml(report: any): string {
-    const monthName = getMonthName(report.month);
+function generateConsolidatedEmailHtml(reports: any[], monthName: string, year: number): string {
+    // Sort reports by staff name
+    const sortedReports = [...reports].sort((a, b) => a.staffName.localeCompare(b.staffName));
     
-    let subjectBreakdownHtml = '';
-    if (report.subjectBreakdown && report.subjectBreakdown.length > 0) {
-        subjectBreakdownHtml = `
-            <h3 style="color: #334155; margin-top: 24px; margin-bottom: 12px;">Hours by Subject/Course</h3>
-            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-                <thead>
-                    <tr style="background-color: #f1f5f9;">
-                        <th style="padding: 12px; text-align: left; border-bottom: 2px solid #e2e8f0;">Subject</th>
-                        <th style="padding: 12px; text-align: left; border-bottom: 2px solid #e2e8f0;">Course</th>
-                        <th style="padding: 12px; text-align: right; border-bottom: 2px solid #e2e8f0;">Hours</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${report.subjectBreakdown.map((item: ISubjectBreakdown) => `
-                        <tr>
-                            <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">${item.subject}</td>
-                            <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">${item.course || '-'}</td>
-                            <td style="padding: 12px; text-align: right; border-bottom: 1px solid #e2e8f0;">${item.hours.toFixed(1)}</td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        `;
-    }
+    const totalHoursAllStaff = sortedReports.reduce((sum, r) => sum + r.totalHours, 0);
+
+    const rows = sortedReports.map(report => `
+        <tr>
+            <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">${report.staffName}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">${report.staffEmail}</td>
+            <td style="padding: 12px; text-align: right; border-bottom: 1px solid #e2e8f0;"><strong>${report.totalHours.toFixed(1)}</strong></td>
+        </tr>
+    `).join('');
 
     return `
     <!DOCTYPE html>
@@ -142,126 +120,119 @@ function generateEmailHtml(report: any): string {
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Monthly Teaching Hours Report</title>
+        <title>Monthly Teaching Hours Report - All Staff</title>
     </head>
-    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #334155; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #334155; max-width: 800px; margin: 0 auto; padding: 20px;">
         <div style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); padding: 32px; border-radius: 16px 16px 0 0; text-align: center;">
             <h1 style="color: white; margin: 0; font-size: 24px;">Monthly Teaching Hours Report</h1>
-            <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0 0;">${monthName} ${report.year}</p>
+            <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0 0;">${monthName} ${year} - All Staff</p>
         </div>
         
         <div style="background: white; padding: 32px; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 16px 16px;">
-            <p style="margin-top: 0;">Dear ${report.staffName},</p>
+            <p style="margin-top: 0;">Dear Admin,</p>
             
-            <p>Here is your teaching hours summary for <strong>${monthName} ${report.year}</strong>.</p>
+            <p>Here is the consolidated teaching hours summary for all staff for <strong>${monthName} ${year}</strong>.</p>
             
             <div style="background: #f8fafc; border-radius: 12px; padding: 24px; margin: 24px 0;">
-                <h2 style="color: #1e40af; margin: 0 0 16px 0; font-size: 18px;">Summary</h2>
-                
-                <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-                    <span style="color: #64748b;">Report Period:</span>
-                    <span style="font-weight: 600;">${formatDate(new Date(report.startDate))} - ${formatDate(new Date(report.endDate))}</span>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="color: #64748b;">Total Staff Reported:</span>
+                    <span style="font-weight: 600;">${reports.length}</span>
                 </div>
-                
-                <div style="display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); padding: 16px; border-radius: 8px; margin-top: 16px;">
-                    <span style="color: rgba(255,255,255,0.9); font-size: 14px;">Total Teaching Hours</span>
-                    <span style="color: white; font-size: 28px; font-weight: 700;">${report.totalHours.toFixed(1)}</span>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+                    <span style="color: #64748b;">Total Hours (All Staff):</span>
+                    <span style="font-weight: 600; color: #1d4ed8;">${totalHoursAllStaff.toFixed(1)}</span>
                 </div>
             </div>
             
-            ${subjectBreakdownHtml}
+            <h3 style="color: #334155; margin-top: 24px; margin-bottom: 12px;">Staff Breakdown</h3>
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                <thead>
+                    <tr style="background-color: #f1f5f9;">
+                        <th style="padding: 12px; text-align: left; border-bottom: 2px solid #e2e8f0;">Staff Name</th>
+                        <th style="padding: 12px; text-align: left; border-bottom: 2px solid #e2e8f0;">Email</th>
+                        <th style="padding: 12px; text-align: right; border-bottom: 2px solid #e2e8f0;">Total Hours</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${rows}
+                </tbody>
+            </table>
             
             <p style="color: #64748b; font-size: 14px; margin-top: 24px;">
-                This is an automated report generated on ${formatDate(new Date(report.generatedAt))}. 
-                If you have any questions about this report, please contact your administrator.
+                This is an automated report generated on ${new Date().toLocaleDateString()}. 
             </p>
-        </div>
-        
-        <div style="text-align: center; padding: 20px; color: #94a3b8; font-size: 12px;">
-            <p style="margin: 0;">Zero to Hero Education</p>
-            <p style="margin: 4px 0 0 0;">© ${new Date().getFullYear()} All rights reserved.</p>
         </div>
     </body>
     </html>
     `;
 }
 
-export async function sendMonthlyReportEmails(reports?: any[]) {
+export async function sendAdminConsolidatedReport(reports: any[]) {
     await dbConnect();
-
-    // If no reports provided, get all unsent reports for the previous month
-    if (!reports) {
-        const now = new Date();
-        let targetMonth = now.getMonth();
-        let targetYear = now.getFullYear();
-        
-        if (now.getMonth() === 0) {
-            targetMonth = 12;
-            targetYear = now.getFullYear() - 1;
-        }
-
-        reports = await MonthlyReport.find({
-            month: targetMonth,
-            year: targetYear,
-            emailSentAt: { $exists: false }
-        });
+    
+    if (!reports || reports.length === 0) {
+        return { success: true, message: 'No reports to send' };
     }
 
     const settings = await Settings.findOne();
+    const adminEmail = settings?.emailSettings?.adminEmail;
     const fromEmail = settings?.emailSettings?.fromEmail || process.env.FROM_EMAIL || 'Zero To Hero <onboarding@resend.dev>';
 
-    const results = [];
-
-    for (const report of reports) {
-        try {
-            const monthName = getMonthName(report.month);
-            const subject = `Your Teaching Hours Report - ${monthName} ${report.year}`;
-            const html = generateEmailHtml(report);
-
-            const data = await resend.emails.send({
-                from: `Zero To Hero <${fromEmail}>`,
-                to: report.staffEmail,
-                subject,
-                html,
-            });
-
-            if (!data.error) {
-                // Mark the report as email sent
-                await MonthlyReport.findByIdAndUpdate(report._id, {
-                    emailSentAt: new Date()
-                });
-
-                results.push({
-                    success: true,
-                    staffEmail: report.staffEmail,
-                    reportId: report._id
-                });
-            } else {
-                results.push({
-                    success: false,
-                    staffEmail: report.staffEmail,
-                    error: data.error
-                });
-            }
-        } catch (error: any) {
-            console.error(`Error sending email to ${report.staffEmail}:`, error);
-            results.push({
-                success: false,
-                staffEmail: report.staffEmail,
-                error: error.message
-            });
-        }
+    if (!adminEmail) {
+        console.error('Admin email not configured in settings');
+        return { success: false, error: 'Admin email not configured' };
     }
 
-    return results;
+    const monthName = getMonthName(reports[0].month);
+    const year = reports[0].year;
+    const subject = `Monthly Teaching Hours Report - All Staff - ${monthName} ${year}`;
+
+    const html = generateConsolidatedEmailHtml(reports, monthName, year);
+
+    try {
+        const data = await resend.emails.send({
+            from: `Zero To Hero <${fromEmail}>`,
+            to: adminEmail,
+            subject,
+            html,
+        });
+
+        if (!data.error) {
+            // Mark all reports as email sent
+            const reportIds = reports.map(r => r._id);
+            await MonthlyReport.updateMany(
+                { _id: { $in: reportIds } },
+                { emailSentAt: new Date() }
+            );
+
+            return {
+                success: true,
+                adminEmail,
+                count: reports.length
+            };
+        } else {
+            return {
+                success: false,
+                adminEmail,
+                error: data.error
+            };
+        }
+    } catch (error: any) {
+        console.error(`Error sending consolidated email to ${adminEmail}:`, error);
+        return {
+            success: false,
+            adminEmail,
+            error: error.message
+        };
+    }
 }
 
 export async function generateAndSendMonthlyReports(options: GenerateReportOptions = {}) {
     // Generate reports
     const reports = await generateMonthlyReports(options);
     
-    // Send emails
-    const emailResults = await sendMonthlyReportEmails(reports);
+    // Send consolidated email to admin instead of individual emails
+    const emailResults = await sendAdminConsolidatedReport(reports);
     
     return {
         reportsGenerated: reports.length,

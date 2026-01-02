@@ -180,7 +180,7 @@ export default function Contact() {
                         <div className="hidden md:grid grid-cols-1 md:grid-cols-3 gap-4">
                             {[
                                 { icon: MapPin, color: 'blue', title: 'Location', text: '9/13 Gandhi Road, Nehru Nagar East, Coimbatore - 641014' },
-                                { icon: Mail, color: 'green', title: 'Email', text: 'mathsmuthu.j@gmail.com' },
+                                { icon: Mail, color: 'green', title: 'Email', text: 'reachus@ztoh.org' },
                                 { icon: Phone, color: 'purple', title: 'Call', text: '+91 95643 21000' }
                             ].map((item, index) => (
                                 <motion.div

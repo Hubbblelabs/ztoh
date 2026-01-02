@@ -15,7 +15,8 @@ import {
     Menu,
     X,
     GraduationCap,
-    Shield
+    Shield,
+    Star
 } from 'lucide-react';
 import Loader from '@/components/ui/Loader';
 
@@ -46,6 +47,7 @@ const navItems = [
     { href: '/admin/staff', icon: Users, label: 'Staff Management' },
     { href: '/admin/hours', icon: Clock, label: 'Teaching Hours' },
     { href: '/admin/reports', icon: FileText, label: 'Monthly Reports' },
+    { href: '/admin/testimonials', icon: Star, label: 'Testimonials' },
     { href: '/admin/admins', icon: Shield, label: 'Admins' },
     { href: '/admin/settings', icon: Settings, label: 'Settings' },
 ];

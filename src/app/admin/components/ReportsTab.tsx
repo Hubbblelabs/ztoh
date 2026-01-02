@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { FileText, Mail, RefreshCw, Send, ChevronLeft, ChevronRight } from 'lucide-react';
+import { FileText, Mail, RefreshCw, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
 import Loader from '@/components/ui/Loader';
 
 interface SubjectBreakdown {
@@ -49,7 +49,6 @@ export default function ReportsTab({ showToast }: ReportsTabProps) {
     const [staff, setStaff] = useState<Staff[]>([]);
     const [loading, setLoading] = useState(true);
     const [generating, setGenerating] = useState(false);
-    const [sendingEmail, setSendingEmail] = useState<string | null>(null);
 
     // Pagination
     const [page, setPage] = useState(1);
@@ -138,25 +137,23 @@ export default function ReportsTab({ showToast }: ReportsTabProps) {
         }
     };
 
-    const handleResendEmail = async (reportId: string) => {
-        setSendingEmail(reportId);
+    const handleDeleteReport = async (reportId: string) => {
+        if (!confirm('Are you sure you want to delete this report?')) return;
+
         try {
             const res = await fetch(`/api/admin/reports/${reportId}`, {
-                method: 'POST',
+                method: 'DELETE',
             });
 
-            const data = await res.json();
-
             if (res.ok) {
-                showToast('Email sent successfully', 'success');
+                showToast('Report deleted successfully', 'success');
                 fetchReports();
             } else {
-                showToast(data.error || 'Failed to send email', 'error');
+                const data = await res.json();
+                showToast(data.error || 'Failed to delete report', 'error');
             }
         } catch (error) {
             showToast('An error occurred', 'error');
-        } finally {
-            setSendingEmail(null);
         }
     };
 
@@ -297,17 +294,11 @@ export default function ReportsTab({ showToast }: ReportsTabProps) {
                                         <td className="py-3 px-4">
                                             <div className="flex items-center justify-end gap-2">
                                                 <button
-                                                    onClick={() => handleResendEmail(report._id)}
-                                                    disabled={sendingEmail === report._id}
-                                                    className="flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-sm font-medium hover:bg-blue-100 transition-colors disabled:opacity-50"
-                                                    title={report.emailSentAt ? 'Resend Email' : 'Send Email'}
+                                                    onClick={() => handleDeleteReport(report._id)}
+                                                    className="p-2 hover:bg-red-50 rounded-lg text-red-600 transition-colors"
+                                                    title="Delete Report"
                                                 >
-                                                    {sendingEmail === report._id ? (
-                                                        <RefreshCw size={14} className="animate-spin" />
-                                                    ) : (
-                                                        <Send size={14} />
-                                                    )}
-                                                    {report.emailSentAt ? 'Resend' : 'Send'}
+                                                    <Trash2 size={16} />
                                                 </button>
                                             </div>
                                         </td>
@@ -407,7 +398,7 @@ export default function ReportsTab({ showToast }: ReportsTabProps) {
                                     className="rounded border-slate-300"
                                 />
                                 <label htmlFor="sendEmails" className="text-sm text-slate-700">
-                                    Send email reports to staff members
+                                    Send consolidated report to Admin
                                 </label>
                             </div>
                         </div>

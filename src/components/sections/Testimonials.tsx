@@ -1,102 +1,18 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import ScrollAnimation from "@/components/animations/ScrollAnimation";
 import { Star, Quote } from "lucide-react";
 
-const testimonials = [
-    {
-        name: "AJAY KRISHNA",
-        title: "Student-CBSE 12",
-        rating: 5,
-        text: "He is a very good teacher. He teaches in an easy & understandable method. His unique method of teaching really helps to solve problems. I scored good marks in my 12th boards — thanks to him."
-    },
-    {
-        name: "SUKESHAN S",
-        title: "IGCSE & IB Diploma & JEE",
-        rating: 5,
-        text: "Awesome tuition. Have been attending for more than 2 years and I’m really grateful for their help and support."
-    },
-    {
-        name: "SUTHIR PRABAKARAN",
-        title: "10th,12th & JEE",
-        rating: 5,
-        text: "One of the best Math professors I have ever seen. Zero to Hero online course helped me score good marks in JEE too. Thank you sir!"
-    },
-    {
-        name: "KAVIPRIYA",
-        title: "Engineering Student",
-        rating: 5,
-        text: "Correct place to develop maths skills. Muthukumar sir is patient, knowledgeable, and explains in a very simple way. Highly recommend him."
-    },
-    {
-        name: "SIBI CHAKRAVARTHI",
-        title: "TANCET",
-        rating: 5,
-        text: "Nice coaching and countless doubt clarification sessions. Best coaching center."
-    },
-    {
-        name: "PRAJWAAL",
-        title: "Student-CBSE 12",
-        rating: 5,
-        text: "I took home tuition for Mathematics for 12th CBSE. It really helped me improve. Zero to Hero is the best tuition in Coimbatore."
-    },
-    {
-        name: "AVANEETH ANAND",
-        title: "Student-CBSE 12",
-        rating: 5,
-        text: "One of the best teachers. Makes complicated problem solving look easy with his techniques. Helped me score excellent marks."
-    },
-    {
-        name: "DHANIKA DENNIS",
-        title: "Student-CBSE 10th to 12th",
-        rating: 5,
-        text: "Success oriented. He is always punctual and helps his students achieve the best."
-    },
-    {
-        name: "K.LAKSIITHA",
-        title: "IGCSE & IB Diploma",
-        rating: 5,
-        text: "The best mathematics classes. Made everything easier to understand."
-    },
-    {
-        name: "SUGAPRIYA",
-        title: "",
-        rating: 5,
-        text: "I arranged tuitions for my cousin from 10th to 12th. Punctual and very good teacher."
-    },
-    {
-        name: "DINESH SANKAR",
-        title: "Parent",
-        rating: 5,
-        text: "Useful tuition. Definitely we reach from Zero to Hero."
-    },
-    {
-        name: "VAISHNAVH",
-        title: "Tiruchengode-Stateboard 12th",
-        rating: 5,
-        text: "Good and fabulous teacher. Easy to become topper in maths. Very useful coaching class 😊😊"
-    },
-    {
-        name: "V M PRIYADHARSHINI",
-        title: "Stateboard 10th,12th,TANCET",
-        rating: 5,
-        text: "Teaching was very good. Easily understood difficult concepts with simple examples. Very best online coaching center."
-    },
-    {
-        name: "AJEETH RAKKAPAN",
-        title: "Engineering Student",
-        rating: 5,
-        text: "Best staff in maths. I learnt M2 and DM from sir and I’m very satisfied. He ensures understanding."
-    },
-    {
-        name: "KUMARAGURU S",
-        title: "Engineering Student",
-        rating: 5,
-        text: "One of the friendliest teachers. Helps students approach complex problems easily. Very knowledgeable and supportive. Helped me score good grades."
-    }
-];
+interface Testimonial {
+    _id: string;
+    name: string;
+    role: string;
+    rating: number;
+    content: string;
+}
 
-const TestimonialCard = ({ testimonial }: { testimonial: typeof testimonials[0] }) => (
+const TestimonialCard = ({ testimonial }: { testimonial: Testimonial }) => (
     <div className="w-[350px] md:w-[400px] bg-white p-8 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-full mx-4 hover:shadow-lg hover:border-secondary/30 transition-all duration-300">
         <div className="flex gap-1 mb-4 text-amber-400">
             {[...Array(testimonial.rating)].map((_, i) => (
@@ -107,7 +23,7 @@ const TestimonialCard = ({ testimonial }: { testimonial: typeof testimonials[0] 
         <div className="mb-6 flex-grow relative">
             <Quote className="absolute -top-2 -left-2 w-8 h-8 text-slate-100 -z-10 transform -scale-x-100" />
             <p className="text-slate-700 leading-relaxed italic relative z-10 text-sm md:text-base">
-                "{testimonial.text}"
+                "{testimonial.content}"
             </p>
         </div>
 
@@ -117,17 +33,50 @@ const TestimonialCard = ({ testimonial }: { testimonial: typeof testimonials[0] 
             </div>
             <div>
                 <h4 className="font-bold text-slate-900 text-sm">{testimonial.name}</h4>
-                {testimonial.title && (
-                    <p className="text-xs text-primary font-medium">{testimonial.title}</p>
+                {testimonial.role && (
+                    <p className="text-xs text-primary font-medium">{testimonial.role}</p>
                 )}
             </div>
         </div>
     </div>
 );
 
-export default function Testimonials() {
+export default function Testimonials({ initialData }: { initialData?: Testimonial[] }) {
+    const [testimonials, setTestimonials] = useState<Testimonial[]>(initialData || []);
+    const [loading, setLoading] = useState(!initialData);
+
+    useEffect(() => {
+        if (initialData) {
+            setLoading(false);
+            return;
+        }
+
+        const fetchTestimonials = async () => {
+            try {
+                const response = await fetch('/api/testimonials');
+                if (response.ok) {
+                    const data = await response.json();
+                    setTestimonials(data);
+                }
+            } catch (error) {
+                console.error('Failed to fetch testimonials:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchTestimonials();
+    }, [initialData]);
+
+    if (loading) return null;
+    if (testimonials.length === 0) return null;
+
     const firstRow = testimonials.slice(0, Math.ceil(testimonials.length / 2));
     const secondRow = testimonials.slice(Math.ceil(testimonials.length / 2));
+
+    // Ensure we have enough items for the marquee effect by duplicating
+    const row1Items = [...firstRow, ...firstRow, ...firstRow, ...firstRow].slice(0, Math.max(firstRow.length * 4, 10));
+    const row2Items = [...secondRow, ...secondRow, ...secondRow, ...secondRow].slice(0, Math.max(secondRow.length * 4, 10));
 
     return (
         <section id="testimonials" className="py-10 bg-slate-100 border-t border-slate-200 relative overflow-hidden">
@@ -165,14 +114,14 @@ export default function Testimonials() {
 
                 {/* Row 1 */}
                 <div className="flex mb-8 w-max animate-marquee hover:[animation-play-state:paused]">
-                    {[...firstRow, ...firstRow].map((testimonial, index) => (
+                    {row1Items.map((testimonial, index) => (
                         <TestimonialCard key={`row1-${index}`} testimonial={testimonial} />
                     ))}
                 </div>
 
                 {/* Row 2 */}
                 <div className="flex w-max animate-marquee-reverse hover:[animation-play-state:paused]">
-                    {[...secondRow, ...secondRow].map((testimonial, index) => (
+                    {row2Items.map((testimonial, index) => (
                         <TestimonialCard key={`row2-${index}`} testimonial={testimonial} />
                     ))}
                 </div>
