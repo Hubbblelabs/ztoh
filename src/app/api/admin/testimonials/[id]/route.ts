@@ -5,7 +5,7 @@ import { verifyAuth } from '@/lib/auth';
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
-        await verifyAuth(request);
+        await verifyAuth();
         await dbConnect();
         const { id } = await params;
         const body = await request.json();
@@ -24,7 +24,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
-        await verifyAuth(request);
+        await verifyAuth();
         await dbConnect();
         const { id } = await params;
         const testimonial = await Testimonial.findByIdAndDelete(id);

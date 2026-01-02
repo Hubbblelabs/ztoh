@@ -3,6 +3,7 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
+import { useSession, signOut } from 'next-auth/react';
 import {
     LayoutDashboard,
     Users,
@@ -59,40 +60,27 @@ export default function AdminLayout({
 }) {
     const router = useRouter();
     const pathname = usePathname();
-    const [user, setUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState(true);
+    const { data: session, status } = useSession();
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const loading = status === 'loading';
 
     useEffect(() => {
-        const checkAuth = async () => {
-            try {
-                const res = await fetch('/api/auth/me', {
-                    credentials: 'include'
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data.role === 'admin') {
-                        setUser(data.user);
-                    } else {
-                        router.push('/login');
-                    }
-                } else {
-                    router.push('/login');
-                }
-            } catch (error) {
-                router.push('/login');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        checkAuth();
-    }, [router]);
+        if (status === 'unauthenticated') {
+            router.push('/login');
+        } else if (status === 'authenticated' && session?.user?.role !== 'admin') {
+            router.push('/login');
+        }
+    }, [status, session, router]);
 
     const logout = async () => {
-        await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
-        router.push('/login');
+        await signOut({ callbackUrl: '/login' });
     };
+
+    const user = session?.user ? {
+        _id: session.user.id || '',
+        name: session.user.name || '',
+        email: session.user.email || ''
+    } : null;
 
     const isActive = (href: string, exact = false) => {
         if (exact) return pathname === href;

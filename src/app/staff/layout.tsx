@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useSession, signOut } from 'next-auth/react';
 import { 
     LayoutDashboard, 
     Clock, 
@@ -29,38 +30,25 @@ export default function StaffLayout({
 }) {
     const pathname = usePathname();
     const router = useRouter();
+    const { data: session, status } = useSession();
     const [dropdownOpen, setDropdownOpen] = useState(false);
-    const [staff, setStaff] = useState<StaffData | null>(null);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [loading, setLoading] = useState(true);
+    const loading = status === 'loading';
+    const isAuthenticated = status === 'authenticated';
+
+    const staff = session?.user ? {
+        _id: session.user.id || '',
+        name: session.user.name || '',
+        email: session.user.email || '',
+        subjects: []
+    } : null;
 
     useEffect(() => {
-        const fetchStaff = async () => {
-            try {
-                const res = await fetch('/api/auth/me', {
-                    credentials: 'include'
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    // Check if user is staff
-                    if (data.role === 'staff') {
-                        setStaff(data.user);
-                        setIsAuthenticated(true);
-                    } else {
-                        // User is admin, redirect to admin
-                        router.push('/admin');
-                    }
-                } else {
-                    router.push('/login');
-                }
-            } catch (error) {
-                router.push('/login');
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchStaff();
-    }, [router]);
+        if (status === 'unauthenticated') {
+            router.push('/login');
+        } else if (status === 'authenticated' && session?.user?.role !== 'staff') {
+            router.push('/admin');
+        }
+    }, [status, session, router]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -78,8 +66,7 @@ export default function StaffLayout({
     }
 
     const handleLogout = async () => {
-        await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
-        router.push('/login');
+        await signOut({ callbackUrl: '/login' });
     };
 
     const navItems = [

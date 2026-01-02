@@ -1,35 +1,13 @@
 import { NextResponse } from 'next/server';
-import { verifyToken } from '@/lib/auth';
+import { verifyAuth } from '@/lib/auth';
 import dbConnect from '@/lib/db';
 import MonthlyReport from '@/models/MonthlyReport';
 import { generateMonthlyReports, generateAndSendMonthlyReports } from '@/lib/monthlyReports';
-import { cookies } from 'next/headers';
-
-// Helper to verify admin token
-async function verifyAdmin() {
-    const cookieStore = await cookies();
-    // Check for authToken first (unified login), then adminToken (legacy)
-    let token = cookieStore.get('authToken')?.value;
-    if (!token) {
-        token = cookieStore.get('adminToken')?.value;
-    }
-    
-    if (!token) {
-        return null;
-    }
-    
-    const payload = await verifyToken(token);
-    return payload;
-}
 
 // GET - List all monthly reports
 export async function GET(request: Request) {
     try {
-        const payload = await verifyAdmin();
-        
-        if (!payload) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
+        await verifyAuth();
 
         await dbConnect();
 
@@ -75,11 +53,7 @@ export async function GET(request: Request) {
 // POST - Generate monthly reports and optionally send emails
 export async function POST(request: Request) {
     try {
-        const payload = await verifyAdmin();
-        
-        if (!payload) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
+        await verifyAuth();
 
         const { month, year, staffId, sendEmails } = await request.json();
 

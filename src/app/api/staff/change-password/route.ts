@@ -1,27 +1,12 @@
 import { NextResponse } from 'next/server';
-import { verifyToken } from '@/lib/auth';
+import { verifyStaffAuth } from '@/lib/auth';
 import dbConnect from '@/lib/db';
 import Staff from '@/models/Staff';
 import bcrypt from 'bcryptjs';
-import { cookies } from 'next/headers';
 
 export async function POST(request: Request) {
     try {
-        const cookieStore = await cookies();
-        let token = cookieStore.get('authToken')?.value;
-        if (!token) {
-            token = cookieStore.get('staffToken')?.value;
-        }
-
-        if (!token) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-
-        const payload = await verifyToken(token);
-
-        if (!payload || payload.role !== 'staff') {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
+        const payload = await verifyStaffAuth();
 
         const { currentPassword, newPassword } = await request.json();
 

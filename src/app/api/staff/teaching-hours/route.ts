@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
-import { verifyToken } from '@/lib/auth';
+import { verifyStaffAuth } from '@/lib/auth';
 import dbConnect from '@/lib/db';
 import TeachingHours from '@/models/TeachingHours';
 import Staff from '@/models/Staff';
-import { cookies } from 'next/headers';
 
 // Helper to get date ranges
 function getDateRanges() {
@@ -31,21 +30,7 @@ function getDateRanges() {
 
 export async function GET(request: Request) {
     try {
-        const cookieStore = await cookies();
-        let token = cookieStore.get('authToken')?.value;
-        if (!token) {
-            token = cookieStore.get('staffToken')?.value;
-        }
-
-        if (!token) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-
-        const payload = await verifyToken(token);
-
-        if (!payload || payload.role !== 'staff') {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
+        const payload = await verifyStaffAuth();
 
         await dbConnect();
         
@@ -134,21 +119,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
     try {
-        const cookieStore = await cookies();
-        let token = cookieStore.get('authToken')?.value;
-        if (!token) {
-            token = cookieStore.get('staffToken')?.value;
-        }
-
-        if (!token) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-
-        const payload = await verifyToken(token);
-
-        if (!payload || payload.role !== 'staff') {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
+        const payload = await verifyStaffAuth();
 
         await dbConnect();
 

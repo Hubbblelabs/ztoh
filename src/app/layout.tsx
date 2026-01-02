@@ -5,6 +5,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ModalProvider } from "@/components/providers/ModalProvider";
 import { ToastProvider } from "@/components/providers/ToastProvider";
+import AuthSessionProvider from "@/components/providers/SessionProvider";
 import LayoutContent from "@/components/layout/LayoutContent";
 import Chatbot from "@/components/Chatbot";
 import { Analytics } from "@vercel/analytics/next";
@@ -40,11 +41,13 @@ export default function RootLayout({
         )}
       >
         <ToastProvider>
-          <ModalProvider>
-            <LayoutContent>
-              {children}
-            </LayoutContent>
-          </ModalProvider>
+          <AuthSessionProvider>
+            <ModalProvider>
+              <LayoutContent>
+                {children}
+              </LayoutContent>
+            </ModalProvider>
+          </AuthSessionProvider>
         </ToastProvider>
         <Analytics />
         <SpeedInsights/>

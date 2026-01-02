@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { signIn, useSession } from 'next-auth/react';
 import { motion } from 'framer-motion';
 import { Lock, Mail, Loader2, ArrowRight, GraduationCap } from 'lucide-react';
 import Loader from '@/components/ui/Loader';
@@ -11,28 +12,14 @@ export default function LoginPage() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    const [checkingAuth, setCheckingAuth] = useState(true);
     const router = useRouter();
+    const { data: session, status } = useSession();
 
     useEffect(() => {
-        // Check if already logged in
-        const checkAuth = async () => {
-            try {
-                const res = await fetch('/api/auth/me', {
-                    credentials: 'include'
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    router.push(data.role === 'admin' ? '/admin' : '/staff');
-                }
-            } catch (error) {
-                // Not logged in, show login form
-            } finally {
-                setCheckingAuth(false);
-            }
-        };
-        checkAuth();
-    }, [router]);
+        if (status === 'authenticated') {
+            router.push(session?.user?.role === 'admin' ? '/admin' : '/staff');
+        }
+    }, [status, session, router]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -40,19 +27,16 @@ export default function LoginPage() {
         setError('');
 
         try {
-            const res = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({ email, password }),
+            const result = await signIn('credentials', {
+                redirect: false,
+                email,
+                password,
             });
 
-            const data = await res.json();
-
-            if (res.ok) {
-                router.push(data.redirect);
+            if (result?.error) {
+                setError('Invalid credentials');
             } else {
-                setError(data.error || 'Login failed');
+                // Redirect handled by useEffect
             }
         } catch (err) {
             setError('An error occurred. Please try again.');
@@ -61,7 +45,7 @@ export default function LoginPage() {
         }
     };
 
-    if (checkingAuth) {
+    if (status === 'loading') {
         return <Loader fullScreen />;
     }
 

@@ -5,7 +5,7 @@ import { verifyAuth } from '@/lib/auth';
 
 export async function GET(request: Request) {
     try {
-        await verifyAuth(request);
+        await verifyAuth();
         await dbConnect();
         const testimonials = await Testimonial.find({}).sort({ createdAt: -1 });
         return NextResponse.json(testimonials);
@@ -19,7 +19,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
     try {
-        await verifyAuth(request);
+        await verifyAuth();
         await dbConnect();
         const body = await request.json();
         const testimonial = await Testimonial.create(body);

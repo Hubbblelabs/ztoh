@@ -1,25 +1,7 @@
 import { NextResponse } from 'next/server';
-import { verifyToken } from '@/lib/auth';
+import { verifyAuth } from '@/lib/auth';
 import MonthlyReport from '@/models/MonthlyReport';
 import dbConnect from '@/lib/db';
-import { cookies } from 'next/headers';
-
-// Helper to verify admin token
-async function verifyAdmin() {
-    const cookieStore = await cookies();
-    // Check for authToken first (unified login), then adminToken (legacy)
-    let token = cookieStore.get('authToken')?.value;
-    if (!token) {
-        token = cookieStore.get('adminToken')?.value;
-    }
-    
-    if (!token) {
-        return null;
-    }
-    
-    const payload = await verifyToken(token);
-    return payload;
-}
 
 // GET - Get a specific report
 export async function GET(
@@ -27,11 +9,7 @@ export async function GET(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const payload = await verifyAdmin();
-        
-        if (!payload) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
+        await verifyAuth();
 
         const { id } = await params;
         await dbConnect();
@@ -55,11 +33,7 @@ export async function DELETE(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const payload = await verifyAdmin();
-        
-        if (!payload) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
+        await verifyAuth();
 
         const { id } = await params;
         await dbConnect();
