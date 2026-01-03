@@ -3,6 +3,7 @@ import { verifyAuth } from '@/lib/auth';
 import dbConnect from '@/lib/db';
 import Staff from '@/models/Staff';
 import TeachingHours from '@/models/TeachingHours';
+import Group from '@/models/Group';
 import bcrypt from 'bcryptjs';
 
 // GET - Get a single staff member with their teaching hours summary
@@ -17,7 +18,7 @@ export async function GET(
         await dbConnect();
 
         const staff = await Staff.findById(id).select('-password');
-        
+
         if (!staff) {
             return NextResponse.json({ error: 'Staff not found' }, { status: 404 });
         }
@@ -64,7 +65,7 @@ export async function PUT(
         const { name, email, password, phone, subjects, isActive } = await request.json();
 
         const staff = await Staff.findById(id);
-        
+
         if (!staff) {
             return NextResponse.json({ error: 'Staff not found' }, { status: 404 });
         }
@@ -85,7 +86,7 @@ export async function PUT(
         if (phone !== undefined) staff.phone = phone;
         if (subjects) staff.subjects = subjects;
         if (isActive !== undefined) staff.isActive = isActive;
-        
+
         // If password is being updated, hash it manually to avoid double hashing
         if (password) {
             const salt = await bcrypt.genSalt(10);
@@ -119,13 +120,16 @@ export async function DELETE(
         await dbConnect();
 
         const staff = await Staff.findByIdAndDelete(id);
-        
+
         if (!staff) {
             return NextResponse.json({ error: 'Staff not found' }, { status: 404 });
         }
 
         // Also delete all teaching hours for this staff member
         await TeachingHours.deleteMany({ staffId: id });
+
+        // Also delete all groups created by this staff member (referential integrity)
+        await Group.deleteMany({ staffId: id });
 
         return NextResponse.json({ success: true, message: 'Staff member deleted successfully' });
     } catch (error) {

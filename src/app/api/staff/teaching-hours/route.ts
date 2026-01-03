@@ -7,11 +7,11 @@ import Staff from '@/models/Staff';
 // Helper to get date ranges
 function getDateRanges() {
     const now = new Date();
-    
+
     // Today (start and end of today)
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
-    
+
     // This week (Sunday to Saturday)
     const dayOfWeek = now.getDay();
     const weekStart = new Date(now);
@@ -20,11 +20,11 @@ function getDateRanges() {
     const weekEnd = new Date(weekStart);
     weekEnd.setDate(weekStart.getDate() + 6);
     weekEnd.setHours(23, 59, 59, 999);
-    
+
     // This month
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
     const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
-    
+
     return { todayStart, todayEnd, weekStart, weekEnd, monthStart, monthEnd };
 }
 
@@ -33,7 +33,7 @@ export async function GET(request: Request) {
         const payload = await verifyStaffAuth();
 
         await dbConnect();
-        
+
         const staff = await Staff.findById(payload.id as string);
         if (!staff || !staff.isActive) {
             return NextResponse.json({ error: 'Staff not found or inactive' }, { status: 404 });
@@ -84,11 +84,11 @@ export async function GET(request: Request) {
         // Subject breakdown for current month
         const subjectBreakdown = await TeachingHours.aggregate([
             { $match: { staffId: staff._id, date: { $gte: monthStart, $lte: monthEnd } } },
-            { 
-                $group: { 
-                    _id: { subject: '$subject', course: '$course' }, 
-                    total: { $sum: '$hours' } 
-                } 
+            {
+                $group: {
+                    _id: { subject: '$subject', course: '$course' },
+                    total: { $sum: '$hours' }
+                }
             },
             { $sort: { total: -1 } }
         ]);
@@ -124,7 +124,7 @@ export async function POST(request: Request) {
         await dbConnect();
 
         const body = await request.json();
-        const { date, hours, subject, course, description } = body;
+        const { date, hours, subject, course, description, groupId, studentIds } = body;
 
         if (!date || !hours || !subject) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -136,7 +136,9 @@ export async function POST(request: Request) {
             hours: Number(hours),
             subject,
             course,
-            description
+            description,
+            groupId,
+            studentIds
         });
 
         return NextResponse.json(newRecord, { status: 201 });

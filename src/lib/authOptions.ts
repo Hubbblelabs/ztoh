@@ -3,6 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import dbConnect from "@/lib/db";
 import Admin from "@/models/Admin";
 import Staff from "@/models/Staff";
+import Student from "@/models/Student";
 import bcrypt from "bcryptjs";
 
 export const authOptions: NextAuthOptions = {
@@ -44,6 +45,21 @@ export const authOptions: NextAuthOptions = {
               email: staff.email,
               name: staff.name,
               role: "staff",
+            };
+          }
+
+        }
+
+        // 3. Check Student
+        const student = await Student.findOne({ email: credentials.email, isActive: true });
+        if (student) {
+          const isMatch = await student.comparePassword(credentials.password);
+          if (isMatch) {
+            return {
+              id: student._id.toString(),
+              email: student.email,
+              name: student.name,
+              role: "student",
             };
           }
         }

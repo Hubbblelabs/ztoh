@@ -36,7 +36,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({
     user: null,
     loading: true,
-    logout: async () => {}
+    logout: async () => { }
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -49,6 +49,7 @@ const navItems = [
     { href: '/admin/hours', icon: Clock, label: 'Teaching Hours' },
     { href: '/admin/reports', icon: FileText, label: 'Monthly Reports' },
     { href: '/admin/testimonials', icon: Star, label: 'Testimonials' },
+    { href: '/admin/students', icon: GraduationCap, label: 'Students' },
     { href: '/admin/admins', icon: Shield, label: 'Admins' },
     { href: '/admin/settings', icon: Settings, label: 'Settings' },
 ];
@@ -111,7 +112,7 @@ export default function AdminLayout({
                 `}>
                     {/* Logo */}
                     <div className="flex items-center justify-between w-full px-3 mt-3 h-16">
-                         <Link href="/admin" className="flex items-center w-full px-3 gap-2">
+                        <Link href="/admin" className="flex items-center w-full px-3 gap-2">
                             <div className="w-8 h-8 bg-sky-500 rounded-lg flex items-center justify-center">
                                 <GraduationCap className="w-5 h-5 text-white" />
                             </div>
@@ -153,7 +154,7 @@ export default function AdminLayout({
 
                     {/* User section */}
                     <div className="mt-auto w-full bg-slate-950 hover:bg-slate-800 transition-colors">
-                         <div className="flex items-center justify-between w-full h-16 px-4">
+                        <div className="flex items-center justify-between w-full h-16 px-4">
                             <div className="flex items-center gap-3 overflow-hidden">
                                 <div className="w-8 h-8 bg-sky-600 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0">
                                     {user?.name?.charAt(0) || 'A'}

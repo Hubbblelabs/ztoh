@@ -10,7 +10,7 @@ interface TeachingHour {
         _id: string;
         name: string;
         email: string;
-    };
+    } | null;
     date: string;
     hours: number;
     subject: string;
@@ -35,7 +35,7 @@ export default function TeachingHoursTab({ showToast }: TeachingHoursTabProps) {
     const [showModal, setShowModal] = useState(false);
     const [editingRecord, setEditingRecord] = useState<TeachingHour | null>(null);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
-    
+
     // Pagination
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -109,7 +109,7 @@ export default function TeachingHoursTab({ showToast }: TeachingHoursTabProps) {
 
     const openEditModal = (record: TeachingHour) => {
         setEditingRecord(record);
-        setSelectedStaffId(record.staffId._id);
+        setSelectedStaffId(record.staffId?._id || '');
         setDate(new Date(record.date).toISOString().split('T')[0]);
         setHours(record.hours.toString());
         setSubject(record.subject);
@@ -132,7 +132,7 @@ export default function TeachingHoursTab({ showToast }: TeachingHoursTabProps) {
             const url = editingRecord
                 ? `/api/admin/teaching-hours/${editingRecord._id}`
                 : '/api/admin/teaching-hours';
-            
+
             const body: any = {
                 date,
                 hours: parseFloat(hours),
@@ -286,8 +286,14 @@ export default function TeachingHoursTab({ showToast }: TeachingHoursTabProps) {
                                         </td>
                                         <td className="py-3 px-4">
                                             <div>
-                                                <span className="font-medium text-slate-900">{record.staffId.name}</span>
-                                                <p className="text-xs text-slate-500">{record.staffId.email}</p>
+                                                {record.staffId ? (
+                                                    <>
+                                                        <span className="font-medium text-slate-900">{record.staffId.name}</span>
+                                                        <p className="text-xs text-slate-500">{record.staffId.email}</p>
+                                                    </>
+                                                ) : (
+                                                    <span className="font-medium text-slate-400 italic">Unknown / Deleted Staff</span>
+                                                )}
                                             </div>
                                         </td>
                                         <td className="py-3 px-4 text-sm text-slate-900">{record.subject}</td>

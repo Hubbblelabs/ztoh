@@ -4,11 +4,11 @@ import React, { useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
-import { 
-    LayoutDashboard, 
-    Clock, 
-    FileText, 
-    LogOut, 
+import {
+    LayoutDashboard,
+    Clock,
+    FileText,
+    LogOut,
     Key,
     GraduationCap,
     User,
@@ -72,6 +72,7 @@ export default function StaffLayout({
     const navItems = [
         { href: '/staff', icon: LayoutDashboard, label: 'Dashboard', exact: true },
         { href: '/staff/hours', icon: Clock, label: 'My Hours' },
+        { href: '/staff/groups', icon: User, label: 'Groups' },
         { href: '/staff/reports', icon: FileText, label: 'Reports' },
     ];
 
@@ -103,11 +104,10 @@ export default function StaffLayout({
                                 <Link
                                     key={item.href}
                                     href={item.href}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-                                        isActive(item.href, item.exact)
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${isActive(item.href, item.exact)
                                             ? 'bg-slate-800 text-sky-400 shadow-md'
                                             : 'text-slate-400 hover:bg-slate-800 hover:text-white'
-                                    }`}
+                                        }`}
                                 >
                                     <item.icon size={18} />
                                     <span className="font-medium">{item.label}</span>
@@ -142,7 +142,7 @@ export default function StaffLayout({
                                             Staff Member
                                         </span>
                                     </div>
-                                    
+
                                     {/* Mobile Navigation */}
                                     <div className="md:hidden border-b border-slate-100">
                                         {navItems.map((item) => (
@@ -150,9 +150,8 @@ export default function StaffLayout({
                                                 key={item.href}
                                                 href={item.href}
                                                 onClick={() => setDropdownOpen(false)}
-                                                className={`flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors ${
-                                                    isActive(item.href, item.exact) ? 'bg-sky-50 text-sky-700' : 'text-slate-700'
-                                                }`}
+                                                className={`flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors ${isActive(item.href, item.exact) ? 'bg-sky-50 text-sky-700' : 'text-slate-700'
+                                                    }`}
                                             >
                                                 <item.icon size={18} />
                                                 <span className="font-medium">{item.label}</span>

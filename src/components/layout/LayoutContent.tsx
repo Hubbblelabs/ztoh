@@ -14,7 +14,7 @@ export default function LayoutContent({
 }) {
     const pathname = usePathname();
     // Hide header/footer/WhatsApp icon/Chatbot for admin, staff, and login pages
-    const isPortalPage = pathname?.startsWith('/admin') || pathname?.startsWith('/staff') || pathname === '/login';
+    const isPortalPage = pathname?.startsWith('/admin') || pathname?.startsWith('/staff') || pathname?.startsWith('/student') || pathname === '/login';
 
     return (
         <>

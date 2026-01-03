@@ -7,6 +7,8 @@ export interface ITeachingHours extends Document {
     subject: string;
     course?: string;
     description?: string;
+    groupId?: Types.ObjectId;
+    studentIds?: Types.ObjectId[];
     createdAt: Date;
     updatedAt: Date;
 }
@@ -18,6 +20,8 @@ const TeachingHoursSchema: Schema = new Schema({
     subject: { type: String, required: true },
     course: { type: String },
     description: { type: String },
+    groupId: { type: Schema.Types.ObjectId, ref: 'Group' },
+    studentIds: [{ type: Schema.Types.ObjectId, ref: 'Student' }],
 }, {
     timestamps: true,
 });
