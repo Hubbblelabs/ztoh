@@ -12,6 +12,8 @@ import CallToAction from "@/components/sections/CallToAction";
 import dbConnect from "@/lib/db";
 import Testimonial from "@/models/Testimonial";
 
+export const dynamic = "force-dynamic";
+
 async function getTestimonials() {
   try {
     await dbConnect();
