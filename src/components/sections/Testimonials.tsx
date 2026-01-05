@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import ScrollAnimation from "@/components/animations/ScrollAnimation";
 import { Star, Quote } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 interface Testimonial {
     _id: string;
     name: string;
