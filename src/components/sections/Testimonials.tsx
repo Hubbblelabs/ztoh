@@ -16,6 +16,18 @@ interface Testimonial {
 
 const TestimonialCard = ({ testimonial }: { testimonial: Testimonial }) => (
     <div className="w-[350px] md:w-[400px] bg-white p-8 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-full mx-4 hover:shadow-lg hover:border-secondary/30 transition-all duration-300">
+        <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-secondary to-primary flex items-center justify-center text-white font-bold text-lg">
+                {testimonial.name.charAt(0)}
+            </div>
+            <div>
+                <h4 className="font-bold text-slate-900 text-sm">{testimonial.name}</h4>
+                {testimonial.role && (
+                    <p className="text-xs text-primary font-medium">{testimonial.role}</p>
+                )}
+            </div>
+        </div>
+
         <div className="flex gap-1 mb-4 text-amber-400">
             {[...Array(testimonial.rating)].map((_, i) => (
                 <Star key={i} size={16} fill="currentColor" />
@@ -27,18 +39,6 @@ const TestimonialCard = ({ testimonial }: { testimonial: Testimonial }) => (
             <p className="text-slate-700 leading-relaxed italic relative z-10 text-sm md:text-base">
                 "{testimonial.content}"
             </p>
-        </div>
-
-        <div className="mt-auto pt-4 border-t border-slate-100 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-secondary to-primary flex items-center justify-center text-white font-bold text-lg">
-                {testimonial.name.charAt(0)}
-            </div>
-            <div>
-                <h4 className="font-bold text-slate-900 text-sm">{testimonial.name}</h4>
-                {testimonial.role && (
-                    <p className="text-xs text-primary font-medium">{testimonial.role}</p>
-                )}
-            </div>
         </div>
     </div>
 );
