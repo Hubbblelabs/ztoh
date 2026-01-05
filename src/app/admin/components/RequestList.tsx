@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Loader2, Eye, Trash2, X, Plus, Check } from 'lucide-react';
+import { Search, Filter, Loader2, Eye, Trash2, X, Plus, Check, Paperclip } from 'lucide-react';
 import { JoinRequest, ContactRequest } from './types';
 import Loader from '@/components/ui/Loader';
 
@@ -33,6 +33,7 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
 
     // New Features State
     const [emailData, setEmailData] = useState({ to: '', subject: '', body: '' });
+    const [emailAttachments, setEmailAttachments] = useState<{ name: string; content: string; type: string }[]>([]);
     const [sendingEmail, setSendingEmail] = useState(false);
     const [noteContent, setNoteContent] = useState('');
     const [addingNote, setAddingNote] = useState(false);
@@ -210,7 +211,44 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
             subject: `Regarding your ${activeTab === 'join' ? 'Application' : 'Enquiry'} at Zero To Hero`,
             body: `Dear ${selectedRequest.name},\n\n`
         });
+        setEmailAttachments([]);
         setShowEmailModal(true);
+    };
+
+    const handleEmailFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (!files || files.length === 0) return;
+
+        const newAttachments: { name: string; content: string; type: string }[] = [];
+        const MAX_SIZE = 3 * 1024 * 1024; // 3MB
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            if (file.size > MAX_SIZE) {
+                showToast(`File ${file.name} exceeds 3MB limit`, 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            await new Promise<void>((resolve) => {
+                reader.onload = () => {
+                    if (typeof reader.result === 'string') {
+                        newAttachments.push({
+                            name: file.name,
+                            content: reader.result as string,
+                            type: file.type
+                        });
+                    }
+                    resolve();
+                };
+            });
+        }
+        setEmailAttachments(prev => [...prev, ...newAttachments]);
+    };
+
+    const removeEmailAttachment = (index: number) => {
+        setEmailAttachments(prev => prev.filter((_, i) => i !== index));
     };
 
     const handleSendEmail = async (e: React.FormEvent) => {
@@ -223,7 +261,8 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
                 body: JSON.stringify({
                     to: emailData.to,
                     subject: emailData.subject,
-                    html: emailData.body.replace(/\n/g, '<br>')
+                    html: emailData.body.replace(/\n/g, '<br>'),
+                    attachments: emailAttachments
                 }),
             });
 
@@ -237,7 +276,7 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
                             type: activeTab,
                             history: [...(selectedRequest.history || []), {
                                 action: 'Email Sent',
-                                details: `Subject: ${emailData.subject}`,
+                                details: `Subject: ${emailData.subject}${emailAttachments.length > 0 ? ` (${emailAttachments.length} attachments)` : ''}`,
                                 performedBy: 'Admin',
                                 timestamp: new Date()
                             }]
@@ -440,7 +479,15 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
                                                 <span className="font-mono text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded">{request.trackingId || '-'}</span>
                                             </td>
                                             <td className="px-6 py-4">
-                                                <div className="font-semibold text-slate-900">{request.name}</div>
+                                                <div className="flex items-center gap-2">
+                                                    <div className="font-semibold text-slate-900">{request.name}</div>
+                                                    {activeTab === 'join' && (request as JoinRequest).attachments && (request as JoinRequest).attachments!.length > 0 && (
+                                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 text-blue-600 rounded-full text-[10px] font-semibold" title={`${(request as JoinRequest).attachments!.length} attachment(s)`}>
+                                                            <Paperclip size={10} />
+                                                            {(request as JoinRequest).attachments!.length}
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="text-sm text-slate-600">{request.email}</div>
@@ -500,6 +547,12 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
                                             <div className="flex items-center gap-2 mb-1">
                                                 <span className="font-mono text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">{request.trackingId || '-'}</span>
                                                 <h3 className="font-semibold text-slate-900">{request.name}</h3>
+                                                {activeTab === 'join' && (request as JoinRequest).attachments && (request as JoinRequest).attachments!.length > 0 && (
+                                                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded-full text-[9px] font-semibold" title={`${(request as JoinRequest).attachments!.length} attachment(s)`}>
+                                                        <Paperclip size={9} />
+                                                        {(request as JoinRequest).attachments!.length}
+                                                    </span>
+                                                )}
                                             </div>
                                             <p className="text-sm text-slate-500">{request.email}</p>
                                             {(request as any).mobile && <p className="text-xs text-slate-400">{(request as any).mobile}</p>}
@@ -614,7 +667,7 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
                                         </span>
                                     </div>
                                     {Object.entries(selectedRequest).map(([key, value]) => {
-                                        if (['_id', '__v', 'updatedAt', 'status', 'teleCallingStatus', 'notes', 'history', 'trackingId'].includes(key)) return null;
+                                        if (['_id', '__v', 'updatedAt', 'status', 'teleCallingStatus', 'notes', 'history', 'trackingId', 'attachments'].includes(key)) return null;
                                         return (
                                             <div key={key} className="grid grid-cols-3 gap-4 pb-4 border-b border-slate-50 last:border-0">
                                                 <span className="text-sm font-semibold text-slate-500 capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
@@ -625,6 +678,35 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
                                         );
                                     })}
                                 </div>
+                                    
+                                {/* Attachments */}
+                                {activeTab === 'join' && (selectedRequest as JoinRequest).type === 'teacher' && (
+                                    <div className="space-y-4 pt-4 border-t border-slate-100">
+                                        <h4 className="font-bold text-slate-900">Attachments</h4>
+                                        {(selectedRequest as JoinRequest).attachments && (selectedRequest as JoinRequest).attachments!.length > 0 ? (
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                                {(selectedRequest as JoinRequest).attachments!.map((att, idx) => (
+                                                    <a
+                                                        key={idx}
+                                                        href={att.content}
+                                                        download={att.name}
+                                                        className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100 transition-colors group"
+                                                    >
+                                                        <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-slate-500 shadow-sm group-hover:text-primary group-hover:scale-110 transition-all">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                                        </div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="text-sm font-medium text-slate-900 truncate">{att.name}</p>
+                                                            <p className="text-xs text-slate-500">Click to download</p>
+                                                        </div>
+                                                    </a>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <p className="text-sm text-slate-500">No attachments uploaded</p>
+                                        )}
+                                    </div>
+                                )}
                             </div>
 
                             {/* Right Column: Notes & History */}
@@ -734,6 +816,42 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
                                     className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none resize-none"
                                 />
                             </div>
+                            
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Attachments</label>
+                                <div className="relative">
+                                    <input
+                                        type="file"
+                                        onChange={handleEmailFileChange}
+                                        className="hidden"
+                                        id="email-file-upload"
+                                        multiple
+                                    />
+                                    <label
+                                        htmlFor="email-file-upload"
+                                        className="flex items-center justify-center w-full p-3 border border-dashed border-slate-300 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors"
+                                    >
+                                        <span className="text-sm text-slate-600">Click to attach files</span>
+                                    </label>
+                                </div>
+                                {emailAttachments.length > 0 && (
+                                    <div className="mt-2 space-y-2">
+                                        {emailAttachments.map((file, index) => (
+                                            <div key={index} className="flex items-center justify-between p-2 bg-slate-50 rounded-lg border border-slate-200">
+                                                <span className="text-xs text-slate-600 truncate max-w-[200px]">{file.name}</span>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeEmailAttachment(index)}
+                                                    className="text-red-500 hover:text-red-600 p-1"
+                                                >
+                                                    <X size={14} />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
                             <div className="pt-4 flex justify-end gap-3">
                                 <button
                                     type="button"

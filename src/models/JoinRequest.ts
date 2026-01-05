@@ -29,6 +29,8 @@ export interface IJoinRequest extends Document {
     modeOfTutoring?: string;
     workType?: string;
 
+    attachments?: { name: string; content: string; type: string }[];
+
     status: 'pending' | 'accepted' | 'declined';
     teleCallingStatus: 'pending' | 'called' | 'no_answer' | 'follow_up_needed' | 'converted' | 'not_interested';
     notes: { content: string; createdAt: Date }[];
@@ -38,6 +40,12 @@ export interface IJoinRequest extends Document {
     trackingId: string;
 }
 
+const AttachmentSchema = new Schema({
+    name: { type: String },
+    content: { type: String },
+    type: { type: String }
+}, { _id: false });
+
 const JoinRequestSchema: Schema = new Schema({
     type: { type: String, required: true, enum: ['student', 'teacher'] },
     email: { type: String, required: true },
@@ -46,6 +54,7 @@ const JoinRequestSchema: Schema = new Schema({
     mobile: { type: String, required: true },
     address: { type: String, required: true },
     trackingId: { type: String, unique: true },
+    attachments: [AttachmentSchema],
 
     // Student
     applyingAs: { type: String },

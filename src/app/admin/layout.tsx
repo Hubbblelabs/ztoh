@@ -46,6 +46,7 @@ const navItems = [
     { href: '/admin/requests', icon: UserPlus, label: 'Join Requests' },
     { href: '/admin/contacts', icon: MessageSquare, label: 'Contact Requests' },
     { href: '/admin/staff', icon: Users, label: 'Staff Management' },
+    { href: '/admin/groups', icon: Users, label: 'Groups' },
     { href: '/admin/hours', icon: Clock, label: 'Teaching Hours' },
     { href: '/admin/reports', icon: FileText, label: 'Monthly Reports' },
     { href: '/admin/testimonials', icon: Star, label: 'Testimonials' },
@@ -127,7 +128,7 @@ export default function AdminLayout({
                     </div>
 
                     {/* Navigation */}
-                    <div className="w-full px-2 flex-1 overflow-y-auto">
+                    <div className="w-full px-2 flex-1 overflow-y-auto sidebar-scrollbar">
                         <div className="flex flex-col items-center w-full mt-3 border-t border-slate-800">
                             {navItems.map((item) => {
                                 const active = isActive(item.href, item.exact);

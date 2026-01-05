@@ -38,6 +38,7 @@ export default function JoinUsModal({ isOpen, onClose }: JoinUsModalProps) {
     const [isVerifying, setIsVerifying] = useState(false);
     const [verificationMessage, setVerificationMessage] = useState('');
     const [email, setEmail] = useState('');
+    const [attachments, setAttachments] = useState<{ name: string; content: string; type: string }[]>([]);
 
     // Form State for Selects
     const [selectValues, setSelectValues] = useState({
@@ -70,11 +71,49 @@ export default function JoinUsModal({ isOpen, onClose }: JoinUsModalProps) {
             setVerificationCode('');
             setVerificationMessage('');
             setEmail('');
+            setAttachments([]);
         }
     }, [isOpen]);
 
     const handleSelectChange = (name: string, value: string) => {
         setSelectValues(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (!files || files.length === 0) return;
+
+        const newAttachments: { name: string; content: string; type: string }[] = [];
+        const MAX_SIZE = 3 * 1024 * 1024; // 3MB
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            if (file.size > MAX_SIZE) {
+                setError(`File ${file.name} exceeds 3MB limit`);
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            await new Promise<void>((resolve) => {
+                reader.onload = () => {
+                    if (typeof reader.result === 'string') {
+                        newAttachments.push({
+                            name: file.name,
+                            content: reader.result as string,
+                            type: file.type
+                        });
+                    }
+                    resolve();
+                };
+            });
+        }
+        setAttachments(prev => [...prev, ...newAttachments]);
+        setError("");
+    };
+
+    const removeAttachment = (index: number) => {
+        setAttachments(prev => prev.filter((_, i) => i !== index));
     };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -112,7 +151,7 @@ export default function JoinUsModal({ isOpen, onClose }: JoinUsModalProps) {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ ...data, email, type: activeTab, token }),
+                body: JSON.stringify({ ...data, email, type: activeTab, token, attachments }),
             });
 
             const result = await response.json();
@@ -439,8 +478,7 @@ export default function JoinUsModal({ isOpen, onClose }: JoinUsModalProps) {
                                                         onChange={(val) => handleSelectChange("gender", val)}
                                                         options={[
                                                             { value: "male", label: "Male" },
-                                                            { value: "female", label: "Female" },
-                                                            { value: "other", label: "Other" }
+                                                            { value: "female", label: "Female" }
                                                         ]}
                                                     />
                                                     <div>
@@ -710,6 +748,54 @@ export default function JoinUsModal({ isOpen, onClose }: JoinUsModalProps) {
                                                                     { value: "part_time", label: "Part Time" }
                                                                 ]}
                                                             />
+                                                        </div>
+
+                                                        <div>
+                                                            <label className="block text-sm font-semibold text-slate-700 mb-2">
+                                                                Resume / CV (Optional)
+                                                            </label>
+                                                            <div className="relative">
+                                                                <input
+                                                                    type="file"
+                                                                    onChange={handleFileChange}
+                                                                    className="hidden"
+                                                                    id="file-upload"
+                                                                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                                                                />
+                                                                <label
+                                                                    htmlFor="file-upload"
+                                                                    className={`flex items-center justify-center w-full p-4 border-2 border-dashed rounded-xl cursor-pointer transition-colors ${
+                                                                        attachments.length > 0 ? 'border-green-500 bg-green-50' : 'border-slate-300 hover:border-slate-400'
+                                                                    }`}
+                                                                >
+                                                                    <div className="text-center">
+                                                                        <p className="text-sm font-medium text-slate-600">
+                                                                            {attachments.length > 0 
+                                                                                ? `${attachments.length} file(s) selected` 
+                                                                                : "Click to upload or drag and drop"}
+                                                                        </p>
+                                                                        <p className="text-xs text-slate-400 mt-1">
+                                                                            PDF, DOC, Images (Max 3MB)
+                                                                        </p>
+                                                                    </div>
+                                                                </label>
+                                                            </div>
+                                                            {attachments.length > 0 && (
+                                                                <div className="mt-3 space-y-2">
+                                                                    {attachments.map((file, index) => (
+                                                                        <div key={index} className="flex items-center justify-between p-2 bg-slate-50 rounded-lg border border-slate-200">
+                                                                            <span className="text-sm text-slate-600 truncate max-w-[200px]">{file.name}</span>
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => removeAttachment(index)}
+                                                                                className="text-red-500 hover:text-red-600 p-1"
+                                                                            >
+                                                                                <X size={16} />
+                                                                            </button>
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            )}
                                                         </div>
                                                     </motion.div>
                                                 )}

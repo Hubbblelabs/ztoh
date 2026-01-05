@@ -18,7 +18,7 @@ export async function POST(request: Request) {
             applyingAs, currentStatus, gradeYear, boardUniversity, subjectDetails, modeOfStudy,
             // Teacher fields
             qualification, nationality, state, city, currentJobDetails, experience, subjectWillingToHandle, modeOfTutoring, workType,
-            token
+            token, attachments
         } = body;
 
         // Rate Limiting: 5 requests per hour per IP
@@ -95,10 +95,46 @@ export async function POST(request: Request) {
             }
         }
 
-        const joinRequest = new JoinRequest({
-            ...body,
-            trackingId: generateTrackingId('join')
-        });
+        // Build the request data object explicitly
+        const requestData: any = {
+            type,
+            email,
+            name,
+            gender,
+            mobile,
+            address,
+            trackingId: generateTrackingId('join'),
+            status: 'pending',
+            teleCallingStatus: 'pending'
+        };
+
+        // Add type-specific fields
+        if (type === 'student') {
+            requestData.applyingAs = applyingAs;
+            requestData.currentStatus = currentStatus;
+            requestData.gradeYear = gradeYear;
+            requestData.boardUniversity = boardUniversity;
+            requestData.subjectDetails = subjectDetails;
+            requestData.modeOfStudy = modeOfStudy;
+            if (body.specificNeeds) requestData.specificNeeds = body.specificNeeds;
+        } else if (type === 'teacher') {
+            requestData.qualification = qualification;
+            requestData.nationality = nationality;
+            requestData.state = state;
+            requestData.city = city;
+            requestData.currentJobDetails = currentJobDetails;
+            requestData.experience = experience;
+            requestData.subjectWillingToHandle = subjectWillingToHandle;
+            requestData.modeOfTutoring = modeOfTutoring;
+            requestData.workType = workType;
+            
+            // Add attachments only for teachers if they exist
+            if (attachments && Array.isArray(attachments) && attachments.length > 0) {
+                requestData.attachments = attachments;
+            }
+        }
+
+        const joinRequest = new JoinRequest(requestData);
         await joinRequest.save();
 
         // Send email notification
@@ -108,13 +144,23 @@ export async function POST(request: Request) {
 
                 // Format details for email
                 const detailsHtml = Object.entries(body)
-                    .filter(([key]) => key !== 'type' && key !== 'name' && key !== 'email' && key !== 'token')
+                    .filter(([key]) => key !== 'type' && key !== 'name' && key !== 'email' && key !== 'token' && key !== 'attachments')
                     .map(([key, value]) => `<p><strong>${key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}:</strong> ${value}</p>`)
                     .join('');
 
                 const settings = await Settings.findOne();
                 const adminEmail = settings?.emailSettings?.adminEmail || process.env.ADMIN_EMAIL;
                 const fromEmail = settings?.emailSettings?.fromEmail || process.env.FROM_EMAIL;
+
+                // Prepare attachments for Resend
+                const emailAttachments = attachments?.map((att: any) => {
+                    // Extract base64 content (remove data:image/png;base64, prefix)
+                    const base64Content = att.content.split(',')[1] || att.content;
+                    return {
+                        filename: att.name,
+                        content: Buffer.from(base64Content, 'base64'),
+                    };
+                }) || [];
 
                 if (!adminEmail || !fromEmail) {
                     console.warn("ADMIN_EMAIL or FROM_EMAIL not set in .env");
@@ -135,6 +181,7 @@ export async function POST(request: Request) {
                         <h4>Details:</h4>
                         ${detailsHtml}
                     `,
+                        attachments: emailAttachments
                     });
 
                     // Send acknowledgement email to User

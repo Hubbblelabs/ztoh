@@ -2,7 +2,7 @@ import mongoose, { Schema, Document, Model, Types } from 'mongoose';
 
 export interface IGroup extends Document {
     name: string;
-    staffId: Types.ObjectId;
+    staffIds: Types.ObjectId[];
     studentIds: Types.ObjectId[];
     description?: string;
     isActive: boolean;
@@ -12,7 +12,7 @@ export interface IGroup extends Document {
 
 const GroupSchema: Schema = new Schema({
     name: { type: String, required: true },
-    staffId: { type: Schema.Types.ObjectId, ref: 'Staff', required: true },
+    staffIds: [{ type: Schema.Types.ObjectId, ref: 'Staff', required: true }],
     studentIds: [{ type: Schema.Types.ObjectId, ref: 'Student' }],
     description: { type: String },
     isActive: { type: Boolean, default: true },

@@ -23,6 +23,7 @@ export interface JoinRequest {
     history: { action: string; details: string; performedBy: string; timestamp: string }[];
     createdAt: string;
     trackingId?: string;
+    attachments?: { name: string; content: string; type: string }[];
     [key: string]: any;
 }
 
