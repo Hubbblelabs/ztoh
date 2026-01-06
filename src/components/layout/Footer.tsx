@@ -86,7 +86,16 @@ export default function Footer() {
 
                 <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-slate-500">
                     <p>&copy; {new Date().getFullYear()} Zero to Hero. All rights reserved.</p>
-                    <div className="flex gap-6">
+
+                    <div className="flex items-center justify-center gap-2 order-3 md:order-2 flex-wrap">
+                        <span>Designed and Developed by</span>
+                        <Link href="https://teammistake.com" target="_blank" className="flex items-center gap-2 hover:text-white transition-colors group">
+                            <img src="https://teammistake.com/team-mistake.png" alt="TM" className="h-6 w-auto" />
+                            <span className="font-semibold text-slate-400 group-hover:text-white transition-colors">TeamMistake Technologies</span>
+                        </Link>
+                    </div>
+
+                    <div className="flex gap-6 order-2 md:order-3">
                         <Link href="#" className="hover:text-white transition-colors">Privacy Policy</Link>
                         <Link href="#" className="hover:text-white transition-colors">Terms of Service</Link>
                     </div>
