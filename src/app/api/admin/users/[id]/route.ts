@@ -36,7 +36,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
             return NextResponse.json({ message: 'Admin updated successfully', admin });
         }
 
-    } catch (error) {
+    } catch (_error) {
         return NextResponse.json({ error: 'Failed to update admin' }, { status: 500 });
     }
 }

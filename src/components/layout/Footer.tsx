@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin, ArrowRight } from "lucide-react";
 
 export default function Footer() {
@@ -90,7 +91,7 @@ export default function Footer() {
                     <div className="flex items-center justify-center gap-2 order-3 md:order-2 flex-wrap">
                         <span>Designed and Developed by</span>
                         <Link href="https://teammistake.com" target="_blank" className="flex items-center gap-2 hover:text-white transition-colors group">
-                            <img src="https://teammistake.com/team-mistake.png" alt="TM" className="h-6 w-auto" />
+                            <Image src="https://teammistake.com/team-mistake.png" alt="TM" width={24} height={24} className="h-6 w-auto" />
                             <span className="font-semibold text-slate-400 group-hover:text-white transition-colors">TeamMistake Technologies</span>
                         </Link>
                     </div>

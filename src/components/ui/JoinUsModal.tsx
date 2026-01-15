@@ -13,13 +13,7 @@ interface JoinUsModalProps {
     onClose: () => void;
 }
 
-const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: { staggerChildren: 0.05 }
-    }
-};
+
 
 const itemVariants = {
     hidden: { opacity: 0, y: 10 },
@@ -138,7 +132,7 @@ export default function JoinUsModal({ isOpen, onClose }: JoinUsModalProps) {
         const rawData = Object.fromEntries(formData.entries());
 
         // Trim all string values
-        const data: Record<string, any> = {};
+        const data: Record<string, string | File> = {};
         for (const [key, value] of Object.entries(rawData)) {
             if (typeof value === 'string') {
                 data[key] = value.trim();
@@ -163,8 +157,8 @@ export default function JoinUsModal({ isOpen, onClose }: JoinUsModalProps) {
             }
 
             setIsSuccess(true);
-        } catch (err: any) {
-            setError(err.message || "Something went wrong. Please try again.");
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
             turnstileRef.current?.reset();
             setToken(null);
         } finally {
@@ -197,7 +191,7 @@ export default function JoinUsModal({ isOpen, onClose }: JoinUsModalProps) {
             } else {
                 setVerificationMessage(data.error || 'Failed to send code');
             }
-        } catch (error) {
+        } catch (_error) {
             setVerificationMessage('Failed to send code');
         } finally {
             setIsVerifying(false);
@@ -224,7 +218,7 @@ export default function JoinUsModal({ isOpen, onClose }: JoinUsModalProps) {
             } else {
                 setVerificationMessage(data.error || 'Invalid code');
             }
-        } catch (error) {
+        } catch (_error) {
             setVerificationMessage('Failed to verify code');
         } finally {
             setIsVerifying(false);

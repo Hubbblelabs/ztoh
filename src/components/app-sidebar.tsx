@@ -2,18 +2,7 @@
 
 import * as React from "react"
 import {
-    LayoutDashboard,
-    Users,
-    UserPlus,
-    MessageSquare,
-    Clock,
-    FileText,
-    Settings,
     GraduationCap,
-    Shield,
-    Star,
-    LogOut,
-    ChevronDown,
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -29,22 +18,11 @@ import {
     SidebarGroup,
     SidebarGroupLabel,
     SidebarGroupContent,
-    useSidebar,
+
     SidebarRail,
 } from "@/components/ui/sidebar"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import {
-    Avatar,
-    AvatarFallback,
-    AvatarImage,
-} from "@/components/ui/avatar"
+
+
 
 
 // We need to access the AuthContext. Since it's defined in admin/layout, 
@@ -71,7 +49,7 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
     title?: string;
 }
 
-export function AppSidebar({ navGroups, user, title = "Zero to Hero", ...props }: AppSidebarProps) {
+export function AppSidebar({ navGroups, title = "Zero to Hero", ...props }: AppSidebarProps) {
     const pathname = usePathname()
 
     const isActive = (href: string, exact = false) => {

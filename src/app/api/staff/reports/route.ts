@@ -9,7 +9,7 @@ export async function GET(request: Request) {
         const payload = await verifyStaffAuth();
 
         await dbConnect();
-        
+
         const staff = await Staff.findById(payload.id);
         if (!staff || !staff.isActive) {
             return NextResponse.json({ error: 'Staff not found or inactive' }, { status: 404 });
@@ -20,7 +20,7 @@ export async function GET(request: Request) {
         const month = searchParams.get('month');
 
         const query: any = { staffId: payload.id };
-        
+
         if (year) {
             query.year = parseInt(year);
         }
@@ -31,8 +31,8 @@ export async function GET(request: Request) {
         const reports = await MonthlyReport.find(query).sort({ year: -1, month: -1 });
 
         return NextResponse.json({ reports });
-    } catch (error) {
-        console.error('Error fetching monthly reports:', error);
+    } catch (_error) {
+        console.error('Error fetching monthly reports:', _error);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }

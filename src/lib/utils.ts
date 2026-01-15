@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function generateTrackingId(type: 'contact' | 'join'): string {
+export function generateTrackingId(_type: 'contact' | 'join'): string {
   // Format: YYYYMMDD-XXXX (e.g., 20231201-1234)
   const date = new Date();
   const year = date.getFullYear();

@@ -106,7 +106,7 @@ export default function StaffGroupsPage() {
                     <div className="col-span-full py-12 text-center bg-card rounded-lg border border-dashed border-border text-muted-foreground">
                         <Users className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
                         <h3 className="text-lg font-medium text-foreground">No Groups Assigned</h3>
-                        <p className="text-muted-foreground mb-6 max-w-sm mx-auto">You haven't been assigned any student groups yet.</p>
+                        <p className="text-muted-foreground mb-6 max-w-sm mx-auto">You haven&apos;t been assigned any student groups yet.</p>
                     </div>
                 ) : (
                     groups.map((group) => (

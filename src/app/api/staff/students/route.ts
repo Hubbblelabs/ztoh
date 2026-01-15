@@ -4,9 +4,10 @@ import { authOptions } from "@/lib/authOptions";
 import dbConnect from "@/lib/db";
 import Student from "@/models/Student";
 
-export async function GET(req: Request) {
+export async function GET(_req: Request) {
     try {
         const session = await getServerSession(authOptions);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         if (!session || (session.user as any).role !== "staff") {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }

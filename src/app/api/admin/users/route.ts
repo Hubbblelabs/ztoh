@@ -48,7 +48,7 @@ export async function GET() {
         await dbConnect();
         const admins = await Admin.find({}).select('-password').sort({ createdAt: -1 });
         return NextResponse.json(admins);
-    } catch (error) {
+    } catch (_error) {
         return NextResponse.json(
             { error: 'Failed to fetch admins' },
             { status: 500 }

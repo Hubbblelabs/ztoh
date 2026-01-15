@@ -37,7 +37,7 @@ const TestimonialCard = ({ testimonial }: { testimonial: Testimonial }) => (
         <div className="mb-6 flex-grow relative">
             <Quote className="absolute -top-2 -left-2 w-8 h-8 text-slate-100 -z-10 transform -scale-x-100" />
             <p className="text-slate-700 leading-relaxed italic relative z-10 text-sm md:text-base">
-                "{testimonial.content}"
+                &quot;{testimonial.content}&quot;
             </p>
         </div>
     </div>

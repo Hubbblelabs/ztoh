@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
+// import { useState } from "react";
+// import Link from "next/link";
 import { motion, Variants } from "framer-motion";
 import { ArrowRight, CheckCircle, Sparkles, Zap, Award } from "lucide-react";
 import { useJoinUsModal } from "@/components/providers/ModalProvider";

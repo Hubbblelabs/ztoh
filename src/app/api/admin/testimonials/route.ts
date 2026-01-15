@@ -3,7 +3,7 @@ import dbConnect from '@/lib/db';
 import Testimonial from '@/models/Testimonial';
 import { verifyAuth } from '@/lib/auth';
 
-export async function GET(request: Request) {
+export async function GET(_request: Request) {
     try {
         await verifyAuth();
         await dbConnect();

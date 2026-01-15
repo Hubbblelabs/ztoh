@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+// import { motion } from "framer-motion";
 import {
     BookOpen,
     TrendingUp,
@@ -220,7 +220,7 @@ export default function Services() {
                                                 {section.title}
                                             </h4>
                                         </div>
-                                        
+
                                         <div className="space-y-6">
                                             {section.groups.map((group, idx) => (
                                                 <div key={idx}>

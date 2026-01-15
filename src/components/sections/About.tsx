@@ -17,7 +17,7 @@ export default function About() {
                     <div className="space-y-12 text-lg text-slate-600 leading-relaxed">
                         <ScrollAnimation>
                             <p>
-                                Founded in 2015 in Coimbatore, <span className="font-bold text-slate-900">Zero to Hero Online and Home Tutoring Services</span> provides all kinds of educational support for everything from elementary school to competitive exams like JEE, SAT, TANCET, and more. We offer online and in-home tutoring sessions for both one-on-one and group tutoring. We serve all boards, including the IB and IGCSE, with our services. Additionally, we expanded our services to other countries like the US, the UK, the Emirates, and Saudi Arabia. Our team takes the utmost care to ensure that each student receives individualized attention and committed assistance to support their professional advancement and realize their goals Regardless of the student's skill level.
+                                Founded in 2015 in Coimbatore, <span className="font-bold text-slate-900">Zero to Hero Online and Home Tutoring Services</span> provides all kinds of educational support for everything from elementary school to competitive exams like JEE, SAT, TANCET, and more. We offer online and in-home tutoring sessions for both one-on-one and group tutoring. We serve all boards, including the IB and IGCSE, with our services. Additionally, we expanded our services to other countries like the US, the UK, the Emirates, and Saudi Arabia. Our team takes the utmost care to ensure that each student receives individualized attention and committed assistance to support their professional advancement and realize their goals Regardless of the student&apos;s skill level.
                             </p>
                         </ScrollAnimation>
 
@@ -27,11 +27,11 @@ export default function About() {
                                 <div className="absolute bottom-0 right-0 w-20 h-20 bg-accent/20 rounded-tl-full blur-xl"></div>
 
                                 <div className="relative z-10 text-center">
-                                    <span className="text-6xl text-secondary/30 font-serif absolute -top-4 -left-2">"</span>
+                                    <span className="text-6xl text-secondary/30 font-serif absolute -top-4 -left-2">&quot;</span>
                                     <p className="text-xl md:text-2xl font-medium italic leading-relaxed font-heading">
                                         Aim beyond the ordinary, small ambitions are a disservice to your potential. When your aspirations are grand, let your dedication and preparation be even more monumental. In the pursuit of greatness, there is no room for small aims or modest efforts.
                                     </p>
-                                    <span className="text-6xl text-secondary/30 font-serif absolute -bottom-8 -right-2">"</span>
+                                    <span className="text-6xl text-secondary/30 font-serif absolute -bottom-8 -right-2">&quot;</span>
                                 </div>
                             </div>
                         </ScrollAnimation>

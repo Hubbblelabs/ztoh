@@ -3,7 +3,7 @@ import { verifyStaffAuth } from '@/lib/auth';
 import dbConnect from '@/lib/db';
 import Staff from '@/models/Staff';
 
-export async function GET(request: Request) {
+export async function GET(_request: Request) {
     try {
         const payload = await verifyStaffAuth();
 

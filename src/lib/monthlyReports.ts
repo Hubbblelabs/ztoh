@@ -13,6 +13,21 @@ interface GenerateReportOptions {
     staffId?: string; // Optional: generate for specific staff only
 }
 
+interface ReportData {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    _id: any;
+    staffName: string;
+    staffEmail: string;
+    totalHours: number;
+    month: number;
+    year: number;
+    startDate: Date;
+    endDate: Date;
+    generatedAt: Date;
+    subjectBreakdown: ISubjectBreakdown[];
+    emailSentAt?: Date;
+}
+
 export async function generateMonthlyReports(options: GenerateReportOptions = {}) {
     await dbConnect();
 
@@ -52,7 +67,7 @@ export async function generateMonthlyReports(options: GenerateReportOptions = {}
 
         // Calculate subject breakdown
         const subjectMap = new Map<string, { subject: string; course?: string; hours: number }>();
-        
+
         for (const record of teachingHours) {
             const key = `${record.subject}|${record.course || ''}`;
             if (subjectMap.has(key)) {
@@ -100,10 +115,10 @@ function getMonthName(month: number): string {
     return months[month - 1] || '';
 }
 
-function generateConsolidatedEmailHtml(reports: any[], monthName: string, year: number): string {
+function generateConsolidatedEmailHtml(reports: ReportData[], monthName: string, year: number): string {
     // Sort reports by staff name
     const sortedReports = [...reports].sort((a, b) => a.staffName.localeCompare(b.staffName));
-    
+
     const totalHoursAllStaff = sortedReports.reduce((sum, r) => sum + r.totalHours, 0);
 
     const rows = sortedReports.map(report => `
@@ -167,9 +182,9 @@ function generateConsolidatedEmailHtml(reports: any[], monthName: string, year: 
     `;
 }
 
-export async function sendAdminConsolidatedReport(reports: any[]) {
+export async function sendAdminConsolidatedReport(reports: ReportData[]) {
     await dbConnect();
-    
+
     if (!reports || reports.length === 0) {
         return { success: true, message: 'No reports to send' };
     }
@@ -217,12 +232,13 @@ export async function sendAdminConsolidatedReport(reports: any[]) {
                 error: data.error
             };
         }
-    } catch (error: any) {
+    } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : "Unknown error";
         console.error(`Error sending consolidated email to ${adminEmail}:`, error);
         return {
             success: false,
             adminEmail,
-            error: error.message
+            error: errorMessage
         };
     }
 }
@@ -230,10 +246,10 @@ export async function sendAdminConsolidatedReport(reports: any[]) {
 export async function generateAndSendMonthlyReports(options: GenerateReportOptions = {}) {
     // Generate reports
     const reports = await generateMonthlyReports(options);
-    
+
     // Send consolidated email to admin instead of individual emails
     const emailResults = await sendAdminConsolidatedReport(reports);
-    
+
     return {
         reportsGenerated: reports.length,
         emailResults

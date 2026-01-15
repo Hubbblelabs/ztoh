@@ -5,7 +5,7 @@ import dbConnect from "@/lib/db";
 import TeachingHours from "@/models/TeachingHours";
 import Group from "@/models/Group";
 
-export async function GET(req: Request) {
+export async function GET(_req: Request) {
     try {
         const session = await getServerSession(authOptions);
         if (!session || (session.user as any).role !== "student") {

@@ -178,7 +178,7 @@ export default function Contact() {
                     </ScrollAnimation>
                     <ScrollAnimation delay={0.2}>
                         <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-                            Get in touch with us for any inquiries or to join our classes. We're here to help you succeed.
+                            Get in touch with us for any inquiries or to join our classes. We&apos;re here to help you succeed.
                         </p>
                     </ScrollAnimation>
                 </div>

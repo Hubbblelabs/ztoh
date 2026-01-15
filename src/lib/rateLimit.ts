@@ -22,7 +22,7 @@ export async function checkRateLimit(identifier: string, limit: number, windowMs
         await connectDB();
 
         const now = new Date();
-        let record = await RateLimit.findOne({ identifier });
+        const record = await RateLimit.findOne({ identifier });
 
         if (!record) {
             // New record

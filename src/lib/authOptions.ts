@@ -4,7 +4,7 @@ import dbConnect from "@/lib/db";
 import Admin from "@/models/Admin";
 import Staff from "@/models/Staff";
 import Student from "@/models/Student";
-import bcrypt from "bcryptjs";
+
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -81,7 +81,9 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       if (session.user) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (session.user as any).role = token.role;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (session.user as any).id = token.id;
       }
       return session;

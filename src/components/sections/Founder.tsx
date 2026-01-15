@@ -35,7 +35,7 @@ export default function Founder() {
                         <div className="mt-8 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
                             <Quote className="text-secondary mb-4 w-8 h-8" />
                             <p className="text-slate-700 italic font-medium leading-relaxed">
-                                "Confidence and Hard work is the best medicine to kill the disease called Failure"
+                                &quot;Confidence and Hard work is the best medicine to kill the disease called Failure&quot;
                             </p>
                         </div>
                     </motion.div>
@@ -54,7 +54,7 @@ export default function Founder() {
                             </h2>
                             <div className="prose prose-lg text-slate-600 leading-relaxed">
                                 <p>
-                                    Hi, This is <span className="font-bold text-slate-900">MuthuKumar</span>, the Founder and Head of "Zero to Hero Online and Home Tutoring Services", Coimbatore. I hold a Master of Philosophy degree in Mathematics and possess extensive experience in teaching mathematics to engineering graduates and students from various school boards, including IB, IGCSE, CBSE, and the State Board of the Indian curriculum.
+                                    Hi, This is <span className="font-bold text-slate-900">MuthuKumar</span>, the Founder and Head of &quot;Zero to Hero Online and Home Tutoring Services&quot;, Coimbatore. I hold a Master of Philosophy degree in Mathematics and possess extensive experience in teaching mathematics to engineering graduates and students from various school boards, including IB, IGCSE, CBSE, and the State Board of the Indian curriculum.
                                 </p>
                                 <p className="mt-4">
                                     I have gained valuable expertise in teaching the syllabi of different countries such as the US, the UK, and Saudi Arabia too. Also, I am well-versed in preparing students and trainers for competitive exams such as SSAT (Middle and Upper Level), SSC, IIT-JEE Mains, SAT, GATE, Management (MAT, CAT, TANCET), as well as Deemed Universities Engineering Entrance Exams.
