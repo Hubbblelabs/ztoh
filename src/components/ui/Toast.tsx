@@ -54,7 +54,7 @@ export default function Toast({ id, message, type, onClose, duration = 5000 }: T
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
             className={cn(
-                "flex items-center gap-4 p-4 rounded-2xl shadow-lg border backdrop-blur-sm min-w-[300px] max-w-md pointer-events-auto",
+                "flex items-center gap-4 p-4 rounded-md shadow-lg border backdrop-blur-sm min-w-[300px] max-w-md pointer-events-auto",
                 styles[type]
             )}
         >

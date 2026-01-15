@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Loader2, Save } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function SettingsTab() {
     const [loading, setLoading] = useState(true);
@@ -58,49 +59,69 @@ export default function SettingsTab() {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center py-20">
-                <Loader2 className="animate-spin text-primary" size={32} />
+            <div className="max-w-2xl mx-auto">
+                <div className="bg-card rounded-lg shadow-sm border border-border overflow-hidden">
+                    <div className="p-6 border-b border-border">
+                        <Skeleton className="h-6 w-40 mb-2" />
+                        <Skeleton className="h-4 w-64" />
+                    </div>
+                    <div className="p-6 space-y-6">
+                        <div>
+                            <Skeleton className="h-4 w-24 mb-1" />
+                            <Skeleton className="h-3 w-full mb-2" />
+                            <Skeleton className="h-10 w-full" />
+                        </div>
+                        <div>
+                            <Skeleton className="h-4 w-40 mb-1" />
+                            <Skeleton className="h-3 w-full mb-2" />
+                            <Skeleton className="h-10 w-full" />
+                        </div>
+                        <div className="flex justify-end pt-4">
+                            <Skeleton className="h-10 w-32" />
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }
 
     return (
         <div className="max-w-2xl mx-auto">
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                <div className="p-6 border-b border-slate-100">
-                    <h2 className="text-lg font-bold text-slate-900">Email Configuration</h2>
-                    <p className="text-sm text-slate-500">Manage email settings for notifications</p>
+            <div className="bg-card rounded-lg shadow-sm border border-border overflow-hidden">
+                <div className="p-6 border-b border-border">
+                    <h2 className="text-lg font-bold text-foreground">Email Configuration</h2>
+                    <p className="text-sm text-muted-foreground">Manage email settings for notifications</p>
                 </div>
 
                 <form onSubmit={handleSave} className="p-6 space-y-6">
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">From Email</label>
-                        <p className="text-xs text-slate-500 mb-2">The email address that appears as the sender for automated emails.</p>
+                        <label className="block text-sm font-medium text-foreground mb-1">From Email</label>
+                        <p className="text-xs text-muted-foreground mb-2">The email address that appears as the sender for automated emails.</p>
                         <input
                             type="email"
                             required
                             value={settings.fromEmail}
                             onChange={(e) => setSettings({ ...settings, fromEmail: e.target.value })}
-                            className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                            className="w-full px-4 py-2 rounded-md border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                             placeholder="noreply@example.com"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Admin Notification Email</label>
-                        <p className="text-xs text-slate-500 mb-2">The email address that receives notifications about new requests.</p>
+                        <label className="block text-sm font-medium text-foreground mb-1">Admin Notification Email</label>
+                        <p className="text-xs text-muted-foreground mb-2">The email address that receives notifications about new requests.</p>
                         <input
                             type="email"
                             required
                             value={settings.adminEmail}
                             onChange={(e) => setSettings({ ...settings, adminEmail: e.target.value })}
-                            className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                            className="w-full px-4 py-2 rounded-md border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                             placeholder="admin@example.com"
                         />
                     </div>
 
                     {message.text && (
-                        <div className={`p-3 rounded-lg text-sm ${message.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+                        <div className={`p-3 rounded-lg text-sm ${message.type === 'success' ? 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400' : 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400'}`}>
                             {message.text}
                         </div>
                     )}
@@ -109,7 +130,7 @@ export default function SettingsTab() {
                         <button
                             type="submit"
                             disabled={saving}
-                            className="flex items-center gap-2 px-6 py-2 bg-slate-900 text-white rounded-xl text-sm font-semibold hover:bg-slate-800 transition-colors disabled:opacity-70"
+                            className="flex items-center gap-2 px-6 py-2 bg-primary text-primary-foreground rounded-md text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-70"
                         >
                             {saving ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
                             Save Changes
@@ -120,3 +141,4 @@ export default function SettingsTab() {
         </div>
     );
 }
+

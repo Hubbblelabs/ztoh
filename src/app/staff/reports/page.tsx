@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { FileText, Mail, Calendar } from 'lucide-react';
-import Loader from '@/components/ui/Loader';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useSetPageTitle } from '@/hooks/useSetPageTitle';
 
 interface MonthlyReport {
     _id: string;
@@ -26,6 +27,8 @@ const MONTH_NAMES = [
 ];
 
 export default function StaffReportsPage() {
+    useSetPageTitle('Monthly Reports', 'View your generated monthly teaching reports');
+
     const [reports, setReports] = useState<MonthlyReport[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -56,73 +59,92 @@ export default function StaffReportsPage() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-[60vh]">
-                <Loader />
+            <div className="space-y-6">
+                {/* Reports Skeleton */}
+                <div className="space-y-4">
+                    {[1, 2, 3].map((i) => (
+                        <div key={i} className="bg-card rounded-lg shadow-sm border border-border p-6">
+                            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                                <div className="flex items-start gap-4">
+                                    <Skeleton className="h-12 w-12 rounded-md" />
+                                    <div className="space-y-2">
+                                        <Skeleton className="h-6 w-36" />
+                                        <Skeleton className="h-4 w-48" />
+                                        <Skeleton className="h-3 w-32" />
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-6">
+                                    <div className="space-y-1">
+                                        <Skeleton className="h-10 w-20" />
+                                        <Skeleton className="h-4 w-16" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="mt-6 pt-6 border-t border-border">
+                                <Skeleton className="h-4 w-32 mb-3" />
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                    {[1, 2, 3].map((j) => (
+                                        <Skeleton key={j} className="h-16" />
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
         );
     }
 
     return (
         <div className="space-y-6">
-            {/* Header */}
-            <div className="flex items-center gap-4">
-                <div className="p-3 bg-indigo-100 rounded-xl">
-                    <FileText className="w-6 h-6 text-indigo-600" />
-                </div>
-                <div>
-                    <h1 className="text-2xl font-bold text-slate-900">Monthly Reports</h1>
-                    <p className="text-slate-500">View your generated monthly teaching reports</p>
-                </div>
-            </div>
-
             {/* Reports */}
             {reports.length > 0 ? (
                 <div className="space-y-4">
                     {reports.map((report) => (
-                        <div key={report._id} className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                        <div key={report._id} className="bg-card rounded-lg shadow-sm border border-border p-6">
                             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                                 <div className="flex items-start gap-4">
-                                    <div className="p-3 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl">
-                                        <Calendar className="w-6 h-6 text-emerald-600" />
+                                    <div className="p-3 bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 rounded-md">
+                                        <Calendar className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
                                     </div>
                                     <div>
-                                        <h3 className="text-xl font-bold text-slate-900">
+                                        <h3 className="text-xl font-bold text-foreground">
                                             {MONTH_NAMES[report.month - 1]} {report.year}
                                         </h3>
-                                        <p className="text-sm text-slate-500 mt-1">
+                                        <p className="text-sm text-muted-foreground mt-1">
                                             {formatDate(report.startDate)} - {formatDate(report.endDate)}
                                         </p>
-                                        <p className="text-xs text-slate-400 mt-1">
+                                        <p className="text-xs text-muted-foreground mt-1">
                                             Generated: {formatDate(report.generatedAt)}
                                         </p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-6">
                                     <div className="text-center lg:text-right">
-                                        <p className="text-4xl font-bold text-emerald-600">
+                                        <p className="text-4xl font-bold text-emerald-600 dark:text-emerald-400">
                                             {report.totalHours.toFixed(1)}
                                         </p>
-                                        <p className="text-sm text-slate-500">total hours</p>
+                                        <p className="text-sm text-muted-foreground">total hours</p>
                                     </div>
                                 </div>
                             </div>
 
                             {report.subjectBreakdown && report.subjectBreakdown.length > 0 && (
-                                <div className="mt-6 pt-6 border-t border-slate-100">
-                                    <h4 className="text-sm font-semibold text-slate-600 mb-3">Subject Breakdown</h4>
+                                <div className="mt-6 pt-6 border-t border-border">
+                                    <h4 className="text-sm font-semibold text-muted-foreground mb-3">Subject Breakdown</h4>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                                         {report.subjectBreakdown.map((item, index) => (
                                             <div
                                                 key={index}
-                                                className="flex items-center justify-between p-3 bg-slate-50 rounded-xl"
+                                                className="flex items-center justify-between p-3 bg-muted/50 rounded-md"
                                             >
                                                 <div>
-                                                    <p className="font-medium text-slate-900">{item.subject}</p>
+                                                    <p className="font-medium text-foreground">{item.subject}</p>
                                                     {item.course && (
-                                                        <p className="text-xs text-slate-500">{item.course}</p>
+                                                        <p className="text-xs text-muted-foreground">{item.course}</p>
                                                     )}
                                                 </div>
-                                                <span className="text-lg font-bold text-emerald-600">
+                                                <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
                                                     {item.hours.toFixed(1)}h
                                                 </span>
                                             </div>
@@ -134,10 +156,10 @@ export default function StaffReportsPage() {
                     ))}
                 </div>
             ) : (
-                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-12 text-center">
-                    <FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold text-slate-700 mb-2">No Reports Yet</h3>
-                    <p className="text-slate-500">
+                <div className="bg-card rounded-lg shadow-sm border border-border p-12 text-center">
+                    <FileText className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold text-foreground mb-2">No Reports Yet</h3>
+                    <p className="text-muted-foreground">
                         Monthly reports are generated automatically at the end of each month.
                     </p>
                 </div>

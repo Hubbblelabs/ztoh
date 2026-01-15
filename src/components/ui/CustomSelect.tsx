@@ -23,7 +23,7 @@ export default function CustomSelect({
     options,
     value,
     onChange,
-    placeholder = "Select an option...",
+    placeholder = "Select...",
     label,
     required = false,
     name
@@ -46,12 +46,6 @@ export default function CustomSelect({
 
     return (
         <div className="relative" ref={containerRef}>
-            {label && (
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    {label} {required && <span className="text-secondary">*</span>}
-                </label>
-            )}
-
             {/* Hidden input for form submission if needed */}
             {name && <input type="hidden" name={name} value={value} required={required} />}
 
@@ -59,63 +53,64 @@ export default function CustomSelect({
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
                 whileTap={{ scale: 0.995 }}
-                className={`w-full px-4 py-3 rounded-xl border-2 text-left flex items-center justify-between transition-all duration-300 group ${isOpen
-                        ? "border-secondary ring-4 ring-secondary/10 shadow-lg shadow-secondary/5"
-                        : "border-slate-200/80 hover:border-slate-300 hover:shadow-sm"
-                    } bg-white/90 backdrop-blur-sm`}
+                className={`flex h-12 w-full items-center rounded-md border bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-zinc-200 dark:focus:ring-zinc-500 focus:border-zinc-400 dark:focus:border-zinc-400 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm group
+                    ${isOpen
+                        ? "border-zinc-400 ring-2 ring-zinc-200 dark:ring-zinc-500"
+                        : "border-zinc-300 dark:border-zinc-700"
+                    }`}
             >
-                <span className={`block truncate transition-colors ${!selectedOption ? "text-slate-400" : "text-slate-900 font-medium"}`}>
+                {/* Inline Label */}
+                {label && (
+                    <span className="text-xs font-medium text-slate-500 uppercase tracking-wide whitespace-nowrap flex items-center mr-1 select-none pointer-events-none">
+                        {label}
+                        <span className="mx-1">:</span>
+                    </span>
+                )}
+
+                <span className={`block flex-1 text-left truncate transition-colors px-0 ${!selectedOption ? "text-muted-foreground" : "text-foreground"}`}>
                     {selectedOption ? selectedOption.label : placeholder}
                 </span>
+
                 <motion.div
                     animate={{ rotate: isOpen ? 180 : 0 }}
                     transition={{ duration: 0.2 }}
-                    className={`ml-2 transition-colors ${isOpen ? 'text-secondary' : 'text-slate-400 group-hover:text-slate-500'}`}
+                    className={`ml-2 transition-colors flex-shrink-0 ${isOpen ? 'text-foreground' : 'text-muted-foreground'}`}
                 >
-                    <ChevronDown size={20} />
+                    <ChevronDown size={16} className="opacity-50" />
                 </motion.div>
             </motion.button>
 
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
-                        initial={{ opacity: 0, y: 8, scale: 0.96 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                        transition={{ duration: 0.15, ease: "easeOut" }}
-                        className="absolute z-50 w-full mt-2 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-100 max-h-64 overflow-auto py-2"
-                        style={{
-                            boxShadow: '0 20px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.02)'
-                        }}
+                        initial={{ opacity: 0, y: 4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 4 }}
+                        transition={{ duration: 0.12, ease: "easeOut" }}
+                        className="absolute z-50 w-full mt-1 bg-white rounded-md shadow-lg border border-slate-200 max-h-64 overflow-auto py-1"
                     >
-                        {options.map((option, index) => (
-                            <motion.button
+                        {options.map((option) => (
+                            <button
                                 key={option.value}
                                 type="button"
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: index * 0.03 }}
                                 onClick={() => {
                                     onChange(option.value);
                                     setIsOpen(false);
                                 }}
-                                className={`w-full px-4 py-3 text-left text-sm flex items-center justify-between transition-all duration-150 mx-1 rounded-xl ${value === option.value
-                                        ? "text-secondary font-semibold bg-secondary/5"
-                                        : "text-slate-700 hover:bg-slate-50 hover:text-slate-900"
+                                className={`w-full px-3 py-2.5 text-left text-sm flex items-center gap-3 transition-colors
+                                    ${value === option.value
+                                        ? "text-foreground font-medium"
+                                        : "text-slate-600 hover:bg-slate-50"
                                     }`}
-                                style={{ width: 'calc(100% - 8px)' }}
                             >
+                                {/* Checkmark on the left for selected item */}
+                                <span className="w-4 flex-shrink-0">
+                                    {value === option.value && (
+                                        <Check size={14} className="text-slate-700" strokeWidth={2.5} />
+                                    )}
+                                </span>
                                 <span>{option.label}</span>
-                                {value === option.value && (
-                                    <motion.div
-                                        initial={{ scale: 0, rotate: -45 }}
-                                        animate={{ scale: 1, rotate: 0 }}
-                                        className="w-5 h-5 rounded-full bg-secondary/10 flex items-center justify-center"
-                                    >
-                                        <Check size={12} className="text-secondary" strokeWidth={3} />
-                                    </motion.div>
-                                )}
-                            </motion.button>
+                            </button>
                         ))}
                     </motion.div>
                 )}

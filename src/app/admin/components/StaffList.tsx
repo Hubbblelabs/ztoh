@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Plus, Edit2, Trash2, X, Eye, Clock, Mail } from 'lucide-react';
-import Loader from '@/components/ui/Loader';
+import { Plus, Edit2, Trash2, X, Eye, Clock, Mail, Search } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface Staff {
     _id: string;
@@ -25,6 +26,7 @@ export default function StaffList({ showToast }: StaffListProps) {
     const [editingStaff, setEditingStaff] = useState<Staff | null>(null);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
     const [includeInactive, setIncludeInactive] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
 
     // Form fields
     const [name, setName] = useState('');
@@ -89,7 +91,7 @@ export default function StaffList({ showToast }: StaffListProps) {
             const url = editingStaff
                 ? `/api/admin/staff/${editingStaff._id}`
                 : '/api/admin/staff';
-            
+
             const body: any = {
                 name,
                 email,
@@ -159,8 +161,35 @@ export default function StaffList({ showToast }: StaffListProps) {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center py-12">
-                <Loader />
+            <div className="space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                        <Skeleton className="h-6 w-32" />
+                        <Skeleton className="h-5 w-24" />
+                    </div>
+                    <Skeleton className="h-10 w-28" />
+                </div>
+                <div className="space-y-3">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                        <div key={i} className="flex items-center gap-4 p-3 border-b border-border">
+                            <div className="flex-1 space-y-2">
+                                <Skeleton className="h-5 w-1/4" />
+                                <Skeleton className="h-4 w-1/3" />
+                            </div>
+                            <div className="flex gap-1">
+                                {[1, 2, 3].map((j) => (
+                                    <Skeleton key={j} className="h-5 w-16" />
+                                ))}
+                            </div>
+                            <Skeleton className="h-6 w-16" />
+                            <Skeleton className="h-4 w-24" />
+                            <div className="flex gap-2">
+                                <Skeleton className="h-8 w-8" />
+                                <Skeleton className="h-8 w-8" />
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
         );
     }
@@ -168,81 +197,95 @@ export default function StaffList({ showToast }: StaffListProps) {
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div className="flex items-center gap-4">
-                    <h2 className="text-lg font-semibold text-slate-900">Staff Members</h2>
-                    <label className="flex items-center gap-2 text-sm text-slate-600">
+                <div className="flex items-center gap-4 flex-1">
+                    <div className="relative">
+                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
                         <input
-                            type="checkbox"
+                            type="text"
+                            placeholder="Search staff..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="pl-9 pr-4 py-1.5 text-sm rounded-md border border-border bg-background hover:bg-muted/50 focus:bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-colors w-48"
+                        />
+                    </div>
+                    <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
+                        <Checkbox
                             checked={includeInactive}
-                            onChange={(e) => setIncludeInactive(e.target.checked)}
-                            className="rounded border-slate-300"
+                            onCheckedChange={(checked: boolean | 'indeterminate') => setIncludeInactive(checked === true)}
+                            className="rounded-sm"
                         />
                         Show inactive
                     </label>
                 </div>
                 <button
                     onClick={openAddModal}
-                    className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-primary/90 transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-md text-sm font-semibold hover:bg-primary/90 transition-colors"
                 >
                     <Plus size={16} />
                     Add Staff
                 </button>
             </div>
 
-            {staff.length > 0 ? (
+            {/* Filtered Staff List */}
+            {staff.filter(member =>
+                member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                member.email.toLowerCase().includes(searchTerm.toLowerCase())
+            ).length > 0 ? (
                 <div className="overflow-x-auto">
                     <table className="w-full">
                         <thead>
-                            <tr className="border-b border-slate-200">
-                                <th className="text-left py-3 px-4 text-sm font-semibold text-slate-600">Name</th>
-                                <th className="text-left py-3 px-4 text-sm font-semibold text-slate-600">Email</th>
-                                <th className="text-left py-3 px-4 text-sm font-semibold text-slate-600">Subjects</th>
-                                <th className="text-left py-3 px-4 text-sm font-semibold text-slate-600">Status</th>
-                                <th className="text-left py-3 px-4 text-sm font-semibold text-slate-600">Joined</th>
-                                <th className="text-right py-3 px-4 text-sm font-semibold text-slate-600">Actions</th>
+                            <tr className="border-b border-border">
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">Name</th>
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">Email</th>
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">Subjects</th>
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">Status</th>
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">Joined</th>
+                                <th className="text-right py-3 px-4 text-sm font-semibold text-muted-foreground">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {staff.map((member) => (
-                                <tr key={member._id} className="border-b border-slate-100 hover:bg-slate-50">
+                            {staff.filter(member =>
+                                member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                member.email.toLowerCase().includes(searchTerm.toLowerCase())
+                            ).map((member) => (
+                                <tr key={member._id} className="border-b border-border hover:bg-muted/50 transition-colors">
                                     <td className="py-3 px-4">
-                                        <span className="font-medium text-slate-900">{member.name}</span>
+                                        <span className="font-medium text-foreground">{member.name}</span>
                                     </td>
-                                    <td className="py-3 px-4 text-sm text-slate-600">{member.email}</td>
+                                    <td className="py-3 px-4 text-sm text-muted-foreground">{member.email}</td>
                                     <td className="py-3 px-4">
                                         <div className="flex flex-wrap gap-1">
                                             {member.subjects.slice(0, 3).map((subject, i) => (
-                                                <span key={i} className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-xs">
+                                                <span key={i} className="px-2 py-0.5 bg-muted text-muted-foreground rounded text-xs">
                                                     {subject}
                                                 </span>
                                             ))}
                                             {member.subjects.length > 3 && (
-                                                <span className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-xs">
+                                                <span className="px-2 py-0.5 bg-muted text-muted-foreground rounded text-xs">
                                                     +{member.subjects.length - 3}
                                                 </span>
                                             )}
                                         </div>
                                     </td>
                                     <td className="py-3 px-4">
-                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                            member.isActive 
-                                                ? 'bg-green-100 text-green-700' 
-                                                : 'bg-red-100 text-red-700'
-                                        }`}>
+                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${member.isActive
+                                            ? 'bg-green-100 text-green-700'
+                                            : 'bg-red-100 text-red-700'
+                                            }`}>
                                             {member.isActive ? 'Active' : 'Inactive'}
                                         </span>
                                     </td>
-                                    <td className="py-3 px-4 text-sm text-slate-600">
+                                    <td className="py-3 px-4 text-sm text-muted-foreground">
                                         {formatDate(member.createdAt)}
                                     </td>
                                     <td className="py-3 px-4">
                                         <div className="flex items-center justify-end gap-2">
                                             <button
                                                 onClick={() => openEditModal(member)}
-                                                className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                                                className="p-2 hover:bg-muted rounded-lg transition-colors"
                                                 title="Edit"
                                             >
-                                                <Edit2 size={16} className="text-slate-500" />
+                                                <Edit2 size={16} className="text-muted-foreground hover:text-foreground" />
                                             </button>
                                             <button
                                                 onClick={() => setShowDeleteConfirm(member._id)}
@@ -259,49 +302,49 @@ export default function StaffList({ showToast }: StaffListProps) {
                     </table>
                 </div>
             ) : (
-                <div className="text-center py-12 text-slate-500">
-                    <p>No staff members found.</p>
+                <div className="text-center py-12 text-muted-foreground">
+                    <p>No staff members found matching your search.</p>
                 </div>
             )}
 
             {/* Add/Edit Modal */}
             {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-                        <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-                            <h3 className="text-xl font-bold text-slate-900">
+                    <div className="bg-card rounded-md shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto border border-border">
+                        <div className="p-6 border-b border-border flex justify-between items-center">
+                            <h3 className="text-xl font-bold text-foreground">
                                 {editingStaff ? 'Edit Staff Member' : 'Add Staff Member'}
                             </h3>
                             <button
                                 onClick={() => setShowModal(false)}
-                                className="p-2 hover:bg-slate-100 rounded-full transition-colors"
+                                className="p-2 hover:bg-muted rounded-full transition-colors"
                             >
-                                <X size={20} className="text-slate-500" />
+                                <X size={20} className="text-muted-foreground" />
                             </button>
                         </div>
                         <form onSubmit={handleSubmit} className="p-6 space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Name *</label>
+                                <label className="block text-sm font-medium text-muted-foreground mb-1">Name *</label>
                                 <input
                                     type="text"
                                     required
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
-                                    className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                                    className="w-full px-4 py-2 rounded-xl border border-border bg-background text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Email *</label>
+                                <label className="block text-sm font-medium text-muted-foreground mb-1">Email *</label>
                                 <input
                                     type="email"
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                                    className="w-full px-4 py-2 rounded-xl border border-border bg-background text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">
+                                <label className="block text-sm font-medium text-muted-foreground mb-1">
                                     {editingStaff ? 'New Password (leave blank to keep current)' : 'Password *'}
                                 </label>
                                 <input
@@ -309,20 +352,20 @@ export default function StaffList({ showToast }: StaffListProps) {
                                     required={!editingStaff}
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                                    className="w-full px-4 py-2 rounded-xl border border-border bg-background text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Phone</label>
+                                <label className="block text-sm font-medium text-muted-foreground mb-1">Phone</label>
                                 <input
                                     type="tel"
                                     value={phone}
                                     onChange={(e) => setPhone(e.target.value)}
-                                    className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                                    className="w-full px-4 py-2 rounded-xl border border-border bg-background text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">
+                                <label className="block text-sm font-medium text-muted-foreground mb-1">
                                     Subjects (comma-separated)
                                 </label>
                                 <input
@@ -330,19 +373,17 @@ export default function StaffList({ showToast }: StaffListProps) {
                                     value={subjects}
                                     onChange={(e) => setSubjects(e.target.value)}
                                     placeholder="Math, Physics, Chemistry"
-                                    className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                                    className="w-full px-4 py-2 rounded-xl border border-border bg-background text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                                 />
                             </div>
                             {editingStaff && (
                                 <div className="flex items-center gap-2">
-                                    <input
-                                        type="checkbox"
+                                    <Checkbox
                                         id="isActive"
                                         checked={isActive}
-                                        onChange={(e) => setIsActive(e.target.checked)}
-                                        className="rounded border-slate-300"
+                                        onCheckedChange={(checked: boolean | 'indeterminate') => setIsActive(checked === true)}
                                     />
-                                    <label htmlFor="isActive" className="text-sm text-slate-700">
+                                    <label htmlFor="isActive" className="text-sm text-foreground cursor-pointer">
                                         Active
                                     </label>
                                 </div>
@@ -358,13 +399,13 @@ export default function StaffList({ showToast }: StaffListProps) {
                                 <button
                                     type="button"
                                     onClick={() => setShowModal(false)}
-                                    className="px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-xl text-sm font-semibold hover:bg-slate-50 transition-colors"
+                                    className="px-4 py-2 bg-card border border-border text-foreground rounded-md text-sm font-semibold hover:bg-muted transition-colors"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-4 py-2 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-primary/90 transition-colors"
+                                    className="px-4 py-2 bg-primary text-white rounded-md text-sm font-semibold hover:bg-primary/90 transition-colors"
                                 >
                                     {editingStaff ? 'Update' : 'Create'}
                                 </button>
@@ -377,21 +418,21 @@ export default function StaffList({ showToast }: StaffListProps) {
             {/* Delete Confirmation Modal */}
             {showDeleteConfirm && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6">
-                        <h3 className="text-lg font-bold text-slate-900 mb-2">Delete Staff Member</h3>
-                        <p className="text-slate-600 mb-6">
+                    <div className="bg-card rounded-md shadow-2xl max-w-sm w-full p-6 border border-border">
+                        <h3 className="text-lg font-bold text-foreground mb-2">Delete Staff Member</h3>
+                        <p className="text-muted-foreground mb-6">
                             Are you sure you want to delete this staff member? This will also delete all their teaching hours records.
                         </p>
                         <div className="flex justify-end gap-3">
                             <button
                                 onClick={() => setShowDeleteConfirm(null)}
-                                className="px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-xl text-sm font-semibold hover:bg-slate-50 transition-colors"
+                                className="px-4 py-2 bg-card border border-border text-foreground rounded-md text-sm font-semibold hover:bg-muted transition-colors"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={() => handleDelete(showDeleteConfirm)}
-                                className="px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-semibold hover:bg-red-700 transition-colors"
+                                className="px-4 py-2 bg-red-600 text-white rounded-md text-sm font-semibold hover:bg-red-700 transition-colors"
                             >
                                 Delete
                             </button>

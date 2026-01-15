@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSetPageTitle } from '@/hooks/useSetPageTitle';
 import {
     Users,
     Plus,
@@ -11,9 +12,10 @@ import {
     Edit2,
     Save,
     User,
-    GraduationCap
+    GraduationCap,
+    Loader2
 } from "lucide-react";
-import Loader from "@/components/ui/Loader";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Student {
     _id: string;
@@ -37,6 +39,8 @@ interface Group {
 }
 
 export default function AdminGroupsPage() {
+    useSetPageTitle('Student Groups', 'Manage groups and assign to teachers');
+
     const [groups, setGroups] = useState<Group[]>([]);
     const [students, setStudents] = useState<Student[]>([]);
     const [staffList, setStaffList] = useState<Staff[]>([]);
@@ -57,6 +61,7 @@ export default function AdminGroupsPage() {
         studentIds: [] as string[],
     });
     const [submitting, setSubmitting] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
         fetchData();
@@ -204,29 +209,29 @@ export default function AdminGroupsPage() {
     if (loading) {
         return (
             <div className="space-y-6">
-                {/* Header Skeleton */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div>
-                        <div className="h-8 w-48 bg-slate-200 rounded-lg animate-pulse mb-2"></div>
-                        <div className="h-4 w-64 bg-slate-200 rounded-lg animate-pulse"></div>
-                    </div>
-                    <div className="h-10 w-32 bg-slate-200 rounded-xl animate-pulse"></div>
+                {/* Button Skeleton */}
+                <div className="flex justify-end">
+                    <Skeleton className="h-10 w-32" />
                 </div>
 
                 {/* Grid Skeleton */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {[1, 2, 3, 4, 5, 6].map((i) => (
-                        <div key={i} className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 h-48 animate-pulse flex flex-col justify-between">
+                        <div key={i} className="bg-card rounded-lg p-6 shadow-sm border border-border flex flex-col justify-between h-48">
                             <div className="flex justify-between items-start">
-                                <div className="w-12 h-12 bg-slate-100 rounded-xl"></div>
+                                <Skeleton className="w-12 h-12 rounded-md" />
                                 <div className="flex gap-2">
-                                    <div className="w-8 h-8 bg-slate-100 rounded-lg"></div>
-                                    <div className="w-8 h-8 bg-slate-100 rounded-lg"></div>
+                                    <Skeleton className="w-8 h-8" />
+                                    <Skeleton className="w-8 h-8" />
                                 </div>
                             </div>
                             <div className="space-y-3">
-                                <div className="h-6 w-3/4 bg-slate-100 rounded-lg"></div>
-                                <div className="h-4 w-full bg-slate-100 rounded-lg"></div>
+                                <Skeleton className="h-6 w-3/4" />
+                                <Skeleton className="h-4 w-full" />
+                            </div>
+                            <div className="pt-4 border-t border-border flex items-center justify-between">
+                                <Skeleton className="h-4 w-16" />
+                                <Skeleton className="h-6 w-8" />
                             </div>
                         </div>
                     ))}
@@ -239,314 +244,341 @@ export default function AdminGroupsPage() {
         <div className="space-y-6">
             {/* Toast Notification */}
             {toast && (
-                <div className={`fixed bottom-4 right-4 z-50 px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3 ${toast.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-500 text-white'} transition-all duration-300`}>
+                <div className={`fixed bottom-4 right-4 z-50 px-6 py-3 rounded-md shadow-2xl flex items-center gap-3 ${toast.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-500 text-white'} transition-all duration-300`}>
                     {toast.type === 'success' ? <Check size={18} /> : <X size={18} />}
                     <span className="font-medium text-sm">{toast.message}</span>
                 </div>
             )}
 
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold text-slate-900">Student Groups</h1>
-                    <p className="text-slate-500">Manage groups and assign to teachers</p>
-                </div>
-                <button
-                    onClick={() => {
-                        resetForm();
-                        setShowCreateModal(true);
-                    }}
-                    className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-xl hover:bg-slate-800 transition-colors shadow-sm"
-                >
-                    <Plus size={20} />
-                    Create Group
-                </button>
-            </div>
+            {/* Main Content Card */}
+            <div className="bg-card rounded-lg shadow-sm border border-border p-6 space-y-6">
 
-            {/* Groups Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {groups.length === 0 ? (
-                    <div className="col-span-full py-12 text-center bg-white rounded-2xl border border-dashed border-slate-300">
-                        <Users className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-                        <h3 className="text-lg font-medium text-slate-900">No Groups Yet</h3>
-                        <p className="text-slate-500 mb-6 max-w-sm mx-auto">Create groups to organize students under teachers.</p>
-                        <button
-                            onClick={() => {
-                                resetForm();
-                                setShowCreateModal(true);
-                            }}
-                            className="px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 font-medium transition-colors"
-                        >
-                            Create Group
-                        </button>
+                {/* Header Actions & Search */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="relative w-full sm:w-72">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+                        <input
+                            type="text"
+                            placeholder="Search groups..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full pl-9 pr-4 py-2 rounded-md border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm"
+                        />
                     </div>
-                ) : (
-                    groups.map((group) => (
-                        <div key={group._id} className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition-shadow group relative">
-                            <div className="flex justify-between items-start mb-4">
-                                <div className="p-3 bg-sky-50 rounded-xl">
-                                    <Users className="w-6 h-6 text-sky-600" />
-                                </div>
-                                <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-                                    <button
-                                        onClick={() => handleEdit(group)}
-                                        className="p-2 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-sky-600 transition-colors"
-                                        title="Edit Group"
-                                    >
-                                        <Edit2 size={16} />
-                                    </button>
-                                    <button
-                                        onClick={() => handleDelete(group._id)}
-                                        className="p-2 hover:bg-red-50 rounded-lg text-slate-400 hover:text-red-500 transition-colors"
-                                        title="Delete Group"
-                                    >
-                                        <Trash2 size={16} />
-                                    </button>
-                                </div>
-                            </div>
+                    <button
+                        onClick={() => {
+                            resetForm();
+                            setShowCreateModal(true);
+                        }}
+                        className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors shadow-sm whitespace-nowrap"
+                    >
+                        <Plus size={20} />
+                        Create Group
+                    </button>
+                </div>
 
-                            <h3 className="text-lg font-bold text-slate-900 mb-1">{group.name}</h3>
-                            <p className="text-sm text-slate-500 mb-4 line-clamp-2 min-h-[2.5em]">
-                                {group.description || "No description provided"}
+                {/* Groups Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {groups.filter(group =>
+                        group.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                        (group.description || "").toLowerCase().includes(searchTerm.toLowerCase())
+                    ).length === 0 ? (
+                        <div className="col-span-full py-12 text-center bg-muted/50 rounded-lg border border-dashed border-border">
+                            <Users className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                            <h3 className="text-lg font-medium text-foreground">
+                                {groups.length === 0 ? "No Groups Yet" : "No groups found"}
+                            </h3>
+                            <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
+                                {groups.length === 0 ? "Create groups to organize students under teachers." : "Try adjusting your search terms."}
                             </p>
-
-                            <div className="mb-4 flex flex-col gap-2 p-3 bg-slate-50 rounded-lg">
-                                <div className="flex items-center gap-2">
-                                    <User className="w-4 h-4 text-slate-400" />
-                                    <span className="text-sm text-slate-600 font-medium">Teachers ({group.staffIds?.length || 0})</span>
-                                </div>
-                                <div className="flex flex-wrap gap-1">
-                                    {group.staffIds?.length > 0 ? (
-                                        group.staffIds.map(staff => (
-                                            <span key={staff._id} className="text-xs px-2 py-1 bg-white border border-slate-200 rounded-md text-slate-700">
-                                                {staff.name}
-                                            </span>
-                                        ))
-                                    ) : (
-                                        <span className="text-xs text-slate-400 italic">Unassigned</span>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className="pt-4 border-t border-slate-100">
-                                <div className="flex items-center justify-between text-sm">
-                                    <span className="text-slate-600">Students</span>
-                                    <span className="px-2 py-1 bg-slate-100 text-slate-700 font-semibold rounded-md">
-                                        {group.studentIds.length}
-                                    </span>
-                                </div>
-                            </div>
+                            {groups.length === 0 && (
+                                <button
+                                    onClick={() => {
+                                        resetForm();
+                                        setShowCreateModal(true);
+                                    }}
+                                    className="px-4 py-2 bg-background border border-border text-foreground rounded-lg hover:bg-muted font-medium transition-colors"
+                                >
+                                    Create Group
+                                </button>
+                            )}
                         </div>
-                    ))
-                )}
+                    ) : (
+                        groups.filter(group =>
+                            group.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            (group.description || "").toLowerCase().includes(searchTerm.toLowerCase())
+                        ).map((group) => (
+                            <div key={group._id} className="bg-background rounded-lg p-6 shadow-sm border border-border hover:shadow-md transition-shadow group relative">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div className="p-3 bg-sky-50 rounded-md">
+                                        <Users className="w-6 h-6 text-sky-600" />
+                                    </div>
+                                    <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                                        <button
+                                            onClick={() => handleEdit(group)}
+                                            className="p-2 hover:bg-muted rounded-lg text-muted-foreground hover:text-sky-600 transition-colors"
+                                            title="Edit Group"
+                                        >
+                                            <Edit2 size={16} />
+                                        </button>
+                                        <button
+                                            onClick={() => handleDelete(group._id)}
+                                            className="p-2 hover:bg-red-50 rounded-lg text-muted-foreground hover:text-red-500 transition-colors"
+                                            title="Delete Group"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <h3 className="text-lg font-bold text-foreground mb-1">{group.name}</h3>
+                                <p className="text-sm text-muted-foreground mb-4 line-clamp-2 min-h-[2.5em]">
+                                    {group.description || "No description provided"}
+                                </p>
+
+                                <div className="mb-4 flex flex-col gap-2 p-3 bg-muted rounded-lg">
+                                    <div className="flex items-center gap-2">
+                                        <User className="w-4 h-4 text-muted-foreground" />
+                                        <span className="text-sm text-muted-foreground font-medium">Teachers ({group.staffIds?.length || 0})</span>
+                                    </div>
+                                    <div className="flex flex-wrap gap-1">
+                                        {group.staffIds?.length > 0 ? (
+                                            group.staffIds.map(staff => (
+                                                <span key={staff._id} className="text-xs px-2 py-1 bg-card border border-border rounded-md text-foreground">
+                                                    {staff.name}
+                                                </span>
+                                            ))
+                                        ) : (
+                                            <span className="text-xs text-muted-foreground italic">Unassigned</span>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className="pt-4 border-t border-border">
+                                    <div className="flex items-center justify-between text-sm">
+                                        <span className="text-muted-foreground">Students</span>
+                                        <span className="px-2 py-1 bg-muted text-foreground font-semibold rounded-md">
+                                            {group.studentIds.length}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
             </div>
 
             {/* Create/Edit Modal */}
-            {showCreateModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
-                        <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 rounded-t-2xl">
-                            <div>
-                                <h2 className="text-xl font-bold text-slate-900">{editingGroupId ? "Edit Group" : "Create New Group"}</h2>
-                                <p className="text-sm text-slate-500">{editingGroupId ? "Update group details" : "Organize students and assign to staff"}</p>
+            {
+                showCreateModal && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                        <div className="bg-card rounded-lg shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+                            <div className="p-6 border-b border-border flex justify-between items-center bg-muted/50 rounded-t-2xl">
+                                <div>
+                                    <h2 className="text-xl font-bold text-foreground">{editingGroupId ? "Edit Group" : "Create New Group"}</h2>
+                                    <p className="text-sm text-muted-foreground">{editingGroupId ? "Update group details" : "Organize students and assign to staff"}</p>
+                                </div>
+                                <button
+                                    onClick={() => setShowCreateModal(false)}
+                                    className="p-2 hover:bg-muted rounded-full transition-colors text-muted-foreground"
+                                >
+                                    <X size={20} />
+                                </button>
                             </div>
-                            <button
-                                onClick={() => setShowCreateModal(false)}
-                                className="p-2 hover:bg-slate-200 rounded-full transition-colors text-slate-500"
-                            >
-                                <X size={20} />
-                            </button>
-                        </div>
 
-                        <div className="p-6 overflow-y-auto flex-1">
-                            <form id="create-group-form" onSubmit={handleSubmit} className="space-y-6">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="space-y-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-1">Group Name *</label>
-                                            <input
-                                                type="text"
-                                                required
-                                                value={formData.name}
-                                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                                className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none transition-all placeholder:text-slate-300"
-                                                placeholder="e.g. Class 10-A"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
-                                            <textarea
-                                                value={formData.description}
-                                                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                                rows={4}
-                                                className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none transition-all resize-none placeholder:text-slate-300"
-                                                placeholder="Optional details..."
-                                            />
+                            <div className="p-6 overflow-y-auto flex-1">
+                                <form id="create-group-form" onSubmit={handleSubmit} className="space-y-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-foreground mb-1">Group Name *</label>
+                                                <input
+                                                    type="text"
+                                                    required
+                                                    value={formData.name}
+                                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                                    className="w-full px-4 py-2 rounded-md border border-border focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none transition-all placeholder:text-slate-300"
+                                                    placeholder="e.g. Class 10-A"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-foreground mb-1">Description</label>
+                                                <textarea
+                                                    value={formData.description}
+                                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                                    rows={4}
+                                                    className="w-full px-4 py-2 rounded-md border border-border focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none transition-all resize-none placeholder:text-slate-300"
+                                                    placeholder="Optional details..."
+                                                />
+                                            </div>
+
+                                            <div className="flex flex-col h-full min-h-[300px] border border-border rounded-md overflow-hidden mt-4">
+                                                <div className="p-3 bg-muted border-b border-border">
+                                                    <label className="text-sm font-medium text-foreground mb-2 block">
+                                                        Assign Teachers ({formData.staffIds.length}) *
+                                                    </label>
+                                                    <div className="relative">
+                                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
+                                                        <input
+                                                            type="text"
+                                                            value={staffSearch}
+                                                            onChange={(e) => setStaffSearch(e.target.value)}
+                                                            className="w-full pl-9 pr-3 py-1.5 text-sm rounded-lg border border-border focus:outline-none focus:border-sky-500"
+                                                            placeholder="Search teachers..."
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="flex-1 overflow-y-auto p-2 space-y-1 max-h-[200px]">
+                                                    {filteredStaff.length > 0 ? (
+                                                        filteredStaff.map((staff) => (
+                                                            <label
+                                                                key={staff._id}
+                                                                className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-colors ${formData.staffIds.includes(staff._id)
+                                                                    ? 'bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800'
+                                                                    : 'hover:bg-muted border border-transparent'
+                                                                    }`}
+                                                            >
+                                                                <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${formData.staffIds.includes(staff._id)
+                                                                    ? 'bg-purple-600 border-purple-600'
+                                                                    : 'border-border bg-card'
+                                                                    }`}>
+                                                                    {formData.staffIds.includes(staff._id) && <Check size={12} className="text-white" />}
+                                                                </div>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    className="hidden"
+                                                                    checked={formData.staffIds.includes(staff._id)}
+                                                                    onChange={() => handleStaffToggle(staff._id)}
+                                                                />
+                                                                <div className="flex-1 min-w-0">
+                                                                    <div className="text-sm font-medium text-foreground truncate">{staff.name}</div>
+                                                                    <div className="text-xs text-muted-foreground truncate">{staff.email}</div>
+                                                                </div>
+                                                            </label>
+                                                        ))
+                                                    ) : (
+                                                        <div className="text-center py-8 text-muted-foreground text-sm">
+                                                            No teachers found
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
                                         </div>
 
-                                        <div className="flex flex-col h-full min-h-[300px] border border-slate-200 rounded-xl overflow-hidden mt-4">
-                                            <div className="p-3 bg-slate-50 border-b border-slate-200">
-                                                <label className="text-sm font-medium text-slate-700 mb-2 block">
-                                                    Assign Teachers ({formData.staffIds.length}) *
+                                        <div className="flex flex-col h-full min-h-[300px] border border-border rounded-md overflow-hidden">
+                                            <div className="p-3 bg-muted border-b border-border">
+                                                <label className="text-sm font-medium text-foreground mb-2 block">
+                                                    Select Students ({formData.studentIds.length})
                                                 </label>
                                                 <div className="relative">
-                                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
                                                     <input
                                                         type="text"
-                                                        value={staffSearch}
-                                                        onChange={(e) => setStaffSearch(e.target.value)}
-                                                        className="w-full pl-9 pr-3 py-1.5 text-sm rounded-lg border border-slate-200 focus:outline-none focus:border-sky-500"
-                                                        placeholder="Search teachers..."
+                                                        value={studentSearch}
+                                                        onChange={(e) => setStudentSearch(e.target.value)}
+                                                        className="w-full pl-9 pr-3 py-1.5 text-sm rounded-lg border border-border focus:outline-none focus:border-sky-500"
+                                                        placeholder="Search students..."
                                                     />
                                                 </div>
                                             </div>
-                                            <div className="flex-1 overflow-y-auto p-2 space-y-1 max-h-[200px]">
-                                                {filteredStaff.length > 0 ? (
-                                                    filteredStaff.map((staff) => (
+                                            <div className="flex-1 overflow-y-auto p-2 space-y-1">
+                                                {filteredStudents.length > 0 ? (
+                                                    filteredStudents.map((student) => (
                                                         <label
-                                                            key={staff._id}
-                                                            className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-colors ${formData.staffIds.includes(staff._id)
-                                                                ? 'bg-purple-50 border border-purple-100'
-                                                                : 'hover:bg-slate-50 border border-transparent'
+                                                            key={student._id}
+                                                            className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-colors ${formData.studentIds.includes(student._id)
+                                                                ? 'bg-sky-50 dark:bg-sky-900/20 border border-sky-100 dark:border-sky-800'
+                                                                : 'hover:bg-muted border border-transparent'
                                                                 }`}
                                                         >
-                                                            <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${formData.staffIds.includes(staff._id)
-                                                                ? 'bg-purple-600 border-purple-600'
-                                                                : 'border-slate-300 bg-white'
+                                                            <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${formData.studentIds.includes(student._id)
+                                                                ? 'bg-sky-600 border-sky-600'
+                                                                : 'border-border bg-card'
                                                                 }`}>
-                                                                {formData.staffIds.includes(staff._id) && <Check size={12} className="text-white" />}
+                                                                {formData.studentIds.includes(student._id) && <Check size={12} className="text-white" />}
                                                             </div>
                                                             <input
                                                                 type="checkbox"
                                                                 className="hidden"
-                                                                checked={formData.staffIds.includes(staff._id)}
-                                                                onChange={() => handleStaffToggle(staff._id)}
+                                                                checked={formData.studentIds.includes(student._id)}
+                                                                onChange={() => handleStudentToggle(student._id)}
                                                             />
                                                             <div className="flex-1 min-w-0">
-                                                                <div className="text-sm font-medium text-slate-900 truncate">{staff.name}</div>
-                                                                <div className="text-xs text-slate-500 truncate">{staff.email}</div>
+                                                                <div className="text-sm font-medium text-foreground truncate">{student.name}</div>
+                                                                <div className="text-xs text-muted-foreground truncate">{student.email}</div>
                                                             </div>
                                                         </label>
                                                     ))
                                                 ) : (
-                                                    <div className="text-center py-8 text-slate-400 text-sm">
-                                                        No teachers found
+                                                    <div className="text-center py-8 text-muted-foreground text-sm">
+                                                        No students found
                                                     </div>
                                                 )}
                                             </div>
                                         </div>
                                     </div>
-
-                                    <div className="flex flex-col h-full min-h-[300px] border border-slate-200 rounded-xl overflow-hidden">
-                                        <div className="p-3 bg-slate-50 border-b border-slate-200">
-                                            <label className="text-sm font-medium text-slate-700 mb-2 block">
-                                                Select Students ({formData.studentIds.length})
-                                            </label>
-                                            <div className="relative">
-                                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                                                <input
-                                                    type="text"
-                                                    value={studentSearch}
-                                                    onChange={(e) => setStudentSearch(e.target.value)}
-                                                    className="w-full pl-9 pr-3 py-1.5 text-sm rounded-lg border border-slate-200 focus:outline-none focus:border-sky-500"
-                                                    placeholder="Search students..."
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="flex-1 overflow-y-auto p-2 space-y-1">
-                                            {filteredStudents.length > 0 ? (
-                                                filteredStudents.map((student) => (
-                                                    <label
-                                                        key={student._id}
-                                                        className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-colors ${formData.studentIds.includes(student._id)
-                                                            ? 'bg-sky-50 border border-sky-100'
-                                                            : 'hover:bg-slate-50 border border-transparent'
-                                                            }`}
-                                                    >
-                                                        <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${formData.studentIds.includes(student._id)
-                                                            ? 'bg-sky-600 border-sky-600'
-                                                            : 'border-slate-300 bg-white'
-                                                            }`}>
-                                                            {formData.studentIds.includes(student._id) && <Check size={12} className="text-white" />}
-                                                        </div>
-                                                        <input
-                                                            type="checkbox"
-                                                            className="hidden"
-                                                            checked={formData.studentIds.includes(student._id)}
-                                                            onChange={() => handleStudentToggle(student._id)}
-                                                        />
-                                                        <div className="flex-1 min-w-0">
-                                                            <div className="text-sm font-medium text-slate-900 truncate">{student.name}</div>
-                                                            <div className="text-xs text-slate-500 truncate">{student.email}</div>
-                                                        </div>
-                                                    </label>
-                                                ))
-                                            ) : (
-                                                <div className="text-center py-8 text-slate-400 text-sm">
-                                                    No students found
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-
-                        <div className="p-6 border-t border-slate-100 bg-slate-50/50 rounded-b-2xl flex justify-end gap-3">
-                            <button
-                                type="button"
-                                onClick={() => setShowCreateModal(false)}
-                                className="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl text-sm font-semibold hover:bg-slate-50 transition-colors shadow-sm"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                type="submit"
-                                form="create-group-form"
-                                disabled={submitting || !formData.name || formData.staffIds.length === 0}
-                                className="px-5 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-semibold hover:bg-slate-800 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                            >
-                                {submitting ? <Loader className="w-4 h-4" /> : <Save size={18} />}
-                                {editingGroupId ? "Update Group" : "Create Group"}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Delete Confirmation Modal */}
-            {showDeleteModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
-                        <div className="p-6 text-center">
-                            <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <Trash2 className="w-8 h-8 text-red-500" />
+                                </form>
                             </div>
-                            <h3 className="text-xl font-bold text-slate-900 mb-2">Delete Group?</h3>
-                            <p className="text-slate-500 mb-6">
-                                Are you sure you want to delete this group? This action cannot be undone.
-                            </p>
-                            <div className="flex gap-3 justify-center">
+
+                            <div className="p-6 border-t border-border bg-muted/50 rounded-b-2xl flex justify-end gap-3">
                                 <button
-                                    onClick={() => {
-                                        setShowDeleteModal(false);
-                                        setGroupToDelete(null);
-                                    }}
-                                    className="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl font-semibold hover:bg-slate-50 transition-colors shadow-sm"
+                                    type="button"
+                                    onClick={() => setShowCreateModal(false)}
+                                    className="px-5 py-2.5 bg-card border border-border text-foreground rounded-md text-sm font-semibold hover:bg-muted transition-colors shadow-sm"
                                 >
                                     Cancel
                                 </button>
                                 <button
-                                    onClick={confirmDelete}
-                                    className="px-5 py-2.5 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition-colors shadow-sm"
+                                    type="submit"
+                                    form="create-group-form"
+                                    disabled={submitting || !formData.name || formData.staffIds.length === 0}
+                                    className="px-5 py-2.5 bg-primary text-primary-foreground rounded-md text-sm font-semibold hover:bg-primary/90 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                                 >
-                                    Delete Group
+                                    {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save size={18} />}
+                                    {editingGroupId ? "Update Group" : "Create Group"}
                                 </button>
                             </div>
                         </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+
+            {/* Delete Confirmation Modal */}
+            {
+                showDeleteModal && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                        <div className="bg-card rounded-lg shadow-2xl w-full max-w-sm overflow-hidden">
+                            <div className="p-6 text-center">
+                                <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <Trash2 className="w-8 h-8 text-red-500" />
+                                </div>
+                                <h3 className="text-xl font-bold text-foreground mb-2">Delete Group?</h3>
+                                <p className="text-muted-foreground mb-6">
+                                    Are you sure you want to delete this group? This action cannot be undone.
+                                </p>
+                                <div className="flex gap-3 justify-center">
+                                    <button
+                                        onClick={() => {
+                                            setShowDeleteModal(false);
+                                            setGroupToDelete(null);
+                                        }}
+                                        className="px-5 py-2.5 bg-card border border-border text-foreground rounded-md font-semibold hover:bg-muted transition-colors shadow-sm"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={confirmDelete}
+                                        className="px-5 py-2.5 bg-red-600 text-white rounded-md font-semibold hover:bg-red-700 transition-colors shadow-sm"
+                                    >
+                                        Delete Group
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+        </div >
     );
 }
+

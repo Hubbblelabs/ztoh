@@ -2,7 +2,16 @@
 
 import React, { useEffect, useState } from 'react';
 import { Plus, Edit2, Trash2, X, ChevronLeft, ChevronRight } from 'lucide-react';
-import Loader from '@/components/ui/Loader';
+import { DateRange } from 'react-day-picker';
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { DateRangePicker } from '@/components/ui/date-range-picker';
 
 interface TeachingHour {
     _id: string;
@@ -43,8 +52,11 @@ export default function TeachingHoursTab({ showToast }: TeachingHoursTabProps) {
 
     // Filters
     const [filterStaffId, setFilterStaffId] = useState('');
-    const [filterStartDate, setFilterStartDate] = useState('');
-    const [filterEndDate, setFilterEndDate] = useState('');
+    const [dateRange, setDateRange] = useState<DateRange | undefined>();
+
+    // Derived filter values
+    const filterStartDate = dateRange?.from ? dateRange.from.toISOString().split('T')[0] : '';
+    const filterEndDate = dateRange?.to ? dateRange.to.toISOString().split('T')[0] : filterStartDate;
 
     // Form fields
     const [selectedStaffId, setSelectedStaffId] = useState('');
@@ -93,7 +105,7 @@ export default function TeachingHoursTab({ showToast }: TeachingHoursTabProps) {
 
     useEffect(() => {
         fetchRecords();
-    }, [page, filterStaffId, filterStartDate, filterEndDate]);
+    }, [page, filterStaffId, dateRange]);
 
     const openAddModal = () => {
         setEditingRecord(null);
@@ -198,15 +210,37 @@ export default function TeachingHoursTab({ showToast }: TeachingHoursTabProps) {
 
     const clearFilters = () => {
         setFilterStaffId('');
-        setFilterStartDate('');
-        setFilterEndDate('');
+        setDateRange(undefined);
         setPage(1);
     };
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center py-12">
-                <Loader />
+            <div className="space-y-6">
+                <div className="flex flex-wrap gap-4 items-end">
+                    <Skeleton className="h-10 flex-1 min-w-[200px]" />
+                    <Skeleton className="h-10 w-40" />
+                    <Skeleton className="h-10 w-40" />
+                    <Skeleton className="h-10 w-28 ml-auto" />
+                </div>
+                <div className="space-y-3">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                        <div key={i} className="flex items-center gap-4 p-3 border-b border-border">
+                            <Skeleton className="h-4 w-28" />
+                            <div className="flex-1 space-y-1">
+                                <Skeleton className="h-5 w-32" />
+                                <Skeleton className="h-3 w-40" />
+                            </div>
+                            <Skeleton className="h-4 w-24" />
+                            <Skeleton className="h-4 w-28" />
+                            <Skeleton className="h-5 w-12" />
+                            <div className="flex gap-2">
+                                <Skeleton className="h-8 w-8" />
+                                <Skeleton className="h-8 w-8" />
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
         );
     }
@@ -214,49 +248,40 @@ export default function TeachingHoursTab({ showToast }: TeachingHoursTabProps) {
     return (
         <div className="space-y-6">
             {/* Filters */}
-            <div className="flex flex-wrap gap-4 items-end">
-                <div className="flex-1 min-w-[200px]">
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Staff Member</label>
-                    <select
-                        value={filterStaffId}
-                        onChange={(e) => { setFilterStaffId(e.target.value); setPage(1); }}
-                        className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-                    >
-                        <option value="">All Staff</option>
+            <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end">
+                <Select value={filterStaffId || 'all'} onValueChange={(value) => { setFilterStaffId(value === 'all' ? '' : value); setPage(1); }}>
+                    <SelectTrigger className="w-full sm:w-[200px] h-9 rounded-md bg-card">
+                        <span className="text-xs font-semibold text-muted-foreground uppercase mr-2">Staff:</span>
+                        <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="all">All Staff</SelectItem>
                         {staff.map((s) => (
-                            <option key={s._id} value={s._id}>{s.name}</option>
+                            <SelectItem key={s._id} value={s._id}>{s.name}</SelectItem>
                         ))}
-                    </select>
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Start Date</label>
-                    <input
-                        type="date"
-                        value={filterStartDate}
-                        onChange={(e) => { setFilterStartDate(e.target.value); setPage(1); }}
-                        className="px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                    </SelectContent>
+                </Select>
+                <div className="w-full sm:w-auto">
+                    <DateRangePicker
+                        date={dateRange}
+                        setDate={(range) => {
+                            setDateRange(range);
+                            setPage(1);
+                        }}
+                        align="start"
                     />
                 </div>
-                <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">End Date</label>
-                    <input
-                        type="date"
-                        value={filterEndDate}
-                        onChange={(e) => { setFilterEndDate(e.target.value); setPage(1); }}
-                        className="px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-                    />
-                </div>
-                {(filterStaffId || filterStartDate || filterEndDate) && (
+                {(filterStaffId || dateRange) && (
                     <button
                         onClick={clearFilters}
-                        className="px-4 py-2 text-sm text-slate-600 hover:text-slate-900 transition-colors"
+                        className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
                     >
                         Clear Filters
                     </button>
                 )}
                 <button
                     onClick={openAddModal}
-                    className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-primary/90 transition-colors ml-auto"
+                    className="flex items-center justify-center gap-2 px-4 py-2 bg-primary text-white rounded-md text-sm font-semibold hover:bg-primary/90 transition-colors sm:ml-auto"
                 >
                     <Plus size={16} />
                     Add Hours
@@ -269,50 +294,50 @@ export default function TeachingHoursTab({ showToast }: TeachingHoursTabProps) {
                     <div className="overflow-x-auto">
                         <table className="w-full">
                             <thead>
-                                <tr className="border-b border-slate-200">
-                                    <th className="text-left py-3 px-4 text-sm font-semibold text-slate-600">Date</th>
-                                    <th className="text-left py-3 px-4 text-sm font-semibold text-slate-600">Staff</th>
-                                    <th className="text-left py-3 px-4 text-sm font-semibold text-slate-600">Subject</th>
-                                    <th className="text-left py-3 px-4 text-sm font-semibold text-slate-600">Course</th>
-                                    <th className="text-right py-3 px-4 text-sm font-semibold text-slate-600">Hours</th>
-                                    <th className="text-right py-3 px-4 text-sm font-semibold text-slate-600">Actions</th>
+                                <tr className="border-b border-border">
+                                    <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">Date</th>
+                                    <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">Staff</th>
+                                    <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">Subject</th>
+                                    <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">Course</th>
+                                    <th className="text-right py-3 px-4 text-sm font-semibold text-muted-foreground">Hours</th>
+                                    <th className="text-right py-3 px-4 text-sm font-semibold text-muted-foreground">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {records.map((record) => (
-                                    <tr key={record._id} className="border-b border-slate-100 hover:bg-slate-50">
-                                        <td className="py-3 px-4 text-sm text-slate-900">
+                                    <tr key={record._id} className="border-b border-border hover:bg-muted">
+                                        <td className="py-3 px-4 text-sm text-foreground">
                                             {formatDate(record.date)}
                                         </td>
                                         <td className="py-3 px-4">
                                             <div>
                                                 {record.staffId ? (
                                                     <>
-                                                        <span className="font-medium text-slate-900">{record.staffId.name}</span>
-                                                        <p className="text-xs text-slate-500">{record.staffId.email}</p>
+                                                        <span className="font-medium text-foreground">{record.staffId.name}</span>
+                                                        <p className="text-xs text-muted-foreground">{record.staffId.email}</p>
                                                     </>
                                                 ) : (
-                                                    <span className="font-medium text-slate-400 italic">Unknown / Deleted Staff</span>
+                                                    <span className="font-medium text-muted-foreground italic">Unknown / Deleted Staff</span>
                                                 )}
                                             </div>
                                         </td>
-                                        <td className="py-3 px-4 text-sm text-slate-900">{record.subject}</td>
-                                        <td className="py-3 px-4 text-sm text-slate-500">{record.course || '-'}</td>
-                                        <td className="py-3 px-4 text-sm text-slate-900 text-right font-medium">
+                                        <td className="py-3 px-4 text-sm text-foreground">{record.subject}</td>
+                                        <td className="py-3 px-4 text-sm text-muted-foreground">{record.course || '-'}</td>
+                                        <td className="py-3 px-4 text-sm text-foreground text-right font-medium">
                                             {record.hours.toFixed(1)}
                                         </td>
                                         <td className="py-3 px-4">
                                             <div className="flex items-center justify-end gap-2">
                                                 <button
                                                     onClick={() => openEditModal(record)}
-                                                    className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                                                    className="p-2 hover:bg-muted rounded-lg transition-colors"
                                                     title="Edit"
                                                 >
-                                                    <Edit2 size={16} className="text-slate-500" />
+                                                    <Edit2 size={16} className="text-muted-foreground" />
                                                 </button>
                                                 <button
                                                     onClick={() => setShowDeleteConfirm(record._id)}
-                                                    className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                                                    className="p-2 hover:bg-red-50 dark:hover:bg-red-950/50 rounded-lg transition-colors"
                                                     title="Delete"
                                                 >
                                                     <Trash2 size={16} className="text-red-500" />
@@ -331,17 +356,17 @@ export default function TeachingHoursTab({ showToast }: TeachingHoursTabProps) {
                             <button
                                 onClick={() => setPage(p => Math.max(1, p - 1))}
                                 disabled={page === 1}
-                                className="p-2 rounded-lg hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="p-2 rounded-lg hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <ChevronLeft size={20} />
                             </button>
-                            <span className="text-sm text-slate-600">
+                            <span className="text-sm text-muted-foreground">
                                 Page {page} of {totalPages}
                             </span>
                             <button
                                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                                 disabled={page === totalPages}
-                                className="p-2 rounded-lg hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="p-2 rounded-lg hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <ChevronRight size={20} />
                             </button>
@@ -349,7 +374,7 @@ export default function TeachingHoursTab({ showToast }: TeachingHoursTabProps) {
                     )}
                 </>
             ) : (
-                <div className="text-center py-12 text-slate-500">
+                <div className="text-center py-12 text-muted-foreground">
                     <p>No teaching hours records found.</p>
                 </div>
             )}
@@ -357,47 +382,46 @@ export default function TeachingHoursTab({ showToast }: TeachingHoursTabProps) {
             {/* Add/Edit Modal */}
             {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-                        <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-                            <h3 className="text-xl font-bold text-slate-900">
+                    <div className="bg-card rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+                        <div className="p-6 border-b border-border flex justify-between items-center">
+                            <h3 className="text-xl font-bold text-foreground">
                                 {editingRecord ? 'Edit Teaching Hours' : 'Add Teaching Hours'}
                             </h3>
                             <button
                                 onClick={() => setShowModal(false)}
-                                className="p-2 hover:bg-slate-100 rounded-full transition-colors"
+                                className="p-2 hover:bg-muted rounded-full transition-colors"
                             >
-                                <X size={20} className="text-slate-500" />
+                                <X size={20} className="text-muted-foreground" />
                             </button>
                         </div>
                         <form onSubmit={handleSubmit} className="p-6 space-y-4">
                             {!editingRecord && (
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Staff Member *</label>
-                                    <select
-                                        required
-                                        value={selectedStaffId}
-                                        onChange={(e) => setSelectedStaffId(e.target.value)}
-                                        className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-                                    >
-                                        <option value="">Select staff member</option>
-                                        {staff.map((s) => (
-                                            <option key={s._id} value={s._id}>{s.name} ({s.email})</option>
-                                        ))}
-                                    </select>
+                                    <label className="block text-sm font-medium text-foreground mb-1">Staff Member *</label>
+                                    <Select value={selectedStaffId} onValueChange={setSelectedStaffId} required>
+                                        <SelectTrigger className="w-full h-10 rounded-md">
+                                            <SelectValue placeholder="Select staff member" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {staff.map((s) => (
+                                                <SelectItem key={s._id} value={s._id}>{s.name} ({s.email})</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                 </div>
                             )}
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Date *</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">Date *</label>
                                 <input
                                     type="date"
                                     required
                                     value={date}
                                     onChange={(e) => setDate(e.target.value)}
-                                    className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                                    className="w-full px-4 py-2 rounded-md border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Hours *</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">Hours *</label>
                                 <input
                                     type="number"
                                     required
@@ -406,38 +430,38 @@ export default function TeachingHoursTab({ showToast }: TeachingHoursTabProps) {
                                     max="24"
                                     value={hours}
                                     onChange={(e) => setHours(e.target.value)}
-                                    className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                                    className="w-full px-4 py-2 rounded-md border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                                     placeholder="e.g., 2.5"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Subject *</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">Subject *</label>
                                 <input
                                     type="text"
                                     required
                                     value={subject}
                                     onChange={(e) => setSubject(e.target.value)}
-                                    className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                                    className="w-full px-4 py-2 rounded-md border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                                     placeholder="e.g., Mathematics"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Course</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">Course</label>
                                 <input
                                     type="text"
                                     value={course}
                                     onChange={(e) => setCourse(e.target.value)}
-                                    className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                                    className="w-full px-4 py-2 rounded-md border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                                     placeholder="e.g., Grade 10 Advanced"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">Description</label>
                                 <textarea
                                     value={description}
                                     onChange={(e) => setDescription(e.target.value)}
                                     rows={3}
-                                    className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none resize-none"
+                                    className="w-full px-4 py-2 rounded-md border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none resize-none"
                                     placeholder="Optional notes about the session"
                                 />
                             </div>
@@ -452,13 +476,13 @@ export default function TeachingHoursTab({ showToast }: TeachingHoursTabProps) {
                                 <button
                                     type="button"
                                     onClick={() => setShowModal(false)}
-                                    className="px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-xl text-sm font-semibold hover:bg-slate-50 transition-colors"
+                                    className="px-4 py-2 bg-card border border-border text-foreground rounded-md text-sm font-semibold hover:bg-muted transition-colors"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-4 py-2 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-primary/90 transition-colors"
+                                    className="px-4 py-2 bg-primary text-white rounded-md text-sm font-semibold hover:bg-primary/90 transition-colors"
                                 >
                                     {editingRecord ? 'Update' : 'Add'}
                                 </button>
@@ -471,21 +495,21 @@ export default function TeachingHoursTab({ showToast }: TeachingHoursTabProps) {
             {/* Delete Confirmation Modal */}
             {showDeleteConfirm && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6">
-                        <h3 className="text-lg font-bold text-slate-900 mb-2">Delete Record</h3>
-                        <p className="text-slate-600 mb-6">
+                    <div className="bg-card rounded-2xl shadow-2xl max-w-sm w-full p-6">
+                        <h3 className="text-lg font-bold text-foreground mb-2">Delete Record</h3>
+                        <p className="text-muted-foreground mb-6">
                             Are you sure you want to delete this teaching hours record?
                         </p>
                         <div className="flex justify-end gap-3">
                             <button
                                 onClick={() => setShowDeleteConfirm(null)}
-                                className="px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-xl text-sm font-semibold hover:bg-slate-50 transition-colors"
+                                className="px-4 py-2 bg-card border border-border text-foreground rounded-md text-sm font-semibold hover:bg-muted transition-colors"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={() => handleDelete(showDeleteConfirm)}
-                                className="px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-semibold hover:bg-red-700 transition-colors"
+                                className="px-4 py-2 bg-red-600 text-white rounded-md text-sm font-semibold hover:bg-red-700 transition-colors"
                             >
                                 Delete
                             </button>
@@ -496,3 +520,4 @@ export default function TeachingHoursTab({ showToast }: TeachingHoursTabProps) {
         </div>
     );
 }
+

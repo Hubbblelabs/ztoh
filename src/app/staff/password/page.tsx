@@ -4,8 +4,12 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Key, Check, X, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { useSetPageTitle } from '@/hooks/useSetPageTitle';
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function StaffPasswordPage() {
+    useSetPageTitle('Change Password', 'Update your account password');
     const router = useRouter();
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
@@ -57,77 +61,68 @@ export default function StaffPasswordPage() {
 
     return (
         <div className="space-y-6">
-            {/* Header */}
-            <div className="flex items-center gap-4">
-                <Link 
-                    href="/staff" 
-                    className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+            {/* Back Button */}
+            <div className="flex items-center">
+                <Link
+                    href="/staff"
+                    className="p-2 hover:bg-muted rounded-lg transition-colors"
                 >
-                    <ArrowLeft className="w-5 h-5 text-slate-600" />
+                    <ArrowLeft className="w-5 h-5 text-muted-foreground hover:text-foreground" />
                 </Link>
-                <div className="flex items-center gap-4">
-                    <div className="p-3 bg-amber-100 rounded-xl">
-                        <Key className="w-6 h-6 text-amber-600" />
-                    </div>
-                    <div>
-                        <h1 className="text-2xl font-bold text-slate-900">Change Password</h1>
-                        <p className="text-slate-500">Update your account password</p>
-                    </div>
-                </div>
             </div>
 
             {/* Form */}
             <div className="max-w-md">
-                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                <div className="bg-card rounded-lg shadow-sm border border-border p-6">
                     <form onSubmit={handleSubmit} className="space-y-4">
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                        <div className="grid w-full gap-3">
+                            <Label htmlFor="currentPassword">
                                 Current Password
-                            </label>
-                            <input
+                            </Label>
+                            <Input
+                                id="currentPassword"
                                 type="password"
                                 required
                                 value={currentPassword}
                                 onChange={(e) => setCurrentPassword(e.target.value)}
-                                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all"
                                 placeholder="Enter current password"
                             />
                         </div>
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                        <div className="grid w-full gap-3">
+                            <Label htmlFor="newPassword">
                                 New Password
-                            </label>
-                            <input
+                            </Label>
+                            <Input
+                                id="newPassword"
                                 type="password"
                                 required
                                 value={newPassword}
                                 onChange={(e) => setNewPassword(e.target.value)}
-                                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all"
                                 placeholder="Enter new password"
                             />
                         </div>
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                        <div className="grid w-full gap-3">
+                            <Label htmlFor="confirmPassword">
                                 Confirm New Password
-                            </label>
-                            <input
+                            </Label>
+                            <Input
+                                id="confirmPassword"
                                 type="password"
                                 required
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
-                                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all"
                                 placeholder="Confirm new password"
                             />
                         </div>
 
                         {error && (
-                            <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 p-3 rounded-xl">
+                            <div className="flex items-center gap-2 text-sm text-destructive bg-destructive/10 p-3 rounded-md">
                                 <X size={16} />
                                 {error}
                             </div>
                         )}
                         {success && (
-                            <div className="flex items-center gap-2 text-sm text-green-600 bg-green-50 p-3 rounded-xl">
+                            <div className="flex items-center gap-2 text-sm text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 p-3 rounded-md">
                                 <Check size={16} />
                                 {success}
                             </div>
@@ -136,14 +131,14 @@ export default function StaffPasswordPage() {
                         <div className="pt-4 flex gap-3">
                             <Link
                                 href="/staff"
-                                className="flex-1 px-4 py-3 bg-slate-100 text-slate-700 rounded-xl text-sm font-semibold hover:bg-slate-200 transition-colors text-center"
+                                className="flex-1 px-4 py-3 bg-muted text-foreground rounded-md text-sm font-semibold hover:bg-muted/80 transition-colors text-center"
                             >
                                 Cancel
                             </Link>
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="flex-1 px-4 py-3 bg-emerald-600 text-white rounded-xl text-sm font-semibold hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="flex-1 px-4 py-3 bg-emerald-600 text-white rounded-md text-sm font-semibold hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {loading ? 'Updating...' : 'Update Password'}
                             </button>

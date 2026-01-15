@@ -35,7 +35,7 @@ export default function RootLayout({
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <body
         className={cn(
-          "min-h-screen bg-slate-50 font-sans antialiased flex flex-col",
+          "min-h-screen bg-background font-sans antialiased flex flex-col",
           inter.variable,
           plusJakarta.variable
         )}

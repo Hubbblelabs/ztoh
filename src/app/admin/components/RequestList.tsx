@@ -1,9 +1,16 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Loader2, Eye, Trash2, X, Plus, Check, Paperclip } from 'lucide-react';
+import { Search, Loader2, Eye, Trash2, X, Plus, Check, Paperclip } from 'lucide-react';
 import { JoinRequest, ContactRequest } from './types';
-import Loader from '@/components/ui/Loader';
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 
 interface RequestListProps {
     activeTab: 'join' | 'contact';
@@ -186,6 +193,12 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
                     notes: [...(selectedRequest.notes || []), {
                         content: noteContent,
                         createdAt: new Date()
+                    }],
+                    history: [...(selectedRequest.history || []), {
+                        action: 'Note Added',
+                        details: 'Admin added a note',
+                        performedBy: 'Admin',
+                        timestamp: new Date()
                     }]
                 }),
             });
@@ -269,19 +282,27 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
             if (res.ok) {
                 setShowEmailModal(false);
                 if (selectedRequest) {
-                    await fetch(`/api/admin/requests/${selectedRequest._id}`, {
+                    const updateRes = await fetch(`/api/admin/requests/${selectedRequest._id}`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             type: activeTab,
                             history: [...(selectedRequest.history || []), {
                                 action: 'Email Sent',
-                                details: `Subject: ${emailData.subject}${emailAttachments.length > 0 ? ` (${emailAttachments.length} attachments)` : ''}`,
+                                details: JSON.stringify({
+                                    subject: emailData.subject,
+                                    body: emailData.body,
+                                    attachments: emailAttachments.length
+                                }),
                                 performedBy: 'Admin',
                                 timestamp: new Date()
                             }]
                         }),
                     });
+                    if (updateRes.ok) {
+                        const updatedData = await updateRes.json();
+                        setSelectedRequest(updatedData);
+                    }
                     fetchRequests();
                 }
                 showToast('Email sent successfully!', 'success');
@@ -349,40 +370,29 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
 
     const displayedRequests = getFilteredAndSortedRequests();
 
-    // Custom Select Component
-    const CustomSelect = ({ value, onChange, options, label, disabled }: any) => {
-        const [isOpen, setIsOpen] = useState(false);
-        const selectedOption = options.find((opt: any) => opt.value === value);
-
+    // Status Select Component using shadcn Select
+    const StatusSelect = ({ value, onChange, options, label, disabled }: {
+        value: string;
+        onChange: (value: string) => void;
+        options: { value: string; label: string }[];
+        label: string;
+        disabled?: boolean;
+    }) => {
         return (
-            <div className="relative min-w-[200px]">
-                <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">{label}</label>
-                <button
-                    onClick={() => !disabled && setIsOpen(!isOpen)}
-                    className={`w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium flex justify-between items-center ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-slate-300'}`}
-                >
-                    <span className="capitalize">{selectedOption?.label || value}</span>
-                    <Filter size={14} className="text-slate-400" />
-                </button>
-                {isOpen && (
-                    <>
-                        <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)}></div>
-                        <div className="absolute z-20 w-full mt-1 bg-white border border-slate-100 rounded-lg shadow-lg py-1 max-h-60 overflow-auto">
-                            {options.map((option: any) => (
-                                <button
-                                    key={option.value}
-                                    onClick={() => {
-                                        onChange(option.value);
-                                        setIsOpen(false);
-                                    }}
-                                    className={`w-full text-left px-4 py-2 text-sm hover:bg-slate-50 ${value === option.value ? 'text-primary font-semibold bg-primary/5' : 'text-slate-700'}`}
-                                >
-                                    {option.label}
-                                </button>
-                            ))}
-                        </div>
-                    </>
-                )}
+            <div className="min-w-[200px]">
+                <label className="block text-xs font-semibold text-muted-foreground uppercase mb-1">{label}</label>
+                <Select value={value} onValueChange={onChange} disabled={disabled}>
+                    <SelectTrigger className="w-full h-10 rounded-md">
+                        <SelectValue placeholder="Select..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {options.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                                {option.label}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
             </div>
         );
     };
@@ -393,55 +403,52 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
             <div className="flex flex-col sm:flex-row justify-between gap-4">
                 <div className="flex flex-wrap gap-3">
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
                         <input
                             type="text"
                             placeholder="Search..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary w-full sm:w-64"
+                            className="pl-10 pr-4 py-2 border border-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-zinc-200 dark:focus:ring-zinc-500 focus:border-zinc-400 w-full sm:w-64"
                         />
                     </div>
 
-                    <div className="flex items-center gap-2 border border-slate-200 rounded-xl px-3 bg-white">
-                        <span className="text-xs font-semibold text-slate-500 uppercase">Status:</span>
-                        <select
-                            value={statusFilter}
-                            onChange={(e) => setStatusFilter(e.target.value as any)}
-                            className="py-2 text-sm bg-transparent border-none focus:ring-0 text-slate-700 cursor-pointer outline-none"
-                        >
-                            <option value="all">All</option>
-                            <option value="pending">Pending</option>
-                            <option value="accepted">Accepted</option>
-                            <option value="declined">Declined</option>
-                        </select>
-                    </div>
+                    <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as 'all' | 'pending' | 'accepted' | 'declined')}>
+                        <SelectTrigger className="w-[160px] h-9 rounded-md bg-card">
+                            <span className="text-xs font-semibold text-muted-foreground uppercase mr-2">Status:</span>
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All</SelectItem>
+                            <SelectItem value="pending">Pending</SelectItem>
+                            <SelectItem value="accepted">Accepted</SelectItem>
+                            <SelectItem value="declined">Declined</SelectItem>
+                        </SelectContent>
+                    </Select>
 
-                    <div className="flex items-center gap-2 border border-slate-200 rounded-xl px-3 bg-white">
-                        <Filter size={16} className="text-slate-400" />
-                        <select
-                            value={sortOrder}
-                            onChange={(e) => setSortOrder(e.target.value as 'newest' | 'oldest')}
-                            className="py-2 text-sm bg-transparent border-none focus:ring-0 text-slate-700 cursor-pointer outline-none"
-                        >
-                            <option value="newest">Newest</option>
-                            <option value="oldest">Oldest</option>
-                        </select>
-                    </div>
+                    <Select value={sortOrder} onValueChange={(value) => setSortOrder(value as 'newest' | 'oldest')}>
+                        <SelectTrigger className="w-[140px] h-9 rounded-md bg-card">
+                            <span className="text-xs font-semibold text-muted-foreground uppercase mr-2">Sort:</span>
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="newest">Newest</SelectItem>
+                            <SelectItem value="oldest">Oldest</SelectItem>
+                        </SelectContent>
+                    </Select>
 
                     {activeTab === 'join' && (
-                        <div className="flex items-center gap-2 border border-slate-200 rounded-xl px-3 bg-white">
-                            <span className="text-xs font-semibold text-slate-500 uppercase">Type:</span>
-                            <select
-                                value={filterType}
-                                onChange={(e) => setFilterType(e.target.value as 'all' | 'student' | 'teacher')}
-                                className="py-2 text-sm bg-transparent border-none focus:ring-0 text-slate-700 cursor-pointer outline-none"
-                            >
-                                <option value="all">All</option>
-                                <option value="student">Student</option>
-                                <option value="teacher">Teacher</option>
-                            </select>
-                        </div>
+                        <Select value={filterType} onValueChange={(value) => setFilterType(value as 'all' | 'student' | 'teacher')}>
+                            <SelectTrigger className="w-[150px] h-9 rounded-md bg-card">
+                                <span className="text-xs font-semibold text-muted-foreground uppercase mr-2">Type:</span>
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All</SelectItem>
+                                <SelectItem value="student">Student</SelectItem>
+                                <SelectItem value="teacher">Teacher</SelectItem>
+                            </SelectContent>
+                        </Select>
                     )}
                 </div>
             </div>
@@ -449,20 +456,35 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
             {/* List */}
             <div className="overflow-x-auto">
                 {loading ? (
-                    <div className="flex flex-col items-center justify-center py-20">
-                        <Loader text="Loading requests..." />
+                    <div className="space-y-4">
+                        {[1, 2, 3, 4, 5].map((i) => (
+                            <div key={i} className="flex items-center gap-4 p-4 border-b border-border">
+                                <Skeleton className="h-6 w-24" />
+                                <div className="flex-1 space-y-2">
+                                    <Skeleton className="h-5 w-32" />
+                                    <Skeleton className="h-3 w-48" />
+                                </div>
+                                <Skeleton className="h-6 w-16" />
+                                <Skeleton className="h-6 w-16" />
+                                <Skeleton className="h-4 w-28" />
+                                <div className="flex gap-2">
+                                    <Skeleton className="h-8 w-8" />
+                                    <Skeleton className="h-8 w-8" />
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 ) : displayedRequests.length === 0 ? (
-                    <div className="text-center py-20 text-slate-500">
+                    <div className="text-center py-20 text-muted-foreground">
                         No requests found matching your criteria.
                     </div>
                 ) : (
                     <>
                         {/* Desktop View */}
-                        <div className="hidden md:block">
+                        <div className="hidden md:block rounded-md border border-border overflow-hidden">
                             <table className="w-full text-left border-collapse">
                                 <thead>
-                                    <tr className="bg-slate-50 border-b border-slate-100 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                    <tr className="bg-muted border-b border-border text-xs font-bold text-muted-foreground uppercase tracking-wider">
                                         <th className="px-6 py-4">Tracking No.</th>
                                         <th className="px-6 py-4">Name</th>
                                         <th className="px-6 py-4">Contact</th>
@@ -472,15 +494,15 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
                                         <th className="px-6 py-4 text-right">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-slate-100">
+                                <tbody className="divide-y divide-border">
                                     {displayedRequests.map((request) => (
-                                        <tr key={request._id} className="hover:bg-slate-50/50 transition-colors group">
+                                        <tr key={request._id} className="hover:bg-muted/50 transition-colors group">
                                             <td className="px-6 py-4">
-                                                <span className="font-mono text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded">{request.trackingId || '-'}</span>
+                                                <span className="font-mono text-xs text-muted-foreground bg-muted px-2 py-1 rounded">{request.trackingId || '-'}</span>
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-2">
-                                                    <div className="font-semibold text-slate-900">{request.name}</div>
+                                                    <div className="font-semibold text-foreground">{request.name}</div>
                                                     {activeTab === 'join' && (request as JoinRequest).attachments && (request as JoinRequest).attachments!.length > 0 && (
                                                         <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 text-blue-600 rounded-full text-[10px] font-semibold" title={`${(request as JoinRequest).attachments!.length} attachment(s)`}>
                                                             <Paperclip size={10} />
@@ -490,8 +512,8 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">
-                                                <div className="text-sm text-slate-600">{request.email}</div>
-                                                {(request as any).mobile && <div className="text-xs text-slate-400 mt-0.5">{(request as any).mobile}</div>}
+                                                <div className="text-sm text-muted-foreground">{request.email}</div>
+                                                {(request as any).mobile && <div className="text-xs text-muted-foreground mt-0.5">{(request as any).mobile}</div>}
                                             </td>
                                             {activeTab === 'join' && (
                                                 <td className="px-6 py-4">
@@ -511,21 +533,21 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
                                                     {request.status || 'pending'}
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-4 text-sm text-slate-500">
+                                            <td className="px-6 py-4 text-sm text-muted-foreground">
                                                 {formatDate(request.createdAt)}
                                             </td>
                                             <td className="px-6 py-4 text-right">
                                                 <div className="flex items-center justify-end gap-2 transition-opacity">
                                                     <button
                                                         onClick={() => setSelectedRequest(request)}
-                                                        className="p-2 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors"
+                                                        className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-md transition-colors"
                                                         title="View Details"
                                                     >
                                                         <Eye size={18} />
                                                     </button>
                                                     <button
                                                         onClick={() => openDeleteModal(request)}
-                                                        className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                        className="p-2 text-muted-foreground hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
                                                         title="Delete"
                                                     >
                                                         <Trash2 size={18} />
@@ -541,12 +563,12 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
                         {/* Mobile View */}
                         <div className="md:hidden space-y-4">
                             {displayedRequests.map((request) => (
-                                <div key={request._id} className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm space-y-3">
+                                <div key={request._id} className="bg-card p-4 rounded-md border border-border shadow-sm space-y-3">
                                     <div className="flex justify-between items-start">
                                         <div>
                                             <div className="flex items-center gap-2 mb-1">
-                                                <span className="font-mono text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">{request.trackingId || '-'}</span>
-                                                <h3 className="font-semibold text-slate-900">{request.name}</h3>
+                                                <span className="font-mono text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded">{request.trackingId || '-'}</span>
+                                                <h3 className="font-semibold text-foreground">{request.name}</h3>
                                                 {activeTab === 'join' && (request as JoinRequest).attachments && (request as JoinRequest).attachments!.length > 0 && (
                                                     <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded-full text-[9px] font-semibold" title={`${(request as JoinRequest).attachments!.length} attachment(s)`}>
                                                         <Paperclip size={9} />
@@ -554,19 +576,19 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
                                                     </span>
                                                 )}
                                             </div>
-                                            <p className="text-sm text-slate-500">{request.email}</p>
-                                            {(request as any).mobile && <p className="text-xs text-slate-400">{(request as any).mobile}</p>}
+                                            <p className="text-sm text-muted-foreground">{request.email}</p>
+                                            {(request as any).mobile && <p className="text-xs text-muted-foreground">{(request as any).mobile}</p>}
                                         </div>
                                         <div className="flex gap-2">
                                             <button
                                                 onClick={() => setSelectedRequest(request)}
-                                                className="p-2 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors"
+                                                className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-md transition-colors"
                                             >
                                                 <Eye size={18} />
                                             </button>
                                             <button
                                                 onClick={() => openDeleteModal(request)}
-                                                className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                className="p-2 text-muted-foreground hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
                                             >
                                                 <Trash2 size={18} />
                                             </button>
@@ -588,7 +610,7 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
                                             }`}>
                                             {request.status || 'pending'}
                                         </span>
-                                        <span className="text-slate-400 ml-auto">
+                                        <span className="text-muted-foreground ml-auto">
                                             {formatDate(request.createdAt)}
                                         </span>
                                     </div>
@@ -602,14 +624,14 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
             {/* View Details Modal */}
             {selectedRequest && !showEditModal && !showDeleteModal && !showEmailModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-                        <div className="p-6 border-b border-slate-100 flex justify-between items-center sticky top-0 bg-white z-10">
+                    <div className="bg-card rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                        <div className="p-6 border-b border-border flex justify-between items-center sticky top-0 bg-card z-10">
                             <div>
-                                <h3 className="text-xl font-bold text-slate-900">Request Details</h3>
-                                <p className="text-sm text-slate-500">Manage status and track history</p>
+                                <h3 className="text-xl font-bold text-foreground">Request Details</h3>
+                                <p className="text-sm text-muted-foreground">Manage status and track history</p>
                             </div>
-                            <button onClick={() => setSelectedRequest(null)} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
-                                <X size={20} className="text-slate-500" />
+                            <button onClick={() => setSelectedRequest(null)} className="p-2 hover:bg-muted rounded-full transition-colors">
+                                <X size={20} className="text-muted-foreground" />
                             </button>
                         </div>
 
@@ -618,8 +640,8 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
                             <div className="lg:col-span-2 space-y-6">
                                 {/* Status Actions */}
                                 {activeTab !== 'contact' && (
-                                    <div className="flex flex-wrap gap-3 p-4 bg-slate-50 rounded-xl border border-slate-100">
-                                        <CustomSelect
+                                    <div className="flex flex-wrap gap-3 p-4 bg-muted rounded-md border border-border">
+                                        <StatusSelect
                                             label="Status"
                                             value={selectedRequest.status || 'pending'}
                                             onChange={handleUpdateStatus}
@@ -630,7 +652,7 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
                                                 { value: 'declined', label: 'Declined' }
                                             ]}
                                         />
-                                        <CustomSelect
+                                        <StatusSelect
                                             label="Tele-calling Status"
                                             value={selectedRequest.teleCallingStatus || 'pending'}
                                             onChange={handleUpdateTeleStatus}
@@ -651,7 +673,7 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
                                 <div className="flex gap-3">
                                     <button
                                         onClick={openEmailModal}
-                                        className="flex-1 py-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-lg text-sm font-semibold hover:bg-blue-100 transition-colors"
+                                        className="flex-1 py-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-md text-sm font-semibold hover:bg-blue-100 transition-colors"
                                     >
                                         Send Email
                                     </button>
@@ -659,30 +681,30 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
 
                                 {/* Data Fields */}
                                 <div className="space-y-4">
-                                    <h4 className="font-bold text-slate-900">Information</h4>
-                                    <div className="grid grid-cols-3 gap-4 pb-4 border-b border-slate-50 last:border-0">
-                                        <span className="text-sm font-semibold text-slate-500 capitalize">Tracking Number</span>
-                                        <span className="col-span-2 text-sm text-slate-900 break-words font-mono bg-slate-50 px-2 py-1 rounded w-fit">
+                                    <h4 className="font-bold text-foreground">Information</h4>
+                                    <div className="grid grid-cols-3 gap-4 pb-4 border-b border-border last:border-0">
+                                        <span className="text-sm font-semibold text-muted-foreground capitalize">Tracking Number</span>
+                                        <span className="col-span-2 text-sm text-foreground break-words font-mono bg-muted px-2 py-1 rounded w-fit">
                                             {selectedRequest.trackingId || 'N/A'}
                                         </span>
                                     </div>
                                     {Object.entries(selectedRequest).map(([key, value]) => {
                                         if (['_id', '__v', 'updatedAt', 'status', 'teleCallingStatus', 'notes', 'history', 'trackingId', 'attachments'].includes(key)) return null;
                                         return (
-                                            <div key={key} className="grid grid-cols-3 gap-4 pb-4 border-b border-slate-50 last:border-0">
-                                                <span className="text-sm font-semibold text-slate-500 capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
-                                                <span className="col-span-2 text-sm text-slate-900 break-words font-medium">
+                                            <div key={key} className="grid grid-cols-3 gap-4 pb-4 border-b border-border last:border-0">
+                                                <span className="text-sm font-semibold text-muted-foreground capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
+                                                <span className="col-span-2 text-sm text-foreground break-words font-medium">
                                                     {key === 'createdAt' ? formatDate(value as string) : String(value)}
                                                 </span>
                                             </div>
                                         );
                                     })}
                                 </div>
-                                    
+
                                 {/* Attachments */}
                                 {activeTab === 'join' && (selectedRequest as JoinRequest).type === 'teacher' && (
-                                    <div className="space-y-4 pt-4 border-t border-slate-100">
-                                        <h4 className="font-bold text-slate-900">Attachments</h4>
+                                    <div className="space-y-4 pt-4 border-t border-border">
+                                        <h4 className="font-bold text-foreground">Attachments</h4>
                                         {(selectedRequest as JoinRequest).attachments && (selectedRequest as JoinRequest).attachments!.length > 0 ? (
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                                 {(selectedRequest as JoinRequest).attachments!.map((att, idx) => (
@@ -690,20 +712,20 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
                                                         key={idx}
                                                         href={att.content}
                                                         download={att.name}
-                                                        className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100 transition-colors group"
+                                                        className="flex items-center gap-3 p-3 bg-muted border border-border rounded-md hover:bg-muted transition-colors group"
                                                     >
-                                                        <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-slate-500 shadow-sm group-hover:text-primary group-hover:scale-110 transition-all">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                                        <div className="w-10 h-10 bg-card rounded-md flex items-center justify-center text-muted-foreground shadow-sm group-hover:text-primary group-hover:scale-110 transition-all">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" /><polyline points="14 2 14 8 20 8" /></svg>
                                                         </div>
                                                         <div className="flex-1 min-w-0">
-                                                            <p className="text-sm font-medium text-slate-900 truncate">{att.name}</p>
-                                                            <p className="text-xs text-slate-500">Click to download</p>
+                                                            <p className="text-sm font-medium text-foreground truncate">{att.name}</p>
+                                                            <p className="text-xs text-muted-foreground">Click to download</p>
                                                         </div>
                                                     </a>
                                                 ))}
                                             </div>
                                         ) : (
-                                            <p className="text-sm text-slate-500">No attachments uploaded</p>
+                                            <p className="text-sm text-muted-foreground">No attachments uploaded</p>
                                         )}
                                     </div>
                                 )}
@@ -713,17 +735,17 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
                             <div className="space-y-8">
                                 {/* Notes */}
                                 <div>
-                                    <h4 className="font-bold text-slate-900 mb-4">Notes</h4>
-                                    <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 max-h-60 overflow-y-auto mb-4 space-y-3">
+                                    <h4 className="font-bold text-foreground mb-4">Notes</h4>
+                                    <div className="bg-muted rounded-md p-4 border border-border max-h-60 overflow-y-auto mb-4 space-y-3">
                                         {selectedRequest.notes?.length ? (
                                             selectedRequest.notes.map((note, idx) => (
-                                                <div key={idx} className="bg-white p-3 rounded-lg border border-slate-100 shadow-sm">
-                                                    <p className="text-sm text-slate-700 mb-1">{note.content}</p>
-                                                    <p className="text-xs text-slate-400">{formatDate(note.createdAt)}</p>
+                                                <div key={idx} className="bg-card p-3 rounded-md border border-border shadow-sm">
+                                                    <p className="text-sm text-foreground mb-1">{note.content}</p>
+                                                    <p className="text-xs text-muted-foreground">{formatDate(note.createdAt)}</p>
                                                 </div>
                                             ))
                                         ) : (
-                                            <p className="text-sm text-slate-400 text-center py-4">No notes yet.</p>
+                                            <p className="text-sm text-muted-foreground text-center py-4">No notes yet.</p>
                                         )}
                                     </div>
                                     <form onSubmit={handleAddNote} className="flex gap-2">
@@ -732,12 +754,12 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
                                             value={noteContent}
                                             onChange={(e) => setNoteContent(e.target.value)}
                                             placeholder="Add a note..."
-                                            className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 outline-none"
+                                            className="flex-1 px-3 py-2 border border-border rounded-md text-sm focus:ring-2 focus:ring-zinc-200 dark:focus:ring-zinc-500 focus:border-zinc-400 outline-none"
                                         />
                                         <button
                                             type="submit"
                                             disabled={addingNote || !noteContent.trim()}
-                                            className="px-3 py-2 bg-slate-900 text-white rounded-lg text-sm font-semibold hover:bg-slate-800 disabled:opacity-50"
+                                            className="px-3 py-2 bg-primary text-primary-foreground rounded-md text-sm font-semibold hover:bg-primary/90 disabled:opacity-50"
                                         >
                                             <Plus size={18} />
                                         </button>
@@ -746,30 +768,59 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
 
                                 {/* History */}
                                 <div>
-                                    <h4 className="font-bold text-slate-900 mb-4">History</h4>
-                                    <div className="relative border-l-2 border-slate-100 ml-2 space-y-6">
-                                        {selectedRequest.history?.slice().reverse().map((event, idx) => (
-                                            <div key={idx} className="relative pl-6">
-                                                <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-slate-300 ring-4 ring-white"></div>
-                                                <p className="text-sm font-semibold text-slate-900">{event.action}</p>
-                                                <p className="text-xs text-slate-500 mb-1">{event.details}</p>
-                                                <p className="text-[10px] text-slate-400 uppercase tracking-wide">
-                                                    {formatDate(event.timestamp)} • {event.performedBy}
-                                                </p>
-                                            </div>
-                                        ))}
+                                    <h4 className="font-bold text-foreground mb-4">History</h4>
+                                    <div className="relative border-l-2 border-border ml-2 space-y-6">
+                                        {selectedRequest.history?.slice().reverse().map((event, idx) => {
+                                            let isEmail = event.action === 'Email Sent';
+                                            let emailDetails = null;
+                                            if (isEmail) {
+                                                try {
+                                                    emailDetails = JSON.parse(event.details);
+                                                } catch (e) {
+                                                    isEmail = false;
+                                                }
+                                            }
+
+                                            return (
+                                                <div key={idx} className="relative pl-6">
+                                                    <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-muted-foreground/50 ring-4 ring-card"></div>
+                                                    <p className="text-sm font-semibold text-foreground">{event.action}</p>
+                                                    {isEmail && emailDetails ? (
+                                                        <div className="mb-1">
+                                                            <p className="text-xs text-muted-foreground">Subject: {emailDetails.subject}</p>
+                                                            <button
+                                                                onClick={() => {
+                                                                    const win = window.open('', '_blank');
+                                                                    if (win) {
+                                                                        win.document.write('<pre style="white-space: pre-wrap; font-family: sans-serif;">' + emailDetails.body + '</pre>');
+                                                                    }
+                                                                }}
+                                                                className="text-[10px] text-blue-600 hover:underline cursor-pointer"
+                                                            >
+                                                                View Content
+                                                            </button>
+                                                        </div>
+                                                    ) : (
+                                                        <p className="text-xs text-muted-foreground mb-1">{event.details}</p>
+                                                    )}
+                                                    <p className="text-[10px] text-muted-foreground uppercase tracking-wide">
+                                                        {formatDate(event.timestamp)} • {event.performedBy}
+                                                    </p>
+                                                </div>
+                                            );
+                                        })}
                                         {!selectedRequest.history?.length && (
-                                            <p className="text-sm text-slate-400 pl-6">No history available.</p>
+                                            <p className="text-sm text-muted-foreground pl-6">No history available.</p>
                                         )}
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="p-6 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
+                        <div className="p-6 bg-muted border-t border-border flex justify-end gap-3">
                             <button
                                 onClick={() => setSelectedRequest(null)}
-                                className="px-4 py-2 bg-slate-900 text-white rounded-xl text-sm font-semibold hover:bg-slate-800 transition-colors"
+                                className="px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm font-semibold hover:bg-primary/90 transition-colors"
                             >
                                 Close
                             </button>
@@ -781,44 +832,44 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
             {/* Email Modal */}
             {showEmailModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full">
-                        <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-                            <h3 className="text-xl font-bold text-slate-900">Send Email</h3>
-                            <button onClick={() => setShowEmailModal(false)} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
-                                <X size={20} className="text-slate-500" />
+                    <div className="bg-card rounded-2xl shadow-2xl max-w-lg w-full">
+                        <div className="p-6 border-b border-border flex justify-between items-center">
+                            <h3 className="text-xl font-bold text-foreground">Send Email</h3>
+                            <button onClick={() => setShowEmailModal(false)} className="p-2 hover:bg-muted rounded-full transition-colors">
+                                <X size={20} className="text-muted-foreground" />
                             </button>
                         </div>
                         <form onSubmit={handleSendEmail} className="p-6 space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">To</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">To</label>
                                 <input
                                     type="email"
                                     value={emailData.to}
                                     disabled
-                                    className="w-full px-4 py-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-500 cursor-not-allowed"
+                                    className="w-full px-4 py-2 rounded-md border border-border bg-muted text-muted-foreground cursor-not-allowed"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Subject</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">Subject</label>
                                 <input
                                     type="text"
                                     value={emailData.subject}
                                     onChange={(e) => setEmailData({ ...emailData, subject: e.target.value })}
-                                    className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                                    className="w-full px-4 py-2 rounded-md border border-border focus:ring-2 focus:ring-zinc-200 dark:focus:ring-zinc-500 focus:border-zinc-400 outline-none"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Message</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">Message</label>
                                 <textarea
                                     value={emailData.body}
                                     onChange={(e) => setEmailData({ ...emailData, body: e.target.value })}
                                     rows={6}
-                                    className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none resize-none"
+                                    className="w-full px-4 py-2 rounded-md border border-border focus:ring-2 focus:ring-zinc-200 dark:focus:ring-zinc-500 focus:border-zinc-400 outline-none resize-none"
                                 />
                             </div>
-                            
+
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Attachments</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">Attachments</label>
                                 <div className="relative">
                                     <input
                                         type="file"
@@ -829,16 +880,16 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
                                     />
                                     <label
                                         htmlFor="email-file-upload"
-                                        className="flex items-center justify-center w-full p-3 border border-dashed border-slate-300 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors"
+                                        className="flex items-center justify-center w-full p-3 border border-dashed border-border rounded-md cursor-pointer hover:bg-muted transition-colors"
                                     >
-                                        <span className="text-sm text-slate-600">Click to attach files</span>
+                                        <span className="text-sm text-muted-foreground">Click to attach files</span>
                                     </label>
                                 </div>
                                 {emailAttachments.length > 0 && (
                                     <div className="mt-2 space-y-2">
                                         {emailAttachments.map((file, index) => (
-                                            <div key={index} className="flex items-center justify-between p-2 bg-slate-50 rounded-lg border border-slate-200">
-                                                <span className="text-xs text-slate-600 truncate max-w-[200px]">{file.name}</span>
+                                            <div key={index} className="flex items-center justify-between p-2 bg-muted rounded-md border border-border">
+                                                <span className="text-xs text-muted-foreground truncate max-w-[200px]">{file.name}</span>
                                                 <button
                                                     type="button"
                                                     onClick={() => removeEmailAttachment(index)}
@@ -856,14 +907,14 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
                                 <button
                                     type="button"
                                     onClick={() => setShowEmailModal(false)}
-                                    className="px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-xl text-sm font-semibold hover:bg-slate-50 transition-colors"
+                                    className="px-4 py-2 bg-card border border-border text-foreground rounded-md text-sm font-semibold hover:bg-muted transition-colors"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={sendingEmail}
-                                    className="px-4 py-2 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-primary/90 transition-colors flex items-center gap-2"
+                                    className="px-4 py-2 bg-primary text-white rounded-md text-sm font-semibold hover:bg-primary/90 transition-colors flex items-center gap-2"
                                 >
                                     {sendingEmail && <Loader2 className="animate-spin" size={16} />}
                                     Send Email
@@ -877,30 +928,30 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
             {/* Edit Modal */}
             {showEditModal && selectedRequest && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full">
-                        <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-                            <h3 className="text-xl font-bold text-slate-900">Edit Request</h3>
-                            <button onClick={() => setShowEditModal(false)} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
-                                <X size={20} className="text-slate-500" />
+                    <div className="bg-card rounded-2xl shadow-2xl max-w-lg w-full">
+                        <div className="p-6 border-b border-border flex justify-between items-center">
+                            <h3 className="text-xl font-bold text-foreground">Edit Request</h3>
+                            <button onClick={() => setShowEditModal(false)} className="p-2 hover:bg-muted rounded-full transition-colors">
+                                <X size={20} className="text-muted-foreground" />
                             </button>
                         </div>
                         <form onSubmit={handleEditRequest} className="p-6 space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">Name</label>
                                 <input
                                     type="text"
                                     value={editData.name || ''}
                                     onChange={(e) => setEditData({ ...editData, name: e.target.value })}
-                                    className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                                    className="w-full px-4 py-2 rounded-md border border-border focus:ring-2 focus:ring-zinc-200 dark:focus:ring-zinc-500 focus:border-zinc-400 outline-none"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">Email</label>
                                 <input
                                     type="email"
                                     value={editData.email || ''}
                                     onChange={(e) => setEditData({ ...editData, email: e.target.value })}
-                                    className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                                    className="w-full px-4 py-2 rounded-md border border-border focus:ring-2 focus:ring-zinc-200 dark:focus:ring-zinc-500 focus:border-zinc-400 outline-none"
                                 />
                             </div>
                             {/* Add more fields as needed, keeping it simple for now */}
@@ -909,14 +960,14 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
                                 <button
                                     type="button"
                                     onClick={() => setShowEditModal(false)}
-                                    className="px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-xl text-sm font-semibold hover:bg-slate-50 transition-colors"
+                                    className="px-4 py-2 bg-card border border-border text-foreground rounded-md text-sm font-semibold hover:bg-muted transition-colors"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={editStatus === 'loading'}
-                                    className="px-4 py-2 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-primary/90 transition-colors flex items-center gap-2"
+                                    className="px-4 py-2 bg-primary text-white rounded-md text-sm font-semibold hover:bg-primary/90 transition-colors flex items-center gap-2"
                                 >
                                     {editStatus === 'loading' && <Loader2 className="animate-spin" size={16} />}
                                     Save Changes
@@ -930,25 +981,28 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
             {/* Delete Confirmation Modal */}
             {showDeleteModal && selectedRequest && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 text-center">
+                    <div className="bg-card rounded-2xl shadow-2xl max-w-md w-full p-6 text-center">
                         <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
                             <Trash2 size={32} />
                         </div>
-                        <h3 className="text-xl font-bold text-slate-900 mb-2">Delete Request?</h3>
-                        <p className="text-slate-500 mb-8">
-                            Are you sure you want to delete this request from <span className="font-semibold text-slate-900">{selectedRequest.name}</span>? This action cannot be undone.
+                        <h3 className="text-xl font-bold text-foreground mb-2">Delete Request?</h3>
+                        <p className="text-muted-foreground mb-8">
+                            Are you sure you want to delete this request from <span className="font-semibold text-foreground">{selectedRequest.name}</span>? This action cannot be undone.
                         </p>
                         <div className="flex justify-center gap-3">
                             <button
-                                onClick={() => setShowDeleteModal(false)}
-                                className="px-6 py-2 bg-white border border-slate-200 text-slate-700 rounded-xl text-sm font-semibold hover:bg-slate-50 transition-colors"
+                                onClick={() => {
+                                    setShowDeleteModal(false);
+                                    setSelectedRequest(null);
+                                }}
+                                className="px-6 py-2 bg-card border border-border text-foreground rounded-md text-sm font-semibold hover:bg-muted transition-colors"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handleDeleteRequest}
                                 disabled={deleteStatus === 'loading'}
-                                className="px-6 py-2 bg-red-600 text-white rounded-xl text-sm font-semibold hover:bg-red-700 transition-colors flex items-center gap-2"
+                                className="px-6 py-2 bg-red-600 text-white rounded-md text-sm font-semibold hover:bg-red-700 transition-colors flex items-center gap-2"
                             >
                                 {deleteStatus === 'loading' && <Loader2 className="animate-spin" size={16} />}
                                 Delete
@@ -960,3 +1014,4 @@ export default function RequestList({ activeTab, showToast }: RequestListProps) 
         </div>
     );
 }
+

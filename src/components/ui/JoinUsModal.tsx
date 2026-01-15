@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Loader2, CheckCircle, Sparkles, GraduationCap, Users } from "lucide-react";
 import CustomSelect from "./CustomSelect";
+import { Input } from "@/components/ui/input";
+import { FloatingLabelInput, FloatingLabelTextarea } from "@/components/ui/floating-label-input";
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 
 interface JoinUsModalProps {
@@ -235,8 +237,6 @@ export default function JoinUsModal({ isOpen, onClose }: JoinUsModalProps) {
         setVerificationMessage('');
     };
 
-    const inputClasses = "w-full px-4 py-3 rounded-xl border-2 border-slate-200/80 bg-white/90 backdrop-blur-sm focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all duration-300 hover:border-slate-300 hover:shadow-sm placeholder:text-slate-400";
-
     return (
         <AnimatePresence>
             {isOpen && (
@@ -362,7 +362,7 @@ export default function JoinUsModal({ isOpen, onClose }: JoinUsModalProps) {
                                             Teacher
                                         </button>
                                     </motion.div>
-                                    
+
                                     {/* Removed old tabs and form wrapper */}
                                     <form onSubmit={handleSubmit}>
                                         <AnimatePresence mode="wait">
@@ -376,34 +376,31 @@ export default function JoinUsModal({ isOpen, onClose }: JoinUsModalProps) {
                                             >
                                                 {/* Common Fields */}
                                                 <div className="space-y-5">
-                                                <div className="relative group">
-                                                    <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                                        Name <span className="text-secondary">*</span>
-                                                    </label>
-                                                    <input
+                                                    <FloatingLabelInput
+                                                        id="name"
                                                         required
                                                         name="name"
                                                         type="text"
-                                                        className={inputClasses}
-                                                        placeholder="Enter your full name"
+                                                        label="Name"
                                                     />
-                                                </div>
 
-                                                <div className="relative">
-                                                    <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                                        Email <span className="text-secondary">*</span>
-                                                    </label>
                                                     <div className="flex gap-2">
-                                                        <input
-                                                            required
-                                                            name="email"
-                                                            type="email"
-                                                            value={email}
-                                                            onChange={handleEmailChange}
-                                                            className={`${inputClasses} ${verificationStatus === 'verified' ? 'bg-green-50/50 border-green-200' : ''}`}
-                                                            placeholder="Enter your email address"
-                                                            disabled={verificationStatus === 'verified'}
-                                                        />
+                                                        <div className={`flex h-12 flex-1 items-center rounded-md border px-3 transition-colors focus-within:ring-2 focus-within:ring-zinc-200 dark:focus-within:ring-zinc-500 focus-within:border-zinc-400 dark:focus-within:border-zinc-400 ${verificationStatus === 'verified' ? 'bg-green-50/50 border-green-200' : 'border-zinc-300 dark:border-zinc-700 bg-background'}`}>
+                                                            <label className="text-xs font-medium text-slate-500 uppercase tracking-wide whitespace-nowrap flex items-center mr-1 select-none pointer-events-none">
+                                                                Email
+                                                                <span className="mx-1">:</span>
+                                                            </label>
+                                                            <input
+                                                                id="email"
+                                                                required
+                                                                name="email"
+                                                                type="email"
+                                                                value={email}
+                                                                onChange={handleEmailChange}
+                                                                className="flex-1 bg-transparent py-2 text-base text-foreground placeholder:text-muted-foreground outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                                                                disabled={verificationStatus === 'verified'}
+                                                            />
+                                                        </div>
                                                         {verificationStatus === 'unverified' && (
                                                             <motion.button
                                                                 whileHover={{ scale: 1.02 }}
@@ -411,7 +408,7 @@ export default function JoinUsModal({ isOpen, onClose }: JoinUsModalProps) {
                                                                 type="button"
                                                                 onClick={handleSendCode}
                                                                 disabled={isVerifying || !email}
-                                                                className="px-5 py-3 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-xl text-sm font-semibold hover:from-slate-700 hover:to-slate-800 disabled:opacity-50 whitespace-nowrap transition-all duration-200 shadow-md hover:shadow-lg"
+                                                                className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-semibold disabled:opacity-50 whitespace-nowrap transition-all duration-200 shadow-md hover:shadow-lg"
                                                             >
                                                                 {isVerifying ? (
                                                                     <Loader2 className="animate-spin" size={18} />
@@ -422,7 +419,7 @@ export default function JoinUsModal({ isOpen, onClose }: JoinUsModalProps) {
                                                             <motion.div
                                                                 initial={{ scale: 0, rotate: -45 }}
                                                                 animate={{ scale: 1, rotate: 0 }}
-                                                                className="px-4 py-3 bg-gradient-to-r from-green-400 to-emerald-500 text-white rounded-xl text-sm font-semibold flex items-center gap-2 shadow-md"
+                                                                className="px-4 py-3 bg-gradient-to-r from-green-400 to-emerald-500 text-white rounded-md text-sm font-semibold flex items-center gap-2 shadow-md"
                                                             >
                                                                 <CheckCircle size={16} />
                                                                 Verified
@@ -435,13 +432,13 @@ export default function JoinUsModal({ isOpen, onClose }: JoinUsModalProps) {
                                                                 initial={{ opacity: 0, height: 0 }}
                                                                 animate={{ opacity: 1, height: 'auto' }}
                                                                 exit={{ opacity: 0, height: 0 }}
-                                                                className="mt-3 flex gap-2 overflow-hidden"
+                                                                className="flex gap-2 overflow-hidden"
                                                             >
-                                                                <input
+                                                                <Input
                                                                     type="text"
                                                                     value={verificationCode}
                                                                     onChange={(e) => setVerificationCode(e.target.value)}
-                                                                    className={`${inputClasses} font-mono tracking-widest text-center`}
+                                                                    className="font-mono tracking-widest text-center"
                                                                     placeholder="Enter 6-digit code"
                                                                     maxLength={6}
                                                                 />
@@ -451,7 +448,7 @@ export default function JoinUsModal({ isOpen, onClose }: JoinUsModalProps) {
                                                                     type="button"
                                                                     onClick={handleVerifyCode}
                                                                     disabled={isVerifying}
-                                                                    className="px-5 py-3 bg-gradient-to-r from-secondary to-secondary-dark text-white rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-secondary/20 disabled:opacity-50 whitespace-nowrap transition-all duration-200"
+                                                                    className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-semibold hover:shadow-lg disabled:opacity-50 whitespace-nowrap transition-all duration-200"
                                                                 >
                                                                     {isVerifying ? <Loader2 className="animate-spin" size={18} /> : 'Submit'}
                                                                 </motion.button>
@@ -462,395 +459,329 @@ export default function JoinUsModal({ isOpen, onClose }: JoinUsModalProps) {
                                                         <motion.p
                                                             initial={{ opacity: 0, y: -5 }}
                                                             animate={{ opacity: 1, y: 0 }}
-                                                            className={`text-sm mt-2 ${verificationStatus === 'verified' ? 'text-green-600' : 'text-slate-500'}`}
+                                                            className={`text-sm ${verificationStatus === 'verified' ? 'text-green-600' : 'text-slate-500'}`}
                                                         >
                                                             {verificationMessage}
                                                         </motion.p>
                                                     )}
-                                                </div>
 
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                                    <CustomSelect
-                                                        label="Gender"
-                                                        required
-                                                        name="gender"
-                                                        value={selectValues.gender}
-                                                        onChange={(val) => handleSelectChange("gender", val)}
-                                                        options={[
-                                                            { value: "male", label: "Male" },
-                                                            { value: "female", label: "Female" }
-                                                        ]}
-                                                    />
-                                                    <div>
-                                                        <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                                            Mobile Number <span className="text-secondary">*</span>
-                                                        </label>
-                                                        <input
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                                        <CustomSelect
+                                                            label="Gender"
+                                                            required
+                                                            name="gender"
+                                                            value={selectValues.gender}
+                                                            onChange={(val) => handleSelectChange("gender", val)}
+                                                            options={[
+                                                                { value: "male", label: "Male" },
+                                                                { value: "female", label: "Female" }
+                                                            ]}
+                                                        />
+                                                        <FloatingLabelInput
+                                                            id="mobile"
                                                             required
                                                             name="mobile"
                                                             type="tel"
-                                                            className={inputClasses}
-                                                            placeholder="Enter mobile number"
+                                                            label="Mobile Number"
                                                         />
                                                     </div>
-                                                </div>
 
-                                                <div>
-                                                    <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                                        Address <span className="text-secondary">*</span>
-                                                    </label>
-                                                    <textarea
+                                                    <FloatingLabelTextarea
+                                                        id="address"
                                                         required
                                                         name="address"
                                                         rows={3}
-                                                        className={`${inputClasses} resize-none`}
-                                                        placeholder="Enter your full address"
+                                                        label="Address"
                                                     />
                                                 </div>
-                                            </div>
 
-                                            {/* Student Specific Fields */}
-                                            <AnimatePresence mode="wait">
-                                                {activeTab === "student" && (
-                                                    <motion.div
-                                                        key="student-fields"
-                                                        initial={{ opacity: 0, x: -20 }}
-                                                        animate={{ opacity: 1, x: 0 }}
-                                                        exit={{ opacity: 0, x: 20 }}
-                                                        transition={{ duration: 0.2 }}
-                                                        className="space-y-5 pt-5 border-t border-slate-100"
-                                                    >
-                                                        <div className="flex items-center gap-2 mb-2">
-                                                            <div className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />
-                                                            <span className="text-sm font-semibold text-slate-500">Student Information</span>
-                                                        </div>
+                                                {/* Student Specific Fields */}
+                                                <AnimatePresence mode="wait">
+                                                    {activeTab === "student" && (
+                                                        <motion.div
+                                                            key="student-fields"
+                                                            initial={{ opacity: 0, x: -20 }}
+                                                            animate={{ opacity: 1, x: 0 }}
+                                                            exit={{ opacity: 0, x: 20 }}
+                                                            transition={{ duration: 0.2 }}
+                                                            className="space-y-5 pt-5 border-t border-slate-100"
+                                                        >
+                                                            <div className="flex items-center gap-2 mb-2">
+                                                                <div className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />
+                                                                <span className="text-sm font-semibold text-slate-500">Student Information</span>
+                                                            </div>
 
-                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                                            <CustomSelect
-                                                                label="Applying As"
-                                                                required
-                                                                name="applyingAs"
-                                                                value={selectValues.applyingAs}
-                                                                onChange={(val) => handleSelectChange("applyingAs", val)}
-                                                                options={[
-                                                                    { value: "student", label: "Student" },
-                                                                    { value: "parent", label: "Parent" },
-                                                                    { value: "other", label: "Other" }
-                                                                ]}
-                                                            />
-                                                            <CustomSelect
-                                                                label="Current Status"
-                                                                required
-                                                                name="currentStatus"
-                                                                value={selectValues.currentStatus}
-                                                                onChange={(val) => handleSelectChange("currentStatus", val)}
-                                                                options={[
-                                                                    { value: "school", label: "School" },
-                                                                    { value: "college", label: "College" },
-                                                                    { value: "other", label: "Other" }
-                                                                ]}
-                                                            />
-                                                        </div>
+                                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                                                <CustomSelect
+                                                                    label="Applying As"
+                                                                    required
+                                                                    name="applyingAs"
+                                                                    value={selectValues.applyingAs}
+                                                                    onChange={(val) => handleSelectChange("applyingAs", val)}
+                                                                    options={[
+                                                                        { value: "student", label: "Student" },
+                                                                        { value: "parent", label: "Parent" },
+                                                                        { value: "other", label: "Other" }
+                                                                    ]}
+                                                                />
+                                                                <CustomSelect
+                                                                    label="Current Status"
+                                                                    required
+                                                                    name="currentStatus"
+                                                                    value={selectValues.currentStatus}
+                                                                    onChange={(val) => handleSelectChange("currentStatus", val)}
+                                                                    options={[
+                                                                        { value: "school", label: "School" },
+                                                                        { value: "college", label: "College" },
+                                                                        { value: "other", label: "Other" }
+                                                                    ]}
+                                                                />
+                                                            </div>
 
-                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                                            <div>
-                                                                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                                                    Grade / Year <span className="text-secondary">*</span>
-                                                                </label>
-                                                                <input
+                                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                                                <FloatingLabelInput
+                                                                    id="gradeYear"
                                                                     required
                                                                     name="gradeYear"
                                                                     type="text"
-                                                                    className={inputClasses}
-                                                                    placeholder="e.g. 10th Grade"
+                                                                    label="Grade / Year"
                                                                 />
-                                                            </div>
-                                                            <div>
-                                                                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                                                    Board / University <span className="text-secondary">*</span>
-                                                                </label>
-                                                                <input
+                                                                <FloatingLabelInput
+                                                                    id="boardUniversity"
                                                                     required
                                                                     name="boardUniversity"
                                                                     type="text"
-                                                                    className={inputClasses}
-                                                                    placeholder="e.g. CBSE"
+                                                                    label="Board / University"
                                                                 />
                                                             </div>
-                                                        </div>
 
-                                                        <div>
-                                                            <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                                                Subject Details <span className="text-secondary">*</span>
-                                                            </label>
-                                                            <input
+                                                            <FloatingLabelInput
+                                                                id="subjectDetails"
                                                                 required
                                                                 name="subjectDetails"
                                                                 type="text"
-                                                                className={inputClasses}
-                                                                placeholder="Subjects you need help with"
+                                                                label="Subject Details"
                                                             />
-                                                        </div>
 
-                                                        <CustomSelect
-                                                            label="Mode of Study"
-                                                            required
-                                                            name="modeOfStudy"
-                                                            value={selectValues.modeOfStudy}
-                                                            onChange={(val) => handleSelectChange("modeOfStudy", val)}
-                                                            options={[
-                                                                { value: "online", label: "Online" },
-                                                                { value: "home_tuition", label: "Home Tuition" },
-                                                                { value: "1_on_1", label: "1-1" },
-                                                                { value: "group", label: "Group" }
-                                                            ]}
-                                                        />
-
-                                                        <div>
-                                                            <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                                                Specific Needs
-                                                            </label>
-                                                            <textarea
-                                                                name="specificNeeds"
-                                                                placeholder="Female tutor, Tamil known, Crash course, etc."
-                                                                rows={2}
-                                                                className={`${inputClasses} resize-none`}
-                                                            />
-                                                        </div>
-                                                    </motion.div>
-                                                )}
-
-                                                {/* Teacher Specific Fields */}
-                                                {activeTab === "teacher" && (
-                                                    <motion.div
-                                                        key="teacher-fields"
-                                                        initial={{ opacity: 0, x: 20 }}
-                                                        animate={{ opacity: 1, x: 0 }}
-                                                        exit={{ opacity: 0, x: -20 }}
-                                                        transition={{ duration: 0.2 }}
-                                                        className="space-y-5 pt-5 border-t border-slate-100"
-                                                    >
-                                                        <div className="flex items-center gap-2 mb-2">
-                                                            <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-                                                            <span className="text-sm font-semibold text-slate-500">Teacher Information</span>
-                                                        </div>
-
-                                                        <div>
-                                                            <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                                                Qualification <span className="text-secondary">*</span>
-                                                            </label>
-                                                            <input
-                                                                required
-                                                                name="qualification"
-                                                                type="text"
-                                                                className={inputClasses}
-                                                                placeholder="e.g. M.Sc Mathematics"
-                                                            />
-                                                        </div>
-
-                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                                            <div>
-                                                                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                                                    Nationality <span className="text-secondary">*</span>
-                                                                </label>
-                                                                <input
-                                                                    required
-                                                                    name="nationality"
-                                                                    type="text"
-                                                                    className={inputClasses}
-                                                                />
-                                                            </div>
-                                                            <div>
-                                                                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                                                    State <span className="text-secondary">*</span>
-                                                                </label>
-                                                                <input
-                                                                    required
-                                                                    name="state"
-                                                                    type="text"
-                                                                    className={inputClasses}
-                                                                />
-                                                            </div>
-                                                        </div>
-
-                                                        <div>
-                                                            <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                                                City <span className="text-secondary">*</span>
-                                                            </label>
-                                                            <input
-                                                                required
-                                                                name="city"
-                                                                type="text"
-                                                                className={inputClasses}
-                                                            />
-                                                        </div>
-
-                                                        <div>
-                                                            <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                                                Current Job Details <span className="text-secondary">*</span>
-                                                            </label>
-                                                            <input
-                                                                required
-                                                                name="currentJobDetails"
-                                                                type="text"
-                                                                className={inputClasses}
-                                                                placeholder="Current role and organization"
-                                                            />
-                                                        </div>
-
-                                                        <div>
-                                                            <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                                                Experience <span className="text-secondary">*</span>
-                                                            </label>
-                                                            <input
-                                                                required
-                                                                name="experience"
-                                                                type="text"
-                                                                className={inputClasses}
-                                                                placeholder="Years of experience"
-                                                            />
-                                                        </div>
-
-                                                        <div>
-                                                            <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                                                Subject Willing to Handle <span className="text-secondary">*</span>
-                                                            </label>
-                                                            <input
-                                                                required
-                                                                name="subjectWillingToHandle"
-                                                                type="text"
-                                                                className={inputClasses}
-                                                            />
-                                                        </div>
-
-                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                                             <CustomSelect
-                                                                label="Mode of Tutoring"
+                                                                label="Mode of Study"
                                                                 required
-                                                                name="modeOfTutoring"
-                                                                value={selectValues.modeOfTutoring}
-                                                                onChange={(val) => handleSelectChange("modeOfTutoring", val)}
+                                                                name="modeOfStudy"
+                                                                value={selectValues.modeOfStudy}
+                                                                onChange={(val) => handleSelectChange("modeOfStudy", val)}
                                                                 options={[
                                                                     { value: "online", label: "Online" },
                                                                     { value: "home_tuition", label: "Home Tuition" },
                                                                     { value: "1_on_1", label: "1-1" },
-                                                                    { value: "group_class", label: "Group Class" }
+                                                                    { value: "group", label: "Group" }
                                                                 ]}
                                                             />
-                                                            <CustomSelect
-                                                                label="Work Type"
-                                                                required
-                                                                name="workType"
-                                                                value={selectValues.workType}
-                                                                onChange={(val) => handleSelectChange("workType", val)}
-                                                                options={[
-                                                                    { value: "full_time", label: "Full Time" },
-                                                                    { value: "part_time", label: "Part Time" }
-                                                                ]}
-                                                            />
-                                                        </div>
 
-                                                        <div>
-                                                            <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                                                Resume / CV (Optional)
-                                                            </label>
-                                                            <div className="relative">
-                                                                <input
-                                                                    type="file"
-                                                                    onChange={handleFileChange}
-                                                                    className="hidden"
-                                                                    id="file-upload"
-                                                                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                                                                />
-                                                                <label
-                                                                    htmlFor="file-upload"
-                                                                    className={`flex items-center justify-center w-full p-4 border-2 border-dashed rounded-xl cursor-pointer transition-colors ${
-                                                                        attachments.length > 0 ? 'border-green-500 bg-green-50' : 'border-slate-300 hover:border-slate-400'
-                                                                    }`}
-                                                                >
-                                                                    <div className="text-center">
-                                                                        <p className="text-sm font-medium text-slate-600">
-                                                                            {attachments.length > 0 
-                                                                                ? `${attachments.length} file(s) selected` 
-                                                                                : "Click to upload or drag and drop"}
-                                                                        </p>
-                                                                        <p className="text-xs text-slate-400 mt-1">
-                                                                            PDF, DOC, Images (Max 3MB)
-                                                                        </p>
-                                                                    </div>
-                                                                </label>
+                                                            <FloatingLabelTextarea
+                                                                id="specificNeeds"
+                                                                name="specificNeeds"
+                                                                rows={2}
+                                                                label="Specific Needs"
+                                                            />
+                                                        </motion.div>
+                                                    )}
+
+                                                    {/* Teacher Specific Fields */}
+                                                    {activeTab === "teacher" && (
+                                                        <motion.div
+                                                            key="teacher-fields"
+                                                            initial={{ opacity: 0, x: 20 }}
+                                                            animate={{ opacity: 1, x: 0 }}
+                                                            exit={{ opacity: 0, x: -20 }}
+                                                            transition={{ duration: 0.2 }}
+                                                            className="space-y-5 pt-5 border-t border-slate-100"
+                                                        >
+                                                            <div className="flex items-center gap-2 mb-2">
+                                                                <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+                                                                <span className="text-sm font-semibold text-slate-500">Teacher Information</span>
                                                             </div>
-                                                            {attachments.length > 0 && (
-                                                                <div className="mt-3 space-y-2">
-                                                                    {attachments.map((file, index) => (
-                                                                        <div key={index} className="flex items-center justify-between p-2 bg-slate-50 rounded-lg border border-slate-200">
-                                                                            <span className="text-sm text-slate-600 truncate max-w-[200px]">{file.name}</span>
-                                                                            <button
-                                                                                type="button"
-                                                                                onClick={() => removeAttachment(index)}
-                                                                                className="text-red-500 hover:text-red-600 p-1"
-                                                                            >
-                                                                                <X size={16} />
-                                                                            </button>
+
+                                                            <FloatingLabelInput
+                                                                id="qualification"
+                                                                required
+                                                                name="qualification"
+                                                                type="text"
+                                                                label="Qualification"
+                                                            />
+
+                                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                                                <FloatingLabelInput
+                                                                    id="nationality"
+                                                                    required
+                                                                    name="nationality"
+                                                                    type="text"
+                                                                    label="Nationality"
+                                                                />
+                                                                <FloatingLabelInput
+                                                                    id="state"
+                                                                    required
+                                                                    name="state"
+                                                                    type="text"
+                                                                    label="State"
+                                                                />
+                                                            </div>
+
+                                                            <FloatingLabelInput
+                                                                id="city"
+                                                                required
+                                                                name="city"
+                                                                type="text"
+                                                                label="City"
+                                                            />
+
+                                                            <FloatingLabelInput
+                                                                id="currentJobDetails"
+                                                                required
+                                                                name="currentJobDetails"
+                                                                type="text"
+                                                                label="Current Job Details"
+                                                            />
+
+                                                            <FloatingLabelInput
+                                                                id="experience"
+                                                                required
+                                                                name="experience"
+                                                                type="text"
+                                                                label="Experience"
+                                                            />
+
+                                                            <FloatingLabelInput
+                                                                id="subjectWillingToHandle"
+                                                                required
+                                                                name="subjectWillingToHandle"
+                                                                type="text"
+                                                                label="Subject Willing to Handle"
+                                                            />
+
+                                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                                                <CustomSelect
+                                                                    label="Mode of Tutoring"
+                                                                    required
+                                                                    name="modeOfTutoring"
+                                                                    value={selectValues.modeOfTutoring}
+                                                                    onChange={(val) => handleSelectChange("modeOfTutoring", val)}
+                                                                    options={[
+                                                                        { value: "online", label: "Online" },
+                                                                        { value: "home_tuition", label: "Home Tuition" },
+                                                                        { value: "1_on_1", label: "1-1" },
+                                                                        { value: "group_class", label: "Group Class" }
+                                                                    ]}
+                                                                />
+                                                                <CustomSelect
+                                                                    label="Work Type"
+                                                                    required
+                                                                    name="workType"
+                                                                    value={selectValues.workType}
+                                                                    onChange={(val) => handleSelectChange("workType", val)}
+                                                                    options={[
+                                                                        { value: "full_time", label: "Full Time" },
+                                                                        { value: "part_time", label: "Part Time" }
+                                                                    ]}
+                                                                />
+                                                            </div>
+
+                                                            <div>
+                                                                <div className="relative">
+                                                                    <input
+                                                                        type="file"
+                                                                        onChange={handleFileChange}
+                                                                        className="hidden"
+                                                                        id="file-upload"
+                                                                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                                                                    />
+                                                                    <label
+                                                                        htmlFor="file-upload"
+                                                                        className={`flex items-center justify-center w-full p-4 border-2 border-dashed rounded-xl cursor-pointer transition-colors ${attachments.length > 0 ? 'border-green-500 bg-green-50' : 'border-slate-300 hover:border-slate-400'
+                                                                            }`}
+                                                                    >
+                                                                        <div className="text-center">
+                                                                            <p className="text-sm font-medium text-slate-600">
+                                                                                {attachments.length > 0
+                                                                                    ? `${attachments.length} file(s) selected`
+                                                                                    : "Resume / CV (Optional) - Click to upload"}
+                                                                            </p>
+                                                                            <p className="text-xs text-slate-400 mt-1">
+                                                                                PDF, DOC, Images (Max 3MB)
+                                                                            </p>
                                                                         </div>
-                                                                    ))}
+                                                                    </label>
                                                                 </div>
-                                                            )}
-                                                        </div>
-                                                    </motion.div>
-                                                )}
-                                            </AnimatePresence>
+                                                                {attachments.length > 0 && (
+                                                                    <div className="mt-3 space-y-2">
+                                                                        {attachments.map((file, index) => (
+                                                                            <div key={index} className="flex items-center justify-between p-2 bg-slate-50 rounded-lg border border-slate-200">
+                                                                                <span className="text-sm text-slate-600 truncate max-w-[200px]">{file.name}</span>
+                                                                                <button
+                                                                                    type="button"
+                                                                                    onClick={() => removeAttachment(index)}
+                                                                                    className="text-red-500 hover:text-red-600 p-1"
+                                                                                >
+                                                                                    <X size={16} />
+                                                                                </button>
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </motion.div>
+                                                    )}
+                                                </AnimatePresence>
 
-                                            {/* Error Message */}
-                                            <AnimatePresence>
-                                                {error && (
-                                                    <motion.div
-                                                        initial={{ opacity: 0, y: -10, height: 0 }}
-                                                        animate={{ opacity: 1, y: 0, height: 'auto' }}
-                                                        exit={{ opacity: 0, y: -10, height: 0 }}
-                                                        className="text-red-500 text-sm text-center bg-red-50 border border-red-100 p-4 rounded-xl"
-                                                    >
-                                                        {error}
-                                                    </motion.div>
-                                                )}
-                                            </AnimatePresence>
+                                                {/* Error Message */}
+                                                <AnimatePresence>
+                                                    {error && (
+                                                        <motion.div
+                                                            initial={{ opacity: 0, y: -10, height: 0 }}
+                                                            animate={{ opacity: 1, y: 0, height: 'auto' }}
+                                                            exit={{ opacity: 0, y: -10, height: 0 }}
+                                                            className="text-red-500 text-sm text-center bg-red-50 border border-red-100 p-4 rounded-xl"
+                                                        >
+                                                            {error}
+                                                        </motion.div>
+                                                    )}
+                                                </AnimatePresence>
 
-                                            {/* Turnstile */}
-                                            <motion.div variants={itemVariants} className="flex justify-center pt-2">
-                                                <Turnstile
-                                                    ref={turnstileRef}
-                                                    siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
-                                                    onSuccess={setToken}
-                                                    injectScript={true}
-                                                    options={{
-                                                        theme: 'light',
-                                                    }}
-                                                />
+                                                {/* Turnstile */}
+                                                <motion.div variants={itemVariants} className="flex justify-center pt-2">
+                                                    <Turnstile
+                                                        ref={turnstileRef}
+                                                        siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
+                                                        onSuccess={setToken}
+                                                        injectScript={true}
+                                                        options={{
+                                                            theme: 'light',
+                                                        }}
+                                                    />
+                                                </motion.div>
+
+                                                {/* Submit Button */}
+                                                <motion.button
+                                                    variants={itemVariants}
+                                                    whileHover={{ scale: 1.01, y: -2 }}
+                                                    whileTap={{ scale: 0.99 }}
+                                                    disabled={isSubmitting}
+                                                    type="submit"
+                                                    className="w-full py-4 bg-gradient-to-r from-primary via-slate-800 to-primary text-white font-bold text-lg rounded-md shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 relative overflow-hidden btn-shine"
+                                                    style={{ backgroundSize: '200% 100%' }}
+                                                >
+                                                    {isSubmitting ? (
+                                                        <>
+                                                            <Loader2 className="animate-spin" size={22} />
+                                                            <span>Submitting...</span>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <Sparkles size={20} />
+                                                            <span>Submit Request</span>
+                                                        </>
+                                                    )}
+                                                </motion.button>
                                             </motion.div>
-
-                                            {/* Submit Button */}
-                                            <motion.button
-                                                variants={itemVariants}
-                                                whileHover={{ scale: 1.01, y: -2 }}
-                                                whileTap={{ scale: 0.99 }}
-                                                disabled={isSubmitting}
-                                                type="submit"
-                                                className="w-full py-4 bg-gradient-to-r from-primary via-slate-800 to-primary text-white font-bold text-lg rounded-2xl shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 relative overflow-hidden btn-shine"
-                                                style={{ backgroundSize: '200% 100%' }}
-                                            >
-                                                {isSubmitting ? (
-                                                    <>
-                                                        <Loader2 className="animate-spin" size={22} />
-                                                        <span>Submitting...</span>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <Sparkles size={20} />
-                                                        <span>Submit Request</span>
-                                                    </>
-                                                )}
-                                            </motion.button>
-                                        </motion.div>
                                         </AnimatePresence>
                                     </form>
                                 </>

@@ -2,7 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import { Star, Check, X, Plus, Pencil, Trash2, Quote } from 'lucide-react';
-import Loader from '@/components/ui/Loader';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useSetPageTitle } from '@/hooks/useSetPageTitle';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 
 interface Testimonial {
     _id: string;
@@ -14,6 +22,8 @@ interface Testimonial {
 }
 
 export default function TestimonialsPage() {
+    useSetPageTitle('Testimonials', 'Manage student success stories');
+
     const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
     const [loading, setLoading] = useState(true);
     const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
@@ -61,10 +71,10 @@ export default function TestimonialsPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const url = editingTestimonial 
+            const url = editingTestimonial
                 ? `/api/admin/testimonials/${editingTestimonial._id}`
                 : '/api/admin/testimonials';
-            
+
             const method = editingTestimonial ? 'PUT' : 'POST';
 
             const response = await fetch(url, {
@@ -129,32 +139,62 @@ export default function TestimonialsPage() {
         setIsModalOpen(true);
     };
 
-    if (loading) return <Loader />;
+    if (loading) {
+        return (
+            <div className="space-y-6">
+                {/* Button Skeleton */}
+                <div className="flex justify-end">
+                    <Skeleton className="h-10 w-40" />
+                </div>
+
+                {/* Grid Skeleton */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[1, 2, 3, 4, 5, 6].map((i) => (
+                        <div key={i} className="bg-card p-6 rounded-lg shadow-sm border border-border flex flex-col">
+                            <div className="flex justify-between items-start mb-4">
+                                <div className="flex gap-1">
+                                    {[1, 2, 3, 4, 5].map((j) => (
+                                        <Skeleton key={j} className="h-4 w-4" />
+                                    ))}
+                                </div>
+                                <div className="flex gap-2">
+                                    <Skeleton className="h-8 w-8" />
+                                    <Skeleton className="h-8 w-8" />
+                                </div>
+                            </div>
+                            <div className="mb-4 flex-grow space-y-2">
+                                <Skeleton className="h-6 w-6" />
+                                <Skeleton className="h-4 w-full" />
+                                <Skeleton className="h-4 w-3/4" />
+                                <Skeleton className="h-4 w-1/2" />
+                            </div>
+                            <div className="pt-4 border-t border-border space-y-2">
+                                <Skeleton className="h-5 w-1/3" />
+                                <Skeleton className="h-3 w-1/4" />
+                                <Skeleton className="h-5 w-16 mt-2" />
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">
             {/* Toast */}
             {toast && (
-                <div className={`fixed bottom-4 right-4 z-50 px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3 ${toast.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-500 text-white'}`}>
+                <div className={`fixed bottom-4 right-4 z-50 px-6 py-3 rounded-md shadow-2xl flex items-center gap-3 ${toast.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-500 text-white'}`}>
                     {toast.type === 'success' ? <Check size={18} /> : <X size={18} />}
                     <span className="font-medium text-sm">{toast.message}</span>
                 </div>
             )}
 
-            {/* Header */}
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                    <div className="p-3 bg-slate-100 rounded-xl">
-                        <Star className="w-6 h-6 text-slate-600" />
-                    </div>
-                    <div>
-                        <h1 className="text-2xl font-bold text-slate-900">Testimonials</h1>
-                        <p className="text-slate-500">Manage student success stories</p>
-                    </div>
-                </div>
+            {/* Action Button */}
+            <div className="flex justify-end">
                 <button
                     onClick={() => { resetForm(); setIsModalOpen(true); }}
-                    className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-xl text-sm font-semibold hover:bg-slate-800 transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm font-semibold hover:bg-primary/90 transition-colors"
                 >
                     <Plus size={16} />
                     Add Testimonial
@@ -164,7 +204,7 @@ export default function TestimonialsPage() {
             {/* List */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {testimonials.map((testimonial) => (
-                    <div key={testimonial._id} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col">
+                    <div key={testimonial._id} className="bg-card p-6 rounded-lg shadow-sm border border-border flex flex-col">
                         <div className="flex justify-between items-start mb-4">
                             <div className="flex gap-1">
                                 {[...Array(testimonial.rating)].map((_, i) => (
@@ -174,7 +214,7 @@ export default function TestimonialsPage() {
                             <div className="flex gap-2">
                                 <button
                                     onClick={() => openEditModal(testimonial)}
-                                    className="p-2 hover:bg-slate-100 rounded-lg text-slate-600 transition-colors"
+                                    className="p-2 hover:bg-muted rounded-lg text-muted-foreground transition-colors"
                                 >
                                     <Pencil size={16} />
                                 </button>
@@ -186,17 +226,17 @@ export default function TestimonialsPage() {
                                 </button>
                             </div>
                         </div>
-                        
+
                         <div className="mb-4 flex-grow">
                             <Quote className="w-6 h-6 text-slate-200 mb-2" />
-                            <p className="text-slate-600 text-sm italic line-clamp-4">"{testimonial.content}"</p>
+                            <p className="text-muted-foreground text-sm italic line-clamp-4">"{testimonial.content}"</p>
                         </div>
 
-                        <div className="pt-4 border-t border-slate-100">
-                            <h4 className="font-bold text-slate-900">{testimonial.name}</h4>
-                            <p className="text-xs text-slate-500">{testimonial.role}</p>
+                        <div className="pt-4 border-t border-border">
+                            <h4 className="font-bold text-foreground">{testimonial.name}</h4>
+                            <p className="text-xs text-muted-foreground">{testimonial.role}</p>
                             <div className="mt-2">
-                                <span className={`text-xs px-2 py-1 rounded-full ${testimonial.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}>
+                                <span className={`text-xs px-2 py-1 rounded-full ${testimonial.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-muted text-muted-foreground'}`}>
                                     {testimonial.isActive ? 'Active' : 'Inactive'}
                                 </span>
                             </div>
@@ -208,73 +248,74 @@ export default function TestimonialsPage() {
             {/* Modal */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden">
-                        <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-                            <h2 className="text-xl font-bold text-slate-900">
+                    <div className="bg-card rounded-lg shadow-xl w-full max-w-lg overflow-hidden">
+                        <div className="p-6 border-b border-border flex justify-between items-center">
+                            <h2 className="text-xl font-bold text-foreground">
                                 {editingTestimonial ? 'Edit Testimonial' : 'Add Testimonial'}
                             </h2>
-                            <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600">
+                            <button onClick={() => setIsModalOpen(false)} className="text-muted-foreground hover:text-muted-foreground">
                                 <X size={24} />
                             </button>
                         </div>
-                        
+
                         <form onSubmit={handleSubmit} className="p-6 space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">Name</label>
                                 <input
                                     type="text"
                                     required
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                                    className="w-full px-4 py-2 rounded-md border border-border focus:outline-none focus:ring-2 focus:ring-slate-900"
                                 />
                             </div>
-                            
+
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Role / Title</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">Role / Title</label>
                                 <input
                                     type="text"
                                     required
                                     value={formData.role}
                                     onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                                    className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                                    className="w-full px-4 py-2 rounded-md border border-border focus:outline-none focus:ring-2 focus:ring-slate-900"
                                     placeholder="e.g. Student - CBSE 12"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Content</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">Content</label>
                                 <textarea
                                     required
                                     value={formData.content}
                                     onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                                    className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-900 h-32 resize-none"
+                                    className="w-full px-4 py-2 rounded-md border border-border focus:outline-none focus:ring-2 focus:ring-slate-900 h-32 resize-none"
                                 />
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Rating</label>
-                                    <select
-                                        value={formData.rating}
-                                        onChange={(e) => setFormData({ ...formData, rating: Number(e.target.value) })}
-                                        className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-900"
-                                    >
-                                        {[1, 2, 3, 4, 5].map(r => (
-                                            <option key={r} value={r}>{r} Stars</option>
-                                        ))}
-                                    </select>
+                                    <label className="block text-sm font-medium text-foreground mb-1">Rating</label>
+                                    <Select value={formData.rating.toString()} onValueChange={(value) => setFormData({ ...formData, rating: Number(value) })}>
+                                        <SelectTrigger className="w-full h-10 rounded-md">
+                                            <SelectValue placeholder="Select rating" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {[1, 2, 3, 4, 5].map(r => (
+                                                <SelectItem key={r} value={r.toString()}>{r} Stars</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                 </div>
-                                
+
                                 <div className="flex items-center pt-6">
                                     <label className="flex items-center gap-2 cursor-pointer">
                                         <input
                                             type="checkbox"
                                             checked={formData.isActive}
                                             onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                                            className="w-4 h-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900"
+                                            className="w-4 h-4 rounded border-border text-foreground focus:ring-slate-900"
                                         />
-                                        <span className="text-sm font-medium text-slate-700">Active</span>
+                                        <span className="text-sm font-medium text-foreground">Active</span>
                                     </label>
                                 </div>
                             </div>
@@ -283,13 +324,13 @@ export default function TestimonialsPage() {
                                 <button
                                     type="button"
                                     onClick={() => setIsModalOpen(false)}
-                                    className="flex-1 px-4 py-2 bg-slate-100 text-slate-700 rounded-xl font-semibold hover:bg-slate-200 transition-colors"
+                                    className="flex-1 px-4 py-2 bg-muted text-foreground rounded-md font-semibold hover:bg-muted transition-colors"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="flex-1 px-4 py-2 bg-slate-900 text-white rounded-xl font-semibold hover:bg-slate-800 transition-colors"
+                                    className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-md font-semibold hover:bg-primary/90 transition-colors"
                                 >
                                     {editingTestimonial ? 'Update' : 'Create'}
                                 </button>
@@ -301,3 +342,4 @@ export default function TestimonialsPage() {
         </div>
     );
 }
+

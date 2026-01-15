@@ -3,8 +3,10 @@
 import React, { useState } from 'react';
 import { MessageSquare, Check, X } from 'lucide-react';
 import RequestList from '../components/RequestList';
+import { useSetPageTitle } from '@/hooks/useSetPageTitle';
 
 export default function ContactsPage() {
+    useSetPageTitle('Contact Requests', 'Manage contact inquiries');
     const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
     const showToast = (message: string, type: 'success' | 'error') => {
@@ -22,19 +24,8 @@ export default function ContactsPage() {
                 </div>
             )}
 
-            {/* Header */}
-            <div className="flex items-center gap-4">
-                <div className="p-3 bg-amber-100 rounded-xl">
-                    <MessageSquare className="w-6 h-6 text-amber-600" />
-                </div>
-                <div>
-                    <h1 className="text-2xl font-bold text-slate-900">Contact Requests</h1>
-                    <p className="text-slate-500">Manage contact inquiries</p>
-                </div>
-            </div>
-
             {/* Content */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <div className="bg-card rounded-xl shadow-sm border border-border p-6">
                 <RequestList activeTab="contact" showToast={showToast} />
             </div>
         </div>

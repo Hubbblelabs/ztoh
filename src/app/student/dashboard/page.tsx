@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
-import Loader from "@/components/ui/Loader";
+import { Skeleton } from '@/components/ui/skeleton';
 import { LogOut } from "lucide-react";
+import { useSetPageTitle } from '@/hooks/useSetPageTitle';
 
 interface TeachingHours {
     _id: string;
@@ -22,6 +23,7 @@ interface DashboardData {
 
 export default function StudentDashboardPage() {
     const { data: session } = useSession();
+    useSetPageTitle(`Welcome, ${session?.user?.name || 'Student'}`, 'Student Dashboard');
     const [data, setData] = useState<DashboardData | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -42,19 +44,57 @@ export default function StudentDashboardPage() {
         fetchData();
     }, []);
 
-    if (loading) return <div className="flex justify-center p-8"><Loader /></div>;
+    if (loading) {
+        return (
+            <div className="p-8 max-w-7xl mx-auto">
+                {/* Header Skeleton */}
+                <div className="flex items-center justify-between mb-8">
+                    <div className="space-y-2">
+                        <Skeleton className="h-9 w-48" />
+                        <Skeleton className="h-4 w-40" />
+                    </div>
+                    <Skeleton className="h-10 w-28" />
+                </div>
+
+                {/* Stats Skeleton */}
+                <div className="bg-muted/50 p-6 rounded-md border border-border mb-8 max-w-sm">
+                    <Skeleton className="h-5 w-36 mb-2" />
+                    <Skeleton className="h-10 w-24" />
+                </div>
+
+                {/* History Skeleton */}
+                <div className="bg-card rounded-md shadow-sm border border-border overflow-hidden">
+                    <div className="px-6 py-4 border-b border-border">
+                        <Skeleton className="h-6 w-36" />
+                    </div>
+                    <div className="p-6 space-y-4">
+                        {[1, 2, 3, 4, 5].map((i) => (
+                            <div key={i} className="flex items-center gap-4">
+                                <Skeleton className="h-4 w-24" />
+                                <Skeleton className="h-4 w-32 flex-1" />
+                                <Skeleton className="h-4 w-24" />
+                                <Skeleton className="h-4 w-20" />
+                                <Skeleton className="h-4 w-12" />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+    }
     if (!data) return <div className="p-8">Failed to load data</div>;
 
     return (
         <div className="p-8 max-w-7xl mx-auto">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-900">Welcome, {session?.user?.name}</h1>
-                    <p className="text-slate-500">Student Dashboard</p>
+                    <h1 className="text-3xl font-bold text-foreground">Student Dashboard</h1>
+                    <p className="text-muted-foreground">View your learning progress</p>
                 </div>
                 <button
                     onClick={() => signOut({ callbackUrl: '/login' })}
-                    className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-xl hover:bg-slate-50 transition-colors shadow-sm font-medium"
+                    className="flex items-center gap-2 px-4 py-2 bg-card border border-border text-foreground rounded-md hover:bg-muted transition-colors shadow-sm font-medium"
                 >
                     <LogOut size={18} />
                     Sign Out
@@ -62,46 +102,46 @@ export default function StudentDashboardPage() {
             </div>
 
             {/* Stats */}
-            <div className="bg-blue-50 p-6 rounded-xl border border-blue-100 mb-8 max-w-sm">
-                <h2 className="text-lg font-semibold text-blue-900 mb-2">Total Logged Hours</h2>
-                <div className="text-4xl font-bold text-blue-600">{data.totalHours.toFixed(1)} hrs</div>
+            <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-md border border-blue-100 dark:border-blue-900/30 mb-8 max-w-sm">
+                <h2 className="text-lg font-semibold text-blue-900 dark:text-blue-300 mb-2">Total Logged Hours</h2>
+                <div className="text-4xl font-bold text-blue-600 dark:text-blue-400">{data.totalHours.toFixed(1)} hrs</div>
             </div>
 
             {/* History */}
-            <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-                <div className="px-6 py-4 border-b border-slate-100">
-                    <h2 className="text-xl font-bold text-slate-900">Learning History</h2>
+            <div className="bg-card rounded-md shadow-sm border border-border overflow-hidden">
+                <div className="px-6 py-4 border-b border-border">
+                    <h2 className="text-xl font-bold text-foreground">Learning History</h2>
                 </div>
 
                 {/* Desktop View (Table) */}
                 <div className="hidden md:block overflow-x-auto">
                     <table className="w-full">
-                        <thead className="bg-slate-50 border-b border-slate-100">
+                        <thead className="bg-muted/50 border-b border-border">
                             <tr>
-                                <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Date</th>
-                                <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Subject</th>
-                                <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Tutor</th>
-                                <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Course</th>
-                                <th className="px-6 py-3 text-right text-xs font-semibold text-slate-600 uppercase tracking-wider">Hours</th>
+                                <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Date</th>
+                                <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Subject</th>
+                                <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Tutor</th>
+                                <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Course</th>
+                                <th className="px-6 py-3 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider">Hours</th>
                             </tr>
                         </thead>
-                        <tbody className="bg-white divide-y divide-slate-100">
+                        <tbody className="bg-card divide-y divide-border">
                             {data.recentLogs.map((log) => (
-                                <tr key={log._id} className="hover:bg-slate-50 transition-colors">
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900 font-medium">
+                                <tr key={log._id} className="hover:bg-muted/50 transition-colors">
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground font-medium">
                                         {new Date(log.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">{log.subject}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">{log.staffId?.name || 'Unknown'}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">{log.course || '-'}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900 text-right font-bold">
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">{log.subject}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">{log.staffId?.name || 'Unknown'}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">{log.course || '-'}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground text-right font-bold">
                                         {log.hours.toFixed(1)}
                                     </td>
                                 </tr>
                             ))}
                             {data.recentLogs.length === 0 && (
                                 <tr>
-                                    <td colSpan={5} className="px-6 py-12 text-center text-slate-500">
+                                    <td colSpan={5} className="px-6 py-12 text-center text-muted-foreground">
                                         No learning hours recorded yet.
                                     </td>
                                 </tr>
@@ -111,35 +151,35 @@ export default function StudentDashboardPage() {
                 </div>
 
                 {/* Mobile View (Cards) */}
-                <div className="md:hidden divide-y divide-slate-100">
+                <div className="md:hidden divide-y divide-border">
                     {data.recentLogs.map((log) => (
                         <div key={log._id} className="p-4 space-y-3">
                             <div className="flex justify-between items-start">
                                 <div>
-                                    <p className="font-bold text-slate-900">{log.subject}</p>
-                                    <p className="text-xs text-slate-500">
+                                    <p className="font-bold text-foreground">{log.subject}</p>
+                                    <p className="text-xs text-muted-foreground">
                                         {new Date(log.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
                                     </p>
                                 </div>
-                                <div className="bg-blue-50 text-blue-700 px-3 py-1 rounded-lg text-sm font-bold">
+                                <div className="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 px-3 py-1 rounded-lg text-sm font-bold">
                                     {log.hours.toFixed(1)} hrs
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-2 gap-2 text-sm">
                                 <div>
-                                    <p className="text-xs text-slate-400 uppercase">Tutor</p>
-                                    <p className="text-slate-700 font-medium truncate">{log.staffId?.name || 'Unknown'}</p>
+                                    <p className="text-xs text-muted-foreground uppercase">Tutor</p>
+                                    <p className="text-foreground font-medium truncate">{log.staffId?.name || 'Unknown'}</p>
                                 </div>
                                 <div>
-                                    <p className="text-xs text-slate-400 uppercase">Course</p>
-                                    <p className="text-slate-700 font-medium truncate">{log.course || '-'}</p>
+                                    <p className="text-xs text-muted-foreground uppercase">Course</p>
+                                    <p className="text-foreground font-medium truncate">{log.course || '-'}</p>
                                 </div>
                             </div>
                         </div>
                     ))}
                     {data.recentLogs.length === 0 && (
-                        <div className="p-8 text-center text-slate-500">
+                        <div className="p-8 text-center text-muted-foreground">
                             No learning hours recorded yet.
                         </div>
                     )}
