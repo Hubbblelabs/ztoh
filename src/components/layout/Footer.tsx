@@ -47,7 +47,7 @@ export default function Footer() {
                 </svg>
             </div>
 
-            <footer className="bg-slate-900 text-slate-300 pt-8 pb-10 md:pt-12 md:pb-12 relative overflow-hidden">
+            <footer className="bg-slate-900 text-slate-300 pb-10 md:pb-12 relative overflow-hidden">
                 {/* Background Decoration */}
                 <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
                     <div className="absolute top-[10%] -right-[10%] w-[50%] h-[50%] rounded-full bg-secondary/5 blur-3xl" />
@@ -58,19 +58,43 @@ export default function Footer() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
                         {/* Brand Info */}
                         <div className="space-y-6">
-                            <Link href="/" className="text-3xl font-bold font-heading text-white block">
+                            <Link
+                                href="/"
+                                className="text-3xl font-bold font-heading text-white block"
+                            >
                                 ZTOH<span className="text-secondary">.org</span>
                             </Link>
                             <p className="text-sm leading-relaxed text-slate-400 max-w-xs">
                                 Empowering students to go from Zero to Hero. We provide top-tier
-                                mentorship, expert tutoring, and a pathway to success in your career.
+                                mentorship, expert tutoring, and a pathway to success in your
+                                career.
                             </p>
                             <div className="flex gap-3">
                                 {[
-                                    { icon: <Facebook size={18} />, href: '#', label: 'Facebook', hoverBg: 'hover:bg-blue-600' },
-                                    { icon: <Twitter size={18} />, href: '#', label: 'Twitter', hoverBg: 'hover:bg-sky-500' },
-                                    { icon: <Instagram size={18} />, href: '#', label: 'Instagram', hoverBg: 'hover:bg-pink-600' },
-                                    { icon: <Linkedin size={18} />, href: '#', label: 'LinkedIn', hoverBg: 'hover:bg-blue-700' },
+                                    {
+                                        icon: <Facebook size={18} />,
+                                        href: '#',
+                                        label: 'Facebook',
+                                        hoverBg: 'hover:bg-blue-600',
+                                    },
+                                    {
+                                        icon: <Twitter size={18} />,
+                                        href: '#',
+                                        label: 'Twitter',
+                                        hoverBg: 'hover:bg-sky-500',
+                                    },
+                                    {
+                                        icon: <Instagram size={18} />,
+                                        href: '#',
+                                        label: 'Instagram',
+                                        hoverBg: 'hover:bg-pink-600',
+                                    },
+                                    {
+                                        icon: <Linkedin size={18} />,
+                                        href: '#',
+                                        label: 'LinkedIn',
+                                        hoverBg: 'hover:bg-blue-700',
+                                    },
                                 ].map((social) => (
                                     <Link
                                         key={social.label}
@@ -150,14 +174,18 @@ export default function Footer() {
                                         <MapPin size={18} className="text-secondary" />
                                     </div>
                                     <span className="text-sm text-slate-400 group-hover:text-white transition-colors">
-                                        Zero to Hero, 9/13, Gandhi Rd, Periyar Nagar, Coimbatore, TN 641014
+                                        Zero to Hero, 9/13, Gandhi Rd, Periyar Nagar, Coimbatore, TN
+                                        641014
                                     </span>
                                 </li>
                                 <li className="flex items-center gap-3 group">
                                     <div className="p-2 rounded-lg bg-slate-800 group-hover:bg-secondary/20 transition-colors">
                                         <Phone size={18} className="text-secondary" />
                                     </div>
-                                    <a href="tel:+919564321000" className="text-sm text-slate-400 group-hover:text-white transition-colors">
+                                    <a
+                                        href="tel:+919564321000"
+                                        className="text-sm text-slate-400 group-hover:text-white transition-colors"
+                                    >
                                         +91 95643 21000
                                     </a>
                                 </li>
@@ -165,7 +193,10 @@ export default function Footer() {
                                     <div className="p-2 rounded-lg bg-slate-800 group-hover:bg-secondary/20 transition-colors">
                                         <Mail size={18} className="text-secondary" />
                                     </div>
-                                    <a href="mailto:reachus@ztoh.org" className="text-sm text-slate-400 group-hover:text-white transition-colors">
+                                    <a
+                                        href="mailto:reachus@ztoh.org"
+                                        className="text-sm text-slate-400 group-hover:text-white transition-colors"
+                                    >
                                         reachus@ztoh.org
                                     </a>
                                 </li>
@@ -173,7 +204,9 @@ export default function Footer() {
 
                             {/* Newsletter */}
                             <div>
-                                <h4 className="text-white font-semibold mb-3 text-sm">Stay Updated</h4>
+                                <h4 className="text-white font-semibold mb-3 text-sm">
+                                    Stay Updated
+                                </h4>
                                 <form onSubmit={handleNewsletter} className="flex gap-2">
                                     <input
                                         type="email"
@@ -202,8 +235,7 @@ export default function Footer() {
 
                     <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-slate-500">
                         <p className="flex items-center gap-1">
-                            &copy; {new Date().getFullYear()} Zero to Hero. Made with{' '}
-                            <Heart size={14} className="text-red-500 fill-red-500" /> All rights reserved.
+                            &copy; {new Date().getFullYear()} Zero to Hero
                         </p>
 
                         <div className="flex items-center justify-center gap-2 order-3 md:order-2 flex-wrap">
@@ -227,10 +259,16 @@ export default function Footer() {
                         </div>
 
                         <div className="flex gap-6 order-2 md:order-3">
-                            <Link href="/privacy-policy" className="hover:text-white transition-colors">
+                            <Link
+                                href="/privacy-policy"
+                                className="hover:text-white transition-colors"
+                            >
                                 Privacy Policy
                             </Link>
-                            <Link href="/terms-of-service" className="hover:text-white transition-colors">
+                            <Link
+                                href="/terms-of-service"
+                                className="hover:text-white transition-colors"
+                            >
                                 Terms of Service
                             </Link>
                         </div>

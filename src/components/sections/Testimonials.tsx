@@ -15,8 +15,14 @@ interface Testimonial {
     content: string;
 }
 
-const TestimonialCard = ({ testimonial, onClick }: { testimonial: Testimonial; onClick: () => void }) => (
-    <div 
+const TestimonialCard = ({
+    testimonial,
+    onClick,
+}: {
+    testimonial: Testimonial;
+    onClick: () => void;
+}) => (
+    <div
         onClick={onClick}
         className="w-[350px] md:w-[400px] h-[320px] bg-white p-8 rounded-2xl shadow-sm border border-slate-100 flex flex-col mx-4 hover:shadow-lg hover:border-secondary/30 transition-all duration-300 relative group cursor-pointer overflow-hidden"
     >
@@ -32,7 +38,9 @@ const TestimonialCard = ({ testimonial, onClick }: { testimonial: Testimonial; o
             <div className="min-w-0">
                 <h4 className="font-bold text-slate-900 text-sm truncate">{testimonial.name}</h4>
                 {testimonial.role && (
-                    <p className="text-xs text-secondary font-medium truncate">{testimonial.role}</p>
+                    <p className="text-xs text-secondary font-medium truncate">
+                        {testimonial.role}
+                    </p>
                 )}
             </div>
         </div>
@@ -42,7 +50,11 @@ const TestimonialCard = ({ testimonial, onClick }: { testimonial: Testimonial; o
                 <Star
                     key={i}
                     size={16}
-                    className={i < testimonial.rating ? 'text-amber-400 fill-amber-400' : 'text-slate-200 fill-slate-200'}
+                    className={
+                        i < testimonial.rating
+                            ? 'text-amber-400 fill-amber-400'
+                            : 'text-slate-200 fill-slate-200'
+                    }
                     aria-hidden="true"
                 />
             ))}
@@ -97,7 +109,10 @@ export default function Testimonials({ initialData }: { initialData?: Testimonia
                     </div>
                     <div className="flex gap-8 justify-center">
                         {[1, 2, 3].map((i) => (
-                            <div key={i} className="w-[400px] h-[200px] bg-white rounded-2xl animate-pulse" />
+                            <div
+                                key={i}
+                                className="w-[400px] h-[200px] bg-white rounded-2xl animate-pulse"
+                            />
                         ))}
                     </div>
                 </div>
@@ -126,10 +141,10 @@ export default function Testimonials({ initialData }: { initialData?: Testimonia
             className="py-10 bg-slate-100 border-t border-slate-200 relative overflow-hidden"
             aria-label="Student Testimonials"
         >
-            <TestimonialModal 
-                isOpen={!!selectedTestimonial} 
-                onClose={() => setSelectedTestimonial(null)} 
-                testimonial={selectedTestimonial} 
+            <TestimonialModal
+                isOpen={!!selectedTestimonial}
+                onClose={() => setSelectedTestimonial(null)}
+                testimonial={selectedTestimonial}
             />
 
             {/* Background Decoration */}
@@ -170,19 +185,33 @@ export default function Testimonials({ initialData }: { initialData?: Testimonia
                 <div className="absolute top-0 right-0 w-32 h-full bg-linear-to-l from-slate-100 to-transparent z-10 pointer-events-none" />
 
                 {/* Row 1 */}
-                <div className={`flex mb-8 w-max animate-marquee hover:pause ${selectedTestimonial ? 'pause' : ''}`} role="list" aria-label="Testimonials row 1">
+                <div
+                    className={`flex mb-8 w-max animate-marquee hover:pause ${selectedTestimonial ? 'pause' : ''}`}
+                    role="list"
+                    aria-label="Testimonials row 1"
+                >
                     {row1Items.map((testimonial, index) => (
                         <div key={`row1-${index}`} role="listitem">
-                            <TestimonialCard testimonial={testimonial} onClick={() => setSelectedTestimonial(testimonial)} />
+                            <TestimonialCard
+                                testimonial={testimonial}
+                                onClick={() => setSelectedTestimonial(testimonial)}
+                            />
                         </div>
                     ))}
                 </div>
 
                 {/* Row 2 */}
-                <div className={`flex w-max animate-marquee-reverse hover:pause ${selectedTestimonial ? 'pause' : ''}`} role="list" aria-label="Testimonials row 2">
+                <div
+                    className={`flex w-max animate-marquee-reverse hover:pause ${selectedTestimonial ? 'pause' : ''}`}
+                    role="list"
+                    aria-label="Testimonials row 2"
+                >
                     {row2Items.map((testimonial, index) => (
                         <div key={`row2-${index}`} role="listitem">
-                            <TestimonialCard testimonial={testimonial} onClick={() => setSelectedTestimonial(testimonial)} />
+                            <TestimonialCard
+                                testimonial={testimonial}
+                                onClick={() => setSelectedTestimonial(testimonial)}
+                            />
                         </div>
                     ))}
                 </div>

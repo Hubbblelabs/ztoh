@@ -61,7 +61,11 @@ export default function Header() {
                 </Link>
 
                 {/* Desktop Nav */}
-                <nav className="hidden md:flex items-center gap-8" role="navigation" aria-label="Main navigation">
+                <nav
+                    className="hidden md:flex items-center gap-8"
+                    role="navigation"
+                    aria-label="Main navigation"
+                >
                     {navLinks.map((link) => (
                         <Link
                             key={link.name}
@@ -103,7 +107,11 @@ export default function Header() {
                         id="mobile-nav"
                         className="md:hidden absolute top-full left-0 w-full bg-white shadow-xl border-t border-slate-100 overflow-hidden"
                     >
-                        <nav className="flex flex-col p-6 gap-4" role="navigation" aria-label="Mobile navigation">
+                        <nav
+                            className="flex flex-col p-6 gap-4"
+                            role="navigation"
+                            aria-label="Mobile navigation"
+                        >
                             {navLinks.map((link) => (
                                 <Link
                                     key={link.name}

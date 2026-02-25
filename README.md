@@ -74,6 +74,7 @@ Before you begin, ensure you have the following installed:
 
 4.  **Seed the Database**:
     Initialize the database with a default admin user.
+
     ```bash
     npx tsx scripts/seed-admin.ts
     ```

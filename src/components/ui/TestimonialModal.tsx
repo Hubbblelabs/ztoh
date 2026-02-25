@@ -97,18 +97,26 @@ export default function TestimonialModal({ isOpen, onClose, testimonial }: Testi
                                             {testimonial.name}
                                         </h2>
                                         {testimonial.role && (
-                                            <p className="text-secondary font-medium">{testimonial.role}</p>
+                                            <p className="text-secondary font-medium">
+                                                {testimonial.role}
+                                            </p>
                                         )}
                                         <div className="flex gap-1 mt-2">
                                             {[...Array(5)].map((_, i) => (
                                                 <Star
                                                     key={i}
                                                     size={16}
-                                                    className={i < testimonial.rating ? 'text-amber-400 fill-amber-400' : 'text-slate-200 fill-slate-200'}
+                                                    className={
+                                                        i < testimonial.rating
+                                                            ? 'text-amber-400 fill-amber-400'
+                                                            : 'text-slate-200 fill-slate-200'
+                                                    }
                                                     aria-hidden="true"
                                                 />
                                             ))}
-                                            <span className="sr-only">{testimonial.rating} out of 5 stars</span>
+                                            <span className="sr-only">
+                                                {testimonial.rating} out of 5 stars
+                                            </span>
                                         </div>
                                     </div>
                                 </div>

@@ -73,9 +73,7 @@ function TypingText({ text, className }: { text: string; className?: string }) {
     return (
         <span className={className}>
             {displayText}
-            {currentIndex < text.length && (
-                <span className="animate-pulse text-secondary">|</span>
-            )}
+            {currentIndex < text.length && <span className="animate-pulse text-secondary">|</span>}
         </span>
     );
 }
