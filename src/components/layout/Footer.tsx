@@ -42,7 +42,7 @@ export default function Footer() {
                 >
                     <path
                         d="M0 40C240 80 480 0 720 40C960 80 1200 0 1440 40V100H0V40Z"
-                        fill="#0f172a"
+                        className="fill-slate-900"
                     />
                 </svg>
             </div>

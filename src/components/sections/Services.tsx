@@ -208,7 +208,7 @@ export default function Services() {
                 </div>
 
                 {/* Detailed Services Carousel */}
-                <div className="relative mb-24 group overflow-hidden">
+                <div className="relative mb-24 py-4 -my-4 group overflow-hidden">
                     <div className="flex gap-6">
                         <div
                             className={`flex gap-6 animate-marquee hover:pause ${selectedService ? 'pause' : ''}`}
@@ -220,8 +220,7 @@ export default function Services() {
                                     onClick={() => setSelectedService(service)}
                                     className="shrink-0 w-[85vw] md:w-[400px] flex flex-col bg-white p-8 rounded-4xl shadow-lg shadow-slate-200/50 border border-slate-100 hover:shadow-2xl hover:border-secondary/50 hover:-translate-y-2 transition-all duration-300 h-[400px] cursor-pointer group relative overflow-hidden"
                                 >
-                                    {/* Gradient accent line */}
-                                    <div className={`absolute top-0 left-0 right-0 h-1 bg-linear-to-r ${service.accentColor}`} />
+
 
                                     <div className="flex items-start justify-between mb-6">
                                         <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-primary shrink-0 group-hover:bg-primary group-hover:text-white transition-colors duration-300 shadow-inner">

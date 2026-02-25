@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import ScrollAnimation from '@/components/animations/ScrollAnimation';
 import { Star, Quote, MessageSquare } from 'lucide-react';
+import TestimonialModal from '@/components/ui/TestimonialModal';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,21 +15,24 @@ interface Testimonial {
     content: string;
 }
 
-const TestimonialCard = ({ testimonial }: { testimonial: Testimonial }) => (
-    <div className="w-[350px] md:w-[400px] bg-white p-8 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-full mx-4 hover:shadow-lg hover:border-secondary/30 transition-all duration-300 relative group">
+const TestimonialCard = ({ testimonial, onClick }: { testimonial: Testimonial; onClick: () => void }) => (
+    <div 
+        onClick={onClick}
+        className="w-[350px] md:w-[400px] h-[320px] bg-white p-8 rounded-2xl shadow-sm border border-slate-100 flex flex-col mx-4 hover:shadow-lg hover:border-secondary/30 transition-all duration-300 relative group cursor-pointer overflow-hidden"
+    >
         {/* Decorative quote mark */}
         <div className="absolute top-4 right-4 opacity-5 group-hover:opacity-10 transition-opacity">
             <Quote className="w-16 h-16 text-primary" />
         </div>
 
         <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 rounded-full bg-linear-to-br from-secondary to-primary flex items-center justify-center text-white font-bold text-lg shadow-md">
+            <div className="w-12 h-12 rounded-full bg-linear-to-br from-secondary to-primary flex items-center justify-center text-white font-bold text-lg shadow-md shrink-0">
                 {testimonial.name.charAt(0)}
             </div>
-            <div>
-                <h4 className="font-bold text-slate-900 text-sm">{testimonial.name}</h4>
+            <div className="min-w-0">
+                <h4 className="font-bold text-slate-900 text-sm truncate">{testimonial.name}</h4>
                 {testimonial.role && (
-                    <p className="text-xs text-secondary font-medium">{testimonial.role}</p>
+                    <p className="text-xs text-secondary font-medium truncate">{testimonial.role}</p>
                 )}
             </div>
         </div>
@@ -45,10 +49,11 @@ const TestimonialCard = ({ testimonial }: { testimonial: Testimonial }) => (
             <span className="sr-only">{testimonial.rating} out of 5 stars</span>
         </div>
 
-        <div className="mb-6 grow relative">
-            <p className="text-slate-700 leading-relaxed italic relative z-10 text-sm md:text-base">
+        <div className="grow relative overflow-hidden">
+            <p className="text-slate-700 leading-relaxed italic relative z-10 text-sm md:text-base line-clamp-4">
                 &quot;{testimonial.content}&quot;
             </p>
+            <div className="absolute bottom-0 left-0 right-0 h-6 bg-linear-to-t from-white to-transparent pointer-events-none" />
         </div>
     </div>
 );
@@ -56,6 +61,7 @@ const TestimonialCard = ({ testimonial }: { testimonial: Testimonial }) => (
 export default function Testimonials({ initialData }: { initialData?: Testimonial[] }) {
     const [testimonials, setTestimonials] = useState<Testimonial[]>(initialData || []);
     const [loading, setLoading] = useState(!initialData);
+    const [selectedTestimonial, setSelectedTestimonial] = useState<Testimonial | null>(null);
 
     useEffect(() => {
         if (initialData) {
@@ -120,6 +126,12 @@ export default function Testimonials({ initialData }: { initialData?: Testimonia
             className="py-10 bg-slate-100 border-t border-slate-200 relative overflow-hidden"
             aria-label="Student Testimonials"
         >
+            <TestimonialModal 
+                isOpen={!!selectedTestimonial} 
+                onClose={() => setSelectedTestimonial(null)} 
+                testimonial={selectedTestimonial} 
+            />
+
             {/* Background Decoration */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-0 left-1/4 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(14,165,233,0.05),transparent_40%)]"></div>
@@ -158,19 +170,19 @@ export default function Testimonials({ initialData }: { initialData?: Testimonia
                 <div className="absolute top-0 right-0 w-32 h-full bg-linear-to-l from-slate-100 to-transparent z-10 pointer-events-none" />
 
                 {/* Row 1 */}
-                <div className="flex mb-8 w-max animate-marquee hover:[animation-play-state:paused]" role="list" aria-label="Testimonials row 1">
+                <div className={`flex mb-8 w-max animate-marquee hover:pause ${selectedTestimonial ? 'pause' : ''}`} role="list" aria-label="Testimonials row 1">
                     {row1Items.map((testimonial, index) => (
                         <div key={`row1-${index}`} role="listitem">
-                            <TestimonialCard testimonial={testimonial} />
+                            <TestimonialCard testimonial={testimonial} onClick={() => setSelectedTestimonial(testimonial)} />
                         </div>
                     ))}
                 </div>
 
                 {/* Row 2 */}
-                <div className="flex w-max animate-marquee-reverse hover:[animation-play-state:paused]" role="list" aria-label="Testimonials row 2">
+                <div className={`flex w-max animate-marquee-reverse hover:pause ${selectedTestimonial ? 'pause' : ''}`} role="list" aria-label="Testimonials row 2">
                     {row2Items.map((testimonial, index) => (
                         <div key={`row2-${index}`} role="listitem">
-                            <TestimonialCard testimonial={testimonial} />
+                            <TestimonialCard testimonial={testimonial} onClick={() => setSelectedTestimonial(testimonial)} />
                         </div>
                     ))}
                 </div>
