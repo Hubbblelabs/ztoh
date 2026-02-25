@@ -32,9 +32,9 @@ export default function Footer() {
     return (
         <>
             {/* Wave Divider */}
-            <div className="relative bg-white">
+            <div className="w-full overflow-hidden flex flex-col justify-end">
                 <svg
-                    className="block w-full h-16 md:h-24"
+                    className="block w-full h-16 md:h-24 -mb-px"
                     viewBox="0 0 1440 100"
                     preserveAspectRatio="none"
                     fill="none"
@@ -50,8 +50,8 @@ export default function Footer() {
             <footer className="bg-slate-900 text-slate-300 pt-8 pb-10 md:pt-12 md:pb-12 relative overflow-hidden">
                 {/* Background Decoration */}
                 <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-                    <div className="absolute -top-[20%] -right-[10%] w-[50%] h-[50%] rounded-full bg-secondary/5 blur-3xl" />
-                    <div className="absolute bottom-[20%] -left-[10%] w-[40%] h-[40%] rounded-full bg-primary/10 blur-3xl" />
+                    <div className="absolute top-[10%] -right-[10%] w-[50%] h-[50%] rounded-full bg-secondary/5 blur-3xl" />
+                    <div className="absolute bottom-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-primary/10 blur-3xl" />
                 </div>
 
                 <div className="container mx-auto px-4 md:px-6 relative z-10">
