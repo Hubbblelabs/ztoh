@@ -1,7 +1,6 @@
 'use client';
 
-// import { useState } from "react";
-// import Link from "next/link";
+import { useState, useEffect } from 'react';
 import { motion, Variants } from 'framer-motion';
 import { ArrowRight, CheckCircle, Sparkles, Zap, Award } from 'lucide-react';
 import { useJoinUsModal } from '@/components/providers/ModalProvider';
@@ -34,16 +33,105 @@ const staggerContainer: Variants = {
     },
 };
 
+const quotes = [
+    {
+        line1: 'Thinking is the Capital',
+        line2: 'Enterprise is the Way',
+        subtitle: 'Hard Work is the solution.',
+    },
+    {
+        line1: 'Knowledge is Power',
+        line2: 'Education is the Key',
+        subtitle: 'Excellence is a habit.',
+    },
+    {
+        line1: 'Dream Big, Start Small',
+        line2: 'Consistency is Everything',
+        subtitle: 'Success follows effort.',
+    },
+];
+
+function TypingText({ text, className }: { text: string; className?: string }) {
+    const [displayText, setDisplayText] = useState('');
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    useEffect(() => {
+        setDisplayText('');
+        setCurrentIndex(0);
+    }, [text]);
+
+    useEffect(() => {
+        if (currentIndex < text.length) {
+            const timeout = setTimeout(() => {
+                setDisplayText((prev) => prev + text[currentIndex]);
+                setCurrentIndex((prev) => prev + 1);
+            }, 50);
+            return () => clearTimeout(timeout);
+        }
+    }, [currentIndex, text]);
+
+    return (
+        <span className={className}>
+            {displayText}
+            {currentIndex < text.length && (
+                <span className="animate-pulse text-secondary">|</span>
+            )}
+        </span>
+    );
+}
+
 export default function Hero() {
     const { openJoinUsModal } = useJoinUsModal();
+    const [quoteIndex, setQuoteIndex] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setQuoteIndex((prev) => (prev + 1) % quotes.length);
+        }, 6000);
+        return () => clearInterval(interval);
+    }, []);
+
+    const currentQuote = quotes[quoteIndex];
 
     return (
         <section className="relative min-h-dvh flex items-center pt-20 pb-10 md:pt-32 md:pb-16 overflow-hidden bg-slate-50 selection:bg-secondary/30">
-            {/* Dynamic Background */}
+            {/* Animated Mesh Gradient Background */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute -top-[30%] -right-[10%] w-[70%] h-[70%] rounded-full bg-linear-to-br from-secondary/20 to-primary/20 blur-[120px] animate-pulse-slow" />
                 <div className="absolute top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-linear-to-tr from-accent/10 to-secondary/10 blur-[100px] animate-float" />
                 <div className="absolute bottom-0 right-0 w-full h-1/2 bg-linear-to-t from-white via-white/50 to-transparent" />
+
+                {/* Floating Particles */}
+                {[...Array(6)].map((_, i) => (
+                    <motion.div
+                        key={i}
+                        className="absolute w-2 h-2 rounded-full bg-secondary/30"
+                        style={{
+                            top: `${20 + i * 12}%`,
+                            left: `${10 + i * 15}%`,
+                        }}
+                        animate={{
+                            y: [0, -30, 0],
+                            x: [0, 15, 0],
+                            opacity: [0.3, 0.7, 0.3],
+                        }}
+                        transition={{
+                            duration: 4 + i,
+                            repeat: Infinity,
+                            ease: 'easeInOut',
+                            delay: i * 0.5,
+                        }}
+                    />
+                ))}
+
+                {/* Dot grid pattern */}
+                <div
+                    className="absolute inset-0 opacity-[0.03]"
+                    style={{
+                        backgroundImage: 'radial-gradient(circle, #0f172a 1px, transparent 1px)',
+                        backgroundSize: '24px 24px',
+                    }}
+                />
             </div>
 
             <div className="container mx-auto px-4 md:px-6 relative z-10">
@@ -79,7 +167,12 @@ export default function Hero() {
                                 <span className="relative z-10 text-transparent bg-clip-text bg-linear-to-r from-secondary to-primary">
                                     Hero
                                 </span>
-                                <span className="absolute -bottom-2 left-0 w-full h-3 bg-secondary/20 -skew-x-12 z-0" />
+                                <motion.span
+                                    initial={{ scaleX: 0 }}
+                                    animate={{ scaleX: 1 }}
+                                    transition={{ delay: 0.5, duration: 0.6, ease: 'easeOut' }}
+                                    className="absolute -bottom-2 left-0 w-full h-3 bg-secondary/20 -skew-x-12 z-0 origin-left"
+                                />
                             </span>
                         </motion.h1>
 
@@ -98,7 +191,7 @@ export default function Hero() {
                         >
                             <button
                                 onClick={openJoinUsModal}
-                                className="group relative w-full sm:w-auto px-8 py-4 bg-primary text-white font-bold rounded-xl overflow-hidden shadow-xl shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-1 transition-all"
+                                className="group relative w-full sm:w-auto px-8 py-4 bg-primary text-white font-bold rounded-xl overflow-hidden shadow-xl shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-1 transition-all btn-shine"
                             >
                                 <div className="absolute inset-0 bg-linear-to-r from-secondary to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                 <span className="relative flex items-center justify-center gap-2">
@@ -163,15 +256,24 @@ export default function Hero() {
                                     >
                                         <Sparkles className="text-secondary w-12 h-12" />
                                     </motion.div>
-                                    <h3 className="text-2xl md:text-3xl font-bold mb-2 text-center">
-                                        Thinking is the Capital
-                                    </h3>
-                                    <h3 className="text-2xl md:text-3xl font-bold mb-4 text-center text-transparent bg-clip-text bg-linear-to-r from-secondary to-accent">
-                                        Enterprise is the Way
-                                    </h3>
-                                    <p className="text-slate-400 text-center text-sm max-w-[200px]">
-                                        Hard Work is the solution.
-                                    </p>
+                                    <motion.div
+                                        key={quoteIndex}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        transition={{ duration: 0.5 }}
+                                        className="text-center"
+                                    >
+                                        <h3 className="text-2xl md:text-3xl font-bold mb-2">
+                                            <TypingText text={currentQuote.line1} />
+                                        </h3>
+                                        <h3 className="text-2xl md:text-3xl font-bold mb-4 text-transparent bg-clip-text bg-linear-to-r from-secondary to-accent">
+                                            {currentQuote.line2}
+                                        </h3>
+                                        <p className="text-slate-400 text-sm max-w-[200px] mx-auto">
+                                            {currentQuote.subtitle}
+                                        </p>
+                                    </motion.div>
                                 </div>
                             </div>
                         </div>

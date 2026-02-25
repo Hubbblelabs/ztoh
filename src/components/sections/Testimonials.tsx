@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import ScrollAnimation from '@/components/animations/ScrollAnimation';
-import { Star, Quote } from 'lucide-react';
+import { Star, Quote, MessageSquare } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,27 +15,37 @@ interface Testimonial {
 }
 
 const TestimonialCard = ({ testimonial }: { testimonial: Testimonial }) => (
-    <div className="w-[350px] md:w-[400px] bg-white p-8 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-full mx-4 hover:shadow-lg hover:border-secondary/30 transition-all duration-300">
+    <div className="w-[350px] md:w-[400px] bg-white p-8 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-full mx-4 hover:shadow-lg hover:border-secondary/30 transition-all duration-300 relative group">
+        {/* Decorative quote mark */}
+        <div className="absolute top-4 right-4 opacity-5 group-hover:opacity-10 transition-opacity">
+            <Quote className="w-16 h-16 text-primary" />
+        </div>
+
         <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-secondary to-primary flex items-center justify-center text-white font-bold text-lg">
+            <div className="w-12 h-12 rounded-full bg-linear-to-br from-secondary to-primary flex items-center justify-center text-white font-bold text-lg shadow-md">
                 {testimonial.name.charAt(0)}
             </div>
             <div>
                 <h4 className="font-bold text-slate-900 text-sm">{testimonial.name}</h4>
                 {testimonial.role && (
-                    <p className="text-xs text-primary font-medium">{testimonial.role}</p>
+                    <p className="text-xs text-secondary font-medium">{testimonial.role}</p>
                 )}
             </div>
         </div>
 
-        <div className="flex gap-1 mb-4 text-amber-400">
-            {[...Array(testimonial.rating)].map((_, i) => (
-                <Star key={i} size={16} fill="currentColor" />
+        <div className="flex gap-1 mb-4">
+            {[...Array(5)].map((_, i) => (
+                <Star
+                    key={i}
+                    size={16}
+                    className={i < testimonial.rating ? 'text-amber-400 fill-amber-400' : 'text-slate-200 fill-slate-200'}
+                    aria-hidden="true"
+                />
             ))}
+            <span className="sr-only">{testimonial.rating} out of 5 stars</span>
         </div>
 
-        <div className="mb-6 flex-grow relative">
-            <Quote className="absolute -top-2 -left-2 w-8 h-8 text-slate-100 -z-10 transform -scale-x-100" />
+        <div className="mb-6 grow relative">
             <p className="text-slate-700 leading-relaxed italic relative z-10 text-sm md:text-base">
                 &quot;{testimonial.content}&quot;
             </p>
@@ -70,7 +80,25 @@ export default function Testimonials({ initialData }: { initialData?: Testimonia
         fetchTestimonials();
     }, [initialData]);
 
-    if (loading) return null;
+    if (loading) {
+        return (
+            <section id="testimonials" className="py-10 bg-slate-100 border-t border-slate-200">
+                <div className="container mx-auto px-4 md:px-6">
+                    <div className="text-center mb-16">
+                        <div className="h-8 w-32 bg-slate-200 rounded-full mx-auto mb-4 animate-pulse" />
+                        <div className="h-12 w-96 bg-slate-200 rounded-lg mx-auto mb-4 animate-pulse" />
+                        <div className="h-6 w-64 bg-slate-200 rounded-lg mx-auto animate-pulse" />
+                    </div>
+                    <div className="flex gap-8 justify-center">
+                        {[1, 2, 3].map((i) => (
+                            <div key={i} className="w-[400px] h-[200px] bg-white rounded-2xl animate-pulse" />
+                        ))}
+                    </div>
+                </div>
+            </section>
+        );
+    }
+
     if (testimonials.length === 0) return null;
 
     const firstRow = testimonials.slice(0, Math.ceil(testimonials.length / 2));
@@ -90,24 +118,26 @@ export default function Testimonials({ initialData }: { initialData?: Testimonia
         <section
             id="testimonials"
             className="py-10 bg-slate-100 border-t border-slate-200 relative overflow-hidden"
+            aria-label="Student Testimonials"
         >
             {/* Background Decoration */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-0 left-1/4 w-full h-full bg-[radial-gradient(circle_at_50%_50%,_rgba(14,165,233,0.05),_transparent_40%)]"></div>
+                <div className="absolute top-0 left-1/4 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(14,165,233,0.05),transparent_40%)]"></div>
             </div>
 
             <div className="container mx-auto px-4 md:px-6 mb-16 relative z-10">
                 <div className="text-center max-w-3xl mx-auto">
                     <div className="text-center max-w-3xl mx-auto">
                         <ScrollAnimation>
-                            <div className="inline-block mb-4 px-4 py-1.5 rounded-full bg-white border border-slate-200 shadow-sm text-sm font-semibold text-primary">
+                            <div className="inline-flex items-center gap-2 mb-4 px-4 py-1.5 rounded-full bg-white border border-slate-200 shadow-sm text-sm font-semibold text-primary">
+                                <MessageSquare size={14} className="text-secondary" />
                                 Success Stories
                             </div>
                         </ScrollAnimation>
                         <ScrollAnimation delay={0.1}>
                             <h2 className="text-3xl md:text-5xl font-bold font-heading text-slate-900 mb-6">
                                 Student{' '}
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+                                <span className="text-transparent bg-clip-text bg-linear-to-r from-primary to-secondary">
                                     Testimonials
                                 </span>
                             </h2>
@@ -124,20 +154,24 @@ export default function Testimonials({ initialData }: { initialData?: Testimonia
 
             <div className="relative w-full overflow-hidden">
                 {/* Gradient Masks */}
-                <div className="absolute top-0 left-0 w-32 h-full bg-gradient-to-r from-slate-50 to-transparent z-10 pointer-events-none" />
-                <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-slate-50 to-transparent z-10 pointer-events-none" />
+                <div className="absolute top-0 left-0 w-32 h-full bg-linear-to-r from-slate-100 to-transparent z-10 pointer-events-none" />
+                <div className="absolute top-0 right-0 w-32 h-full bg-linear-to-l from-slate-100 to-transparent z-10 pointer-events-none" />
 
                 {/* Row 1 */}
-                <div className="flex mb-8 w-max animate-marquee hover:[animation-play-state:paused]">
+                <div className="flex mb-8 w-max animate-marquee hover:[animation-play-state:paused]" role="list" aria-label="Testimonials row 1">
                     {row1Items.map((testimonial, index) => (
-                        <TestimonialCard key={`row1-${index}`} testimonial={testimonial} />
+                        <div key={`row1-${index}`} role="listitem">
+                            <TestimonialCard testimonial={testimonial} />
+                        </div>
                     ))}
                 </div>
 
                 {/* Row 2 */}
-                <div className="flex w-max animate-marquee-reverse hover:[animation-play-state:paused]">
+                <div className="flex w-max animate-marquee-reverse hover:[animation-play-state:paused]" role="list" aria-label="Testimonials row 2">
                     {row2Items.map((testimonial, index) => (
-                        <TestimonialCard key={`row2-${index}`} testimonial={testimonial} />
+                        <div key={`row2-${index}`} role="listitem">
+                            <TestimonialCard testimonial={testimonial} />
+                        </div>
                     ))}
                 </div>
             </div>

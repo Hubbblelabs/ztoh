@@ -18,6 +18,9 @@ const services = [
     {
         title: 'SAT Preparation',
         icon: <BookOpen className="w-8 h-8" />,
+        category: 'Study Abroad',
+        categoryColor: 'bg-violet-100 text-violet-700',
+        accentColor: 'from-violet-500 to-purple-500',
         description:
             'The SAT is a standardized test widely used for college admissions in the United States. It has undergone name and scoring changes since its introduction in 1926. The test aims to measure literacy, numeracy, and writing skills relevant to academic success in college. It consists of two main sections: Evidence-Based Reading and Writing (EBRW) and Math, further divided into subsections. Previously, there was an optional essay section, but it has been discontinued in most cases.',
         details:
@@ -26,6 +29,9 @@ const services = [
     {
         title: 'MBA Entrance Exams',
         icon: <TrendingUp className="w-8 h-8" />,
+        category: 'Competitive',
+        categoryColor: 'bg-amber-100 text-amber-700',
+        accentColor: 'from-amber-500 to-orange-500',
         description:
             'In India, there are several top MBA entrance exams that aspiring candidates should be aware of. These exams include CAT, XAT, TANCET, SNAP, NMAT, CMAT, IIFT, MAT, MAH CET, IBSAT, and more. It is essential for MBA aspirants to gather information about these exams and choose the one that suits them best, as appearing for these exams is mandatory for admission to MBA courses.',
         details:
@@ -34,6 +40,9 @@ const services = [
     {
         title: 'IGCSE',
         icon: <Globe className="w-8 h-8" />,
+        category: 'Board Exam',
+        categoryColor: 'bg-emerald-100 text-emerald-700',
+        accentColor: 'from-emerald-500 to-teal-500',
         description:
             'IGCSE is an English language-based secondary qualification similar to GCSE. It is recognized in the UK as equivalent to GCSE. Developed by Cambridge Assessment International Education, other boards like Edexcel, LRN, and Oxford AQA offer their versions. Students usually start in Year 10 and take the test in Year 11. However, in some schools, it starts in Year 9 and ends in Year 10.',
         details:
@@ -42,6 +51,9 @@ const services = [
     {
         title: 'Tamil Nadu State Board',
         icon: <MapPin className="w-8 h-8" />,
+        category: 'Board Exam',
+        categoryColor: 'bg-emerald-100 text-emerald-700',
+        accentColor: 'from-emerald-500 to-green-500',
         description:
             'The Tamil Nadu State Board, also known as State Board School Examinations and Board of Higher Secondary Examinations, is responsible for conducting board examinations for students in Std X and XII.',
         details:
@@ -50,6 +62,9 @@ const services = [
     {
         title: 'CBSE',
         icon: <School className="w-8 h-8" />,
+        category: 'Board Exam',
+        categoryColor: 'bg-emerald-100 text-emerald-700',
+        accentColor: 'from-blue-500 to-cyan-500',
         description:
             'The Central Board of Secondary Education (CBSE) is a national-level education board in India, established in 1929 by the Government of India. It aims to integrate and cooperate in secondary education across states. CBSE has more than 27,000 schools in India and 240 schools in 28 foreign countries affiliated with it. CBSE-affiliated schools follow the NCERT curriculum, especially from classes 9 to 12.',
         details:
@@ -58,6 +73,9 @@ const services = [
     {
         title: 'International Baccalaureate (IB)',
         icon: <Award className="w-8 h-8" />,
+        category: 'Board Exam',
+        categoryColor: 'bg-emerald-100 text-emerald-700',
+        accentColor: 'from-indigo-500 to-blue-500',
         description:
             'The International Baccalaureate (IB) offers a range of academic subject groups for students pursuing the IB Diploma. Students must take one subject from groups 1-5 and can choose a second subject from groups 2-5 or group 6. Most subjects have Higher Level (HL) and Standard Level (SL) options, with a recommendation to take a maximum of three HL subjects.',
         details:
@@ -66,6 +84,9 @@ const services = [
     {
         title: 'NTA & JEE',
         icon: <Cpu className="w-8 h-8" />,
+        category: 'Competitive',
+        categoryColor: 'bg-amber-100 text-amber-700',
+        accentColor: 'from-rose-500 to-pink-500',
         description:
             "The National Testing Agency (NTA) is an independent organization established by the Ministry of Education, Government of India, to conduct standardized tests for admission to higher education institutions. The NTA's mission is to improve equity and quality in education by developing and administering valid, reliable, and transparent assessments. They engage with stakeholders such as students, parents, teachers, experts, and partner institutions to ensure quality and effectiveness.",
         details:
@@ -197,10 +218,18 @@ export default function Services() {
                                 <div
                                     key={index}
                                     onClick={() => setSelectedService(service)}
-                                    className="shrink-0 w-[85vw] md:w-[400px] flex flex-col bg-white p-8 rounded-4xl shadow-lg shadow-slate-200/50 border border-slate-100 hover:shadow-2xl hover:border-secondary/50 hover:-translate-y-2 transition-all duration-300 h-[400px] cursor-pointer group"
+                                    className="shrink-0 w-[85vw] md:w-[400px] flex flex-col bg-white p-8 rounded-4xl shadow-lg shadow-slate-200/50 border border-slate-100 hover:shadow-2xl hover:border-secondary/50 hover:-translate-y-2 transition-all duration-300 h-[400px] cursor-pointer group relative overflow-hidden"
                                 >
-                                    <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-primary shrink-0 group-hover:bg-primary group-hover:text-white transition-colors duration-300 shadow-inner mb-6">
-                                        {service.icon}
+                                    {/* Gradient accent line */}
+                                    <div className={`absolute top-0 left-0 right-0 h-1 bg-linear-to-r ${service.accentColor}`} />
+
+                                    <div className="flex items-start justify-between mb-6">
+                                        <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-primary shrink-0 group-hover:bg-primary group-hover:text-white transition-colors duration-300 shadow-inner">
+                                            {service.icon}
+                                        </div>
+                                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${service.categoryColor}`}>
+                                            {service.category}
+                                        </span>
                                     </div>
                                     <h3 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-primary transition-colors">
                                         {service.title}

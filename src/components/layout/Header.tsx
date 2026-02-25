@@ -36,6 +36,7 @@ export default function Header() {
                 scrolled ? 'py-3' : 'py-5',
                 isOpen ? 'bg-white' : scrolled ? 'bg-white/80 backdrop-blur-md' : 'bg-transparent',
             )}
+            role="banner"
         >
             <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
                 <Link href="/" className="flex items-center gap-3 group">
@@ -60,12 +61,12 @@ export default function Header() {
                 </Link>
 
                 {/* Desktop Nav */}
-                <nav className="hidden md:flex items-center gap-8">
+                <nav className="hidden md:flex items-center gap-8" role="navigation" aria-label="Main navigation">
                     {navLinks.map((link) => (
                         <Link
                             key={link.name}
                             href={link.href}
-                            className="relative text-sm font-semibold text-slate-600 hover:text-primary transition-colors py-1 group"
+                            className="relative text-sm font-semibold text-slate-600 hover:text-primary transition-colors py-1 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:rounded-md"
                         >
                             {link.name}
                             <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary transition-all duration-300 group-hover:w-full" />
@@ -76,15 +77,17 @@ export default function Header() {
                         className="relative px-6 py-2.5 bg-primary text-white text-sm font-bold rounded-full overflow-hidden group shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all"
                     >
                         <span className="relative z-10">Get Started</span>
-                        <div className="absolute inset-0 bg-gradient-to-r from-secondary to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        <div className="absolute inset-0 bg-linear-to-r from-secondary to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </button>
                 </nav>
 
                 {/* Mobile Menu Button */}
                 <button
-                    className="md:hidden p-2 text-primary"
+                    className="md:hidden p-2 text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:rounded-md"
                     onClick={() => setIsOpen(!isOpen)}
-                    aria-label="Toggle menu"
+                    aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
+                    aria-expanded={isOpen}
+                    aria-controls="mobile-nav"
                 >
                     {isOpen ? <X size={24} /> : <Menu size={24} />}
                 </button>
@@ -97,9 +100,10 @@ export default function Header() {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
+                        id="mobile-nav"
                         className="md:hidden absolute top-full left-0 w-full bg-white shadow-xl border-t border-slate-100 overflow-hidden"
                     >
-                        <nav className="flex flex-col p-6 gap-4">
+                        <nav className="flex flex-col p-6 gap-4" role="navigation" aria-label="Mobile navigation">
                             {navLinks.map((link) => (
                                 <Link
                                     key={link.name}
