@@ -13,16 +13,19 @@ export interface IStudent extends Document {
     comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
-const StudentSchema: Schema = new Schema({
-    name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    phone: { type: String },
-    enrolledIn: [{ type: String }],
-    isActive: { type: Boolean, default: true },
-}, {
-    timestamps: true,
-});
+const StudentSchema: Schema = new Schema(
+    {
+        name: { type: String, required: true },
+        email: { type: String, required: true, unique: true },
+        password: { type: String, required: true },
+        phone: { type: String },
+        enrolledIn: [{ type: String }],
+        isActive: { type: Boolean, default: true },
+    },
+    {
+        timestamps: true,
+    },
+);
 
 StudentSchema.pre('save', async function (this: IStudent) {
     if (!this.isModified('password')) return;
@@ -35,7 +38,9 @@ StudentSchema.pre('save', async function (this: IStudent) {
     }
 });
 
-StudentSchema.methods.comparePassword = async function (candidatePassword: string): Promise<boolean> {
+StudentSchema.methods.comparePassword = async function (
+    candidatePassword: string,
+): Promise<boolean> {
     try {
         if (!this.password) {
             console.error('Student password is missing');
@@ -48,6 +53,7 @@ StudentSchema.methods.comparePassword = async function (candidatePassword: strin
     }
 };
 
-const Student: Model<IStudent> = mongoose.models.Student || mongoose.model<IStudent>('Student', StudentSchema);
+const Student: Model<IStudent> =
+    mongoose.models.Student || mongoose.model<IStudent>('Student', StudentSchema);
 
 export default Student;

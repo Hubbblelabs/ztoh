@@ -16,31 +16,32 @@ export async function POST(request: Request) {
         const { to, subject, html, attachments } = body;
 
         if (!to || !subject || !html) {
-            return NextResponse.json(
-                { error: 'Missing required fields' },
-                { status: 400 }
-            );
+            return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
         }
 
         await connectDB();
         const settings = await Settings.findOne();
-        const fromEmail = settings?.emailSettings?.fromEmail || process.env.FROM_EMAIL || 'Zero To Hero <onboarding@resend.dev>';
+        const fromEmail =
+            settings?.emailSettings?.fromEmail ||
+            process.env.FROM_EMAIL ||
+            'Zero To Hero <onboarding@resend.dev>';
 
         // Prepare attachments for Resend
-        const emailAttachments = attachments?.map((att: any) => {
-            const base64Content = att.content.split(',')[1] || att.content;
-            return {
-                filename: att.name,
-                content: Buffer.from(base64Content, 'base64'),
-            };
-        }) || [];
+        const emailAttachments =
+            attachments?.map((att: any) => {
+                const base64Content = att.content.split(',')[1] || att.content;
+                return {
+                    filename: att.name,
+                    content: Buffer.from(base64Content, 'base64'),
+                };
+            }) || [];
 
         const data = await resend.emails.send({
             from: fromEmail,
             to: to,
             subject: subject,
             html: html,
-            attachments: emailAttachments
+            attachments: emailAttachments,
         });
 
         if (data.error) {
@@ -50,9 +51,6 @@ export async function POST(request: Request) {
         return NextResponse.json(data);
     } catch (error) {
         console.error('Error sending email:', error);
-        return NextResponse.json(
-            { error: 'Failed to send email' },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: 'Failed to send email' }, { status: 500 });
     }
 }

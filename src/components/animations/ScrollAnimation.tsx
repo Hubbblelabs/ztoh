@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { motion, useInView, Variants, UseInViewOptions } from "framer-motion";
-import { useRef } from "react";
+import { motion, useInView, Variants, UseInViewOptions } from 'framer-motion';
+import { useRef } from 'react';
 
 interface ScrollAnimationProps {
     children: React.ReactNode;
@@ -19,11 +19,11 @@ export const defaultVariants: Variants = {
 
 export default function ScrollAnimation({
     children,
-    className = "",
+    className = '',
     variants = defaultVariants,
     delay = 0,
     duration = 0.5,
-    viewport = { once: true, margin: "-50px" },
+    viewport = { once: true, margin: '-50px' },
 }: ScrollAnimationProps) {
     const ref = useRef(null);
     const isInView = useInView(ref, viewport);
@@ -32,9 +32,9 @@ export default function ScrollAnimation({
         <motion.div
             ref={ref}
             initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
+            animate={isInView ? 'visible' : 'hidden'}
             variants={variants}
-            transition={{ duration, delay, ease: "easeOut" }}
+            transition={{ duration, delay, ease: 'easeOut' }}
             className={className}
         >
             {children}

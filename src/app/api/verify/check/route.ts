@@ -19,7 +19,10 @@ export async function POST(req: Request) {
         const isAllowed = await checkRateLimit(`verify_check_${ip}`, 5, 10 * 60 * 1000);
 
         if (!isAllowed) {
-            return NextResponse.json({ error: 'Too many attempts. Please try again later.' }, { status: 429 });
+            return NextResponse.json(
+                { error: 'Too many attempts. Please try again later.' },
+                { status: 429 },
+            );
         }
 
         // Find code
@@ -38,7 +41,6 @@ export async function POST(req: Request) {
         await VerificationCode.deleteOne({ _id: record._id });
 
         return NextResponse.json({ message: 'Email verified successfully' });
-
     } catch (error) {
         console.error('Error verifying code:', error);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { cn } from "@/lib/utils";
+import * as React from 'react';
+import { cn } from '@/lib/utils';
 
-interface FloatingLabelInputProps extends React.ComponentProps<"input"> {
+interface FloatingLabelInputProps extends React.ComponentProps<'input'> {
     label: string;
     required?: boolean;
 }
@@ -13,10 +13,12 @@ interface FloatingLabelInputProps extends React.ComponentProps<"input"> {
 const FloatingLabelInput = React.forwardRef<HTMLInputElement, FloatingLabelInputProps>(
     ({ className, type, label, ...props }, ref) => {
         return (
-            <div className={cn(
-                "group flex h-12 w-full items-center rounded-md border border-zinc-300 dark:border-zinc-700 bg-background px-3 transition-colors focus-within:ring-2 focus-within:ring-zinc-200 dark:focus-within:ring-zinc-500 focus-within:border-zinc-400 dark:focus-within:border-zinc-400",
-                className
-            )}>
+            <div
+                className={cn(
+                    'group flex h-12 w-full items-center rounded-md border border-zinc-300 dark:border-zinc-700 bg-background px-3 transition-colors focus-within:ring-2 focus-within:ring-zinc-200 dark:focus-within:ring-zinc-500 focus-within:border-zinc-400 dark:focus-within:border-zinc-400',
+                    className,
+                )}
+            >
                 <label className="text-xs font-medium text-slate-500 uppercase tracking-wide whitespace-nowrap flex items-center mr-1 select-none pointer-events-none">
                     {label}
                     <span className="mx-1">:</span>
@@ -29,11 +31,11 @@ const FloatingLabelInput = React.forwardRef<HTMLInputElement, FloatingLabelInput
                 />
             </div>
         );
-    }
+    },
 );
-FloatingLabelInput.displayName = "FloatingLabelInput";
+FloatingLabelInput.displayName = 'FloatingLabelInput';
 
-interface FloatingLabelTextareaProps extends React.ComponentProps<"textarea"> {
+interface FloatingLabelTextareaProps extends React.ComponentProps<'textarea'> {
     label: string;
     required?: boolean;
 }
@@ -41,10 +43,12 @@ interface FloatingLabelTextareaProps extends React.ComponentProps<"textarea"> {
 const FloatingLabelTextarea = React.forwardRef<HTMLTextAreaElement, FloatingLabelTextareaProps>(
     ({ className, label, ...props }, ref) => {
         return (
-            <div className={cn(
-                "flex w-full rounded-md border border-zinc-300 dark:border-zinc-700 bg-background px-3 py-3 transition-colors focus-within:ring-2 focus-within:ring-zinc-200 dark:focus-within:ring-zinc-500 focus-within:border-zinc-400 dark:focus-within:border-zinc-400",
-                className
-            )}>
+            <div
+                className={cn(
+                    'flex w-full rounded-md border border-zinc-300 dark:border-zinc-700 bg-background px-3 py-3 transition-colors focus-within:ring-2 focus-within:ring-zinc-200 dark:focus-within:ring-zinc-500 focus-within:border-zinc-400 dark:focus-within:border-zinc-400',
+                    className,
+                )}
+            >
                 <label
                     className="text-xs font-medium text-slate-500 uppercase tracking-wide whitespace-nowrap flex items-start mt-0.5 mr-1 select-none pointer-events-none"
                     style={{ paddingTop: '2px' }} // Fine-tune alignment with first line of text
@@ -59,8 +63,8 @@ const FloatingLabelTextarea = React.forwardRef<HTMLTextAreaElement, FloatingLabe
                 />
             </div>
         );
-    }
+    },
 );
-FloatingLabelTextarea.displayName = "FloatingLabelTextarea";
+FloatingLabelTextarea.displayName = 'FloatingLabelTextarea';
 
 export { FloatingLabelInput, FloatingLabelTextarea };

@@ -35,7 +35,7 @@ export async function POST(request: Request) {
         if (!name || !email || !password) {
             return NextResponse.json(
                 { error: 'Name, email, and password are required' },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
@@ -44,7 +44,7 @@ export async function POST(request: Request) {
         if (existingStaff) {
             return NextResponse.json(
                 { error: 'A staff member with this email already exists' },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
@@ -65,7 +65,7 @@ export async function POST(request: Request) {
         console.error('Error creating staff:', error);
         return NextResponse.json(
             { error: 'Internal server error: ' + error.message },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }

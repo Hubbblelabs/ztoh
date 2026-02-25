@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { motion, AnimatePresence, Variants } from "framer-motion";
-import { X } from "lucide-react";
-import { useEffect } from "react";
+import { motion, AnimatePresence, Variants } from 'framer-motion';
+import { X } from 'lucide-react';
+import { useEffect } from 'react';
 
 interface ServiceModalProps {
     isOpen: boolean;
@@ -18,34 +18,34 @@ interface ServiceModalProps {
 export default function ServiceModal({ isOpen, onClose, service }: ServiceModalProps) {
     useEffect(() => {
         if (isOpen) {
-            document.body.style.overflow = "hidden";
+            document.body.style.overflow = 'hidden';
         } else {
-            document.body.style.overflow = "unset";
+            document.body.style.overflow = 'unset';
         }
         return () => {
-            document.body.style.overflow = "unset";
+            document.body.style.overflow = 'unset';
         };
     }, [isOpen]);
 
     const modalVariants: Variants = {
-        hidden: { x: "100%" },
+        hidden: { x: '100%' },
         visible: {
             x: 0,
             transition: {
-                type: "spring",
+                type: 'spring',
                 damping: 30,
                 stiffness: 300,
-                mass: 0.8
-            }
+                mass: 0.8,
+            },
         },
         exit: {
-            x: "100%",
+            x: '100%',
             transition: {
-                type: "spring",
+                type: 'spring',
                 damping: 30,
-                stiffness: 300
-            }
-        }
+                stiffness: 300,
+            },
+        },
     };
 
     const contentVariants: Variants = {
@@ -56,9 +56,9 @@ export default function ServiceModal({ isOpen, onClose, service }: ServiceModalP
             transition: {
                 delay: 0.2,
                 duration: 0.4,
-                ease: "easeOut"
-            }
-        }
+                ease: 'easeOut',
+            },
+        },
     };
 
     const staggerContainer: Variants = {
@@ -67,9 +67,9 @@ export default function ServiceModal({ isOpen, onClose, service }: ServiceModalP
             opacity: 1,
             transition: {
                 staggerChildren: 0.1,
-                delayChildren: 0.3
-            }
-        }
+                delayChildren: 0.3,
+            },
+        },
     };
 
     return (

@@ -11,7 +11,7 @@ export async function POST(request: Request) {
         if (!name || !email || !password) {
             return NextResponse.json(
                 { error: 'Name, email, and password are required' },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
@@ -19,7 +19,7 @@ export async function POST(request: Request) {
         if (existingAdmin) {
             return NextResponse.json(
                 { error: 'Admin with this email already exists' },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
@@ -30,15 +30,17 @@ export async function POST(request: Request) {
         });
 
         return NextResponse.json(
-            { message: 'Admin created successfully', admin: { id: newAdmin._id, name: newAdmin.name, email: newAdmin.email } },
-            { status: 201 }
+            {
+                message: 'Admin created successfully',
+                admin: { id: newAdmin._id, name: newAdmin.name, email: newAdmin.email },
+            },
+            { status: 201 },
         );
-
     } catch (error: any) {
         console.error('Error creating admin:', error);
         return NextResponse.json(
             { error: error.message || 'Failed to create admin' },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }
@@ -49,9 +51,6 @@ export async function GET() {
         const admins = await Admin.find({}).select('-password').sort({ createdAt: -1 });
         return NextResponse.json(admins);
     } catch (_error) {
-        return NextResponse.json(
-            { error: 'Failed to fetch admins' },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: 'Failed to fetch admins' }, { status: 500 });
     }
 }

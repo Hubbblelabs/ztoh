@@ -1,12 +1,8 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
-import {
-    Users,
-    Check,
-    X,
-} from "lucide-react";
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { Users, Check, X } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useSetPageTitle } from '@/hooks/useSetPageTitle';
 
@@ -31,7 +27,7 @@ export default function StaffGroupsPage() {
     const { data: session } = useSession();
     const [groups, setGroups] = useState<Group[]>([]);
     const [loading, setLoading] = useState(true);
-    const [toast, setToast] = useState<{ message: string, type: 'success' | 'error' } | null>(null);
+    const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
     useEffect(() => {
         fetchData();
@@ -39,15 +35,15 @@ export default function StaffGroupsPage() {
 
     const fetchData = async () => {
         try {
-            const res = await fetch("/api/staff/groups");
+            const res = await fetch('/api/staff/groups');
 
             if (res.ok) {
                 const groupsData = await res.json();
                 setGroups(groupsData.groups);
             }
         } catch (error) {
-            console.error("Failed to fetch data");
-            showToast("Failed to load data", "error");
+            console.error('Failed to fetch data');
+            showToast('Failed to load data', 'error');
         } finally {
             setLoading(false);
         }
@@ -64,7 +60,10 @@ export default function StaffGroupsPage() {
                 {/* Grid Skeleton */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {[1, 2, 3, 4, 5, 6].map((i) => (
-                        <div key={i} className="bg-card rounded-lg p-6 shadow-sm border border-border">
+                        <div
+                            key={i}
+                            className="bg-card rounded-lg p-6 shadow-sm border border-border"
+                        >
                             <div className="flex justify-between items-start mb-4">
                                 <Skeleton className="h-12 w-12 rounded-md" />
                             </div>
@@ -94,7 +93,9 @@ export default function StaffGroupsPage() {
         <div className="space-y-6">
             {/* Toast Notification */}
             {toast && (
-                <div className={`fixed bottom-4 right-4 z-50 px-6 py-3 rounded-md shadow-2xl flex items-center gap-3 ${toast.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-500 text-white'} transition-all duration-300`}>
+                <div
+                    className={`fixed bottom-4 right-4 z-50 px-6 py-3 rounded-md shadow-2xl flex items-center gap-3 ${toast.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-500 text-white'} transition-all duration-300`}
+                >
                     {toast.type === 'success' ? <Check size={18} /> : <X size={18} />}
                     <span className="font-medium text-sm">{toast.message}</span>
                 </div>
@@ -106,11 +107,16 @@ export default function StaffGroupsPage() {
                     <div className="col-span-full py-12 text-center bg-card rounded-lg border border-dashed border-border text-muted-foreground">
                         <Users className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
                         <h3 className="text-lg font-medium text-foreground">No Groups Assigned</h3>
-                        <p className="text-muted-foreground mb-6 max-w-sm mx-auto">You haven&apos;t been assigned any student groups yet.</p>
+                        <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
+                            You haven&apos;t been assigned any student groups yet.
+                        </p>
                     </div>
                 ) : (
                     groups.map((group) => (
-                        <div key={group._id} className="bg-card rounded-lg p-6 shadow-sm border border-border hover:shadow-md transition-shadow group">
+                        <div
+                            key={group._id}
+                            className="bg-card rounded-lg p-6 shadow-sm border border-border hover:shadow-md transition-shadow group"
+                        >
                             <div className="flex justify-between items-start mb-4">
                                 <div className="p-3 bg-blue-50 dark:bg-blue-900/30 rounded-md">
                                     <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
@@ -119,7 +125,7 @@ export default function StaffGroupsPage() {
 
                             <h3 className="text-lg font-bold text-foreground mb-1">{group.name}</h3>
                             <p className="text-sm text-muted-foreground mb-4 line-clamp-2 min-h-[2.5em]">
-                                {group.description || "No description provided"}
+                                {group.description || 'No description provided'}
                             </p>
 
                             <div className="pt-4 border-t border-border">
@@ -131,7 +137,11 @@ export default function StaffGroupsPage() {
                                 </div>
                                 <div className="mt-3 flex -space-x-2 px-2 py-1">
                                     {group.studentIds.slice(0, 5).map((student, i) => (
-                                        <div key={i} className="shrink-0 h-8 w-8 rounded-full ring-2 ring-background bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-xs font-bold text-indigo-600 dark:text-indigo-400" title={student.name}>
+                                        <div
+                                            key={i}
+                                            className="shrink-0 h-8 w-8 rounded-full ring-2 ring-background bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-xs font-bold text-indigo-600 dark:text-indigo-400"
+                                            title={student.name}
+                                        >
                                             {student.name.charAt(0)}
                                         </div>
                                     ))}

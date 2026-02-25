@@ -1,26 +1,23 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { NextResponse } from "next/server";
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
-  try {
-    const { messages, pageContent } = await req.json();
-    const apiKey = process.env.GEMINI_API_KEY;
+    try {
+        const { messages, pageContent } = await req.json();
+        const apiKey = process.env.GEMINI_API_KEY;
 
-    if (!apiKey) {
-      return NextResponse.json(
-        { error: "GEMINI_API_KEY is not set" },
-        { status: 500 }
-      );
-    }
+        if (!apiKey) {
+            return NextResponse.json({ error: 'GEMINI_API_KEY is not set' }, { status: 500 });
+        }
 
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-flash-lite-latest" });
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const model = genAI.getGenerativeModel({ model: 'gemini-flash-lite-latest' });
 
-    const lastMessage = messages[messages.length - 1];
-    const userQuestion = lastMessage.content;
+        const lastMessage = messages[messages.length - 1];
+        const userQuestion = lastMessage.content;
 
-    // UPDATED PROMPT HERE
-    const prompt = `
+        // UPDATED PROMPT HERE
+        const prompt = `
       You are a helpful AI assistant for a website.
 
       The user is currently viewing a page with the following content:
@@ -41,16 +38,13 @@ export async function POST(req: Request) {
       - Keep the response concise, friendly, and helpful.
 `;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text();
 
-    return NextResponse.json({ role: "assistant", content: text });
-  } catch (error) {
-    console.error("Error in chat API:", error);
-    return NextResponse.json(
-      { error: "Failed to process chat request" },
-      { status: 500 }
-    );
-  }
+        return NextResponse.json({ role: 'assistant', content: text });
+    } catch (error) {
+        console.error('Error in chat API:', error);
+        return NextResponse.json({ error: 'Failed to process chat request' }, { status: 500 });
+    }
 }

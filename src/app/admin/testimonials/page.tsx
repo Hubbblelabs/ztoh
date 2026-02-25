@@ -34,7 +34,7 @@ export default function TestimonialsPage() {
         role: '',
         content: '',
         rating: 5,
-        isActive: true
+        isActive: true,
     });
 
     const showToast = (message: string, type: 'success' | 'error') => {
@@ -84,7 +84,10 @@ export default function TestimonialsPage() {
             });
 
             if (response.ok) {
-                showToast(editingTestimonial ? 'Testimonial updated' : 'Testimonial created', 'success');
+                showToast(
+                    editingTestimonial ? 'Testimonial updated' : 'Testimonial created',
+                    'success',
+                );
                 setIsModalOpen(false);
                 fetchTestimonials();
                 resetForm();
@@ -122,7 +125,7 @@ export default function TestimonialsPage() {
             role: '',
             content: '',
             rating: 5,
-            isActive: true
+            isActive: true,
         });
         setEditingTestimonial(null);
     };
@@ -134,7 +137,7 @@ export default function TestimonialsPage() {
             role: testimonial.role,
             content: testimonial.content,
             rating: testimonial.rating,
-            isActive: testimonial.isActive
+            isActive: testimonial.isActive,
         });
         setIsModalOpen(true);
     };
@@ -150,7 +153,10 @@ export default function TestimonialsPage() {
                 {/* Grid Skeleton */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {[1, 2, 3, 4, 5, 6].map((i) => (
-                        <div key={i} className="bg-card p-6 rounded-lg shadow-sm border border-border flex flex-col">
+                        <div
+                            key={i}
+                            className="bg-card p-6 rounded-lg shadow-sm border border-border flex flex-col"
+                        >
                             <div className="flex justify-between items-start mb-4">
                                 <div className="flex gap-1">
                                     {[1, 2, 3, 4, 5].map((j) => (
@@ -184,7 +190,9 @@ export default function TestimonialsPage() {
         <div className="space-y-6">
             {/* Toast */}
             {toast && (
-                <div className={`fixed bottom-4 right-4 z-50 px-6 py-3 rounded-md shadow-2xl flex items-center gap-3 ${toast.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-500 text-white'}`}>
+                <div
+                    className={`fixed bottom-4 right-4 z-50 px-6 py-3 rounded-md shadow-2xl flex items-center gap-3 ${toast.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-500 text-white'}`}
+                >
                     {toast.type === 'success' ? <Check size={18} /> : <X size={18} />}
                     <span className="font-medium text-sm">{toast.message}</span>
                 </div>
@@ -193,7 +201,10 @@ export default function TestimonialsPage() {
             {/* Action Button */}
             <div className="flex justify-end">
                 <button
-                    onClick={() => { resetForm(); setIsModalOpen(true); }}
+                    onClick={() => {
+                        resetForm();
+                        setIsModalOpen(true);
+                    }}
                     className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm font-semibold hover:bg-primary/90 transition-colors"
                 >
                     <Plus size={16} />
@@ -204,11 +215,18 @@ export default function TestimonialsPage() {
             {/* List */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {testimonials.map((testimonial) => (
-                    <div key={testimonial._id} className="bg-card p-6 rounded-lg shadow-sm border border-border flex flex-col">
+                    <div
+                        key={testimonial._id}
+                        className="bg-card p-6 rounded-lg shadow-sm border border-border flex flex-col"
+                    >
                         <div className="flex justify-between items-start mb-4">
                             <div className="flex gap-1">
                                 {[...Array(testimonial.rating)].map((_, i) => (
-                                    <Star key={i} size={16} className="fill-amber-400 text-amber-400" />
+                                    <Star
+                                        key={i}
+                                        size={16}
+                                        className="fill-amber-400 text-amber-400"
+                                    />
                                 ))}
                             </div>
                             <div className="flex gap-2">
@@ -229,14 +247,18 @@ export default function TestimonialsPage() {
 
                         <div className="mb-4 flex-grow">
                             <Quote className="w-6 h-6 text-slate-200 mb-2" />
-                            <p className="text-muted-foreground text-sm italic line-clamp-4">"{testimonial.content}"</p>
+                            <p className="text-muted-foreground text-sm italic line-clamp-4">
+                                "{testimonial.content}"
+                            </p>
                         </div>
 
                         <div className="pt-4 border-t border-border">
                             <h4 className="font-bold text-foreground">{testimonial.name}</h4>
                             <p className="text-xs text-muted-foreground">{testimonial.role}</p>
                             <div className="mt-2">
-                                <span className={`text-xs px-2 py-1 rounded-full ${testimonial.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-muted text-muted-foreground'}`}>
+                                <span
+                                    className={`text-xs px-2 py-1 rounded-full ${testimonial.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-muted text-muted-foreground'}`}
+                                >
                                     {testimonial.isActive ? 'Active' : 'Inactive'}
                                 </span>
                             </div>
@@ -253,55 +275,79 @@ export default function TestimonialsPage() {
                             <h2 className="text-xl font-bold text-foreground">
                                 {editingTestimonial ? 'Edit Testimonial' : 'Add Testimonial'}
                             </h2>
-                            <button onClick={() => setIsModalOpen(false)} className="text-muted-foreground hover:text-muted-foreground">
+                            <button
+                                onClick={() => setIsModalOpen(false)}
+                                className="text-muted-foreground hover:text-muted-foreground"
+                            >
                                 <X size={24} />
                             </button>
                         </div>
 
                         <form onSubmit={handleSubmit} className="p-6 space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-foreground mb-1">Name</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">
+                                    Name
+                                </label>
                                 <input
                                     type="text"
                                     required
                                     value={formData.name}
-                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                    onChange={(e) =>
+                                        setFormData({ ...formData, name: e.target.value })
+                                    }
                                     className="w-full px-4 py-2 rounded-md border border-border focus:outline-none focus:ring-2 focus:ring-slate-900"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-foreground mb-1">Role / Title</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">
+                                    Role / Title
+                                </label>
                                 <input
                                     type="text"
                                     required
                                     value={formData.role}
-                                    onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                                    onChange={(e) =>
+                                        setFormData({ ...formData, role: e.target.value })
+                                    }
                                     className="w-full px-4 py-2 rounded-md border border-border focus:outline-none focus:ring-2 focus:ring-slate-900"
                                     placeholder="e.g. Student - CBSE 12"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-foreground mb-1">Content</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">
+                                    Content
+                                </label>
                                 <textarea
                                     required
                                     value={formData.content}
-                                    onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                                    onChange={(e) =>
+                                        setFormData({ ...formData, content: e.target.value })
+                                    }
                                     className="w-full px-4 py-2 rounded-md border border-border focus:outline-none focus:ring-2 focus:ring-slate-900 h-32 resize-none"
                                 />
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-foreground mb-1">Rating</label>
-                                    <Select value={formData.rating.toString()} onValueChange={(value) => setFormData({ ...formData, rating: Number(value) })}>
+                                    <label className="block text-sm font-medium text-foreground mb-1">
+                                        Rating
+                                    </label>
+                                    <Select
+                                        value={formData.rating.toString()}
+                                        onValueChange={(value) =>
+                                            setFormData({ ...formData, rating: Number(value) })
+                                        }
+                                    >
                                         <SelectTrigger className="w-full h-10 rounded-md">
                                             <SelectValue placeholder="Select rating" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {[1, 2, 3, 4, 5].map(r => (
-                                                <SelectItem key={r} value={r.toString()}>{r} Stars</SelectItem>
+                                            {[1, 2, 3, 4, 5].map((r) => (
+                                                <SelectItem key={r} value={r.toString()}>
+                                                    {r} Stars
+                                                </SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
@@ -312,10 +358,17 @@ export default function TestimonialsPage() {
                                         <input
                                             type="checkbox"
                                             checked={formData.isActive}
-                                            onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                                            onChange={(e) =>
+                                                setFormData({
+                                                    ...formData,
+                                                    isActive: e.target.checked,
+                                                })
+                                            }
                                             className="w-4 h-4 rounded border-border text-foreground focus:ring-slate-900"
                                         />
-                                        <span className="text-sm font-medium text-foreground">Active</span>
+                                        <span className="text-sm font-medium text-foreground">
+                                            Active
+                                        </span>
                                     </label>
                                 </div>
                             </div>
@@ -342,4 +395,3 @@ export default function TestimonialsPage() {
         </div>
     );
 }
-

@@ -3,10 +3,7 @@ import dbConnect from '@/lib/db';
 import ContactRequest from '@/models/ContactRequest';
 import JoinRequest from '@/models/JoinRequest';
 
-export async function DELETE(
-    request: Request,
-    props: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(request: Request, props: { params: Promise<{ id: string }> }) {
     try {
         await dbConnect();
         const params = await props.params;
@@ -33,10 +30,7 @@ export async function DELETE(
     }
 }
 
-export async function PUT(
-    request: Request,
-    props: { params: Promise<{ id: string }> }
-) {
+export async function PUT(request: Request, props: { params: Promise<{ id: string }> }) {
     try {
         await dbConnect();
         const params = await props.params;

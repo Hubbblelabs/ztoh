@@ -1,18 +1,14 @@
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/authOptions';
+import dbConnect from '@/lib/db';
+import TeachingHours from '@/models/TeachingHours';
 
-import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/authOptions";
-import dbConnect from "@/lib/db";
-import TeachingHours from "@/models/TeachingHours";
-
-export async function PUT(
-    req: Request,
-    { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         const session = await getServerSession(authOptions);
-        if (!session || (session.user as any).role !== "staff") {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        if (!session || (session.user as any).role !== 'staff') {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
         await dbConnect();
@@ -20,7 +16,7 @@ export async function PUT(
         const { id } = resolvedParams;
 
         if (!id) {
-            return NextResponse.json({ error: "ID is required" }, { status: 400 });
+            return NextResponse.json({ error: 'ID is required' }, { status: 400 });
         }
 
         const data = await req.json();
@@ -30,7 +26,10 @@ export async function PUT(
         const record = await TeachingHours.findOne({ _id: id, staffId: (session.user as any).id });
 
         if (!record) {
-            return NextResponse.json({ error: "Record not found or unauthorized" }, { status: 404 });
+            return NextResponse.json(
+                { error: 'Record not found or unauthorized' },
+                { status: 404 },
+            );
         }
 
         record.date = new Date(date);
@@ -52,24 +51,17 @@ export async function PUT(
         await record.save();
 
         return NextResponse.json({ record }, { status: 200 });
-
     } catch (error) {
-        console.error("Error updating teaching hour:", error);
-        return NextResponse.json(
-            { error: "Internal Server Error" },
-            { status: 500 }
-        );
+        console.error('Error updating teaching hour:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }
 
-export async function DELETE(
-    req: Request,
-    { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         const session = await getServerSession(authOptions);
-        if (!session || (session.user as any).role !== "staff") {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        if (!session || (session.user as any).role !== 'staff') {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
         await dbConnect();
@@ -78,20 +70,19 @@ export async function DELETE(
 
         const record = await TeachingHours.findOneAndDelete({
             _id: id,
-            staffId: (session.user as any).id
+            staffId: (session.user as any).id,
         });
 
         if (!record) {
-            return NextResponse.json({ error: "Record not found or unauthorized" }, { status: 404 });
+            return NextResponse.json(
+                { error: 'Record not found or unauthorized' },
+                { status: 404 },
+            );
         }
 
-        return NextResponse.json({ message: "Record deleted successfully" }, { status: 200 });
-
+        return NextResponse.json({ message: 'Record deleted successfully' }, { status: 200 });
     } catch (error) {
-        console.error("Error deleting teaching hour:", error);
-        return NextResponse.json(
-            { error: "Internal Server Error" },
-            { status: 500 }
-        );
+        console.error('Error deleting teaching hour:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }

@@ -1,4 +1,3 @@
-
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
@@ -8,10 +7,7 @@ import Group from '@/models/Group';
 import TeachingHours from '@/models/TeachingHours';
 
 // PUT - Update a student
-export async function PUT(
-    request: Request,
-    { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         const session = await getServerSession(authOptions);
         if (!session || (session.user as any).role !== 'admin') {
@@ -32,10 +28,7 @@ export async function PUT(
         if (email && email !== student.email) {
             const existingStudent = await Student.findOne({ email });
             if (existingStudent) {
-                return NextResponse.json(
-                    { error: 'Email already in use' },
-                    { status: 400 }
-                );
+                return NextResponse.json({ error: 'Email already in use' }, { status: 400 });
             }
             student.email = email;
         }
@@ -54,18 +47,12 @@ export async function PUT(
         return NextResponse.json({ success: true, student });
     } catch (error) {
         console.error('Error updating student:', error);
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }
 
 // DELETE - Delete a student
-export async function DELETE(
-    request: Request,
-    { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         const session = await getServerSession(authOptions);
         if (!session || (session.user as any).role !== 'admin') {
@@ -83,23 +70,14 @@ export async function DELETE(
         }
 
         // Remove student from any groups they are part of
-        await Group.updateMany(
-            { studentIds: id },
-            { $pull: { studentIds: id } }
-        );
+        await Group.updateMany({ studentIds: id }, { $pull: { studentIds: id } });
 
         // Remove student from any teaching hours logs
-        await TeachingHours.updateMany(
-            { studentIds: id },
-            { $pull: { studentIds: id } }
-        );
+        await TeachingHours.updateMany({ studentIds: id }, { $pull: { studentIds: id } });
 
         return NextResponse.json({ success: true, message: 'Student deleted successfully' });
     } catch (error) {
         console.error('Error deleting student:', error);
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }

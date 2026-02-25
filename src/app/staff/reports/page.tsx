@@ -22,8 +22,18 @@ interface MonthlyReport {
 }
 
 const MONTH_NAMES = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
 ];
 
 export default function StaffReportsPage() {
@@ -53,7 +63,7 @@ export default function StaffReportsPage() {
         return new Date(dateString).toLocaleDateString('en-US', {
             month: 'short',
             day: 'numeric',
-            year: 'numeric'
+            year: 'numeric',
         });
     };
 
@@ -63,7 +73,10 @@ export default function StaffReportsPage() {
                 {/* Reports Skeleton */}
                 <div className="space-y-4">
                     {[1, 2, 3].map((i) => (
-                        <div key={i} className="bg-card rounded-lg shadow-sm border border-border p-6">
+                        <div
+                            key={i}
+                            className="bg-card rounded-lg shadow-sm border border-border p-6"
+                        >
                             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                                 <div className="flex items-start gap-4">
                                     <Skeleton className="h-12 w-12 rounded-md" />
@@ -101,7 +114,10 @@ export default function StaffReportsPage() {
             {reports.length > 0 ? (
                 <div className="space-y-4">
                     {reports.map((report) => (
-                        <div key={report._id} className="bg-card rounded-lg shadow-sm border border-border p-6">
+                        <div
+                            key={report._id}
+                            className="bg-card rounded-lg shadow-sm border border-border p-6"
+                        >
                             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                                 <div className="flex items-start gap-4">
                                     <div className="p-3 bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 rounded-md">
@@ -112,7 +128,8 @@ export default function StaffReportsPage() {
                                             {MONTH_NAMES[report.month - 1]} {report.year}
                                         </h3>
                                         <p className="text-sm text-muted-foreground mt-1">
-                                            {formatDate(report.startDate)} - {formatDate(report.endDate)}
+                                            {formatDate(report.startDate)} -{' '}
+                                            {formatDate(report.endDate)}
                                         </p>
                                         <p className="text-xs text-muted-foreground mt-1">
                                             Generated: {formatDate(report.generatedAt)}
@@ -131,7 +148,9 @@ export default function StaffReportsPage() {
 
                             {report.subjectBreakdown && report.subjectBreakdown.length > 0 && (
                                 <div className="mt-6 pt-6 border-t border-border">
-                                    <h4 className="text-sm font-semibold text-muted-foreground mb-3">Subject Breakdown</h4>
+                                    <h4 className="text-sm font-semibold text-muted-foreground mb-3">
+                                        Subject Breakdown
+                                    </h4>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                                         {report.subjectBreakdown.map((item, index) => (
                                             <div
@@ -139,9 +158,13 @@ export default function StaffReportsPage() {
                                                 className="flex items-center justify-between p-3 bg-muted/50 rounded-md"
                                             >
                                                 <div>
-                                                    <p className="font-medium text-foreground">{item.subject}</p>
+                                                    <p className="font-medium text-foreground">
+                                                        {item.subject}
+                                                    </p>
                                                     {item.course && (
-                                                        <p className="text-xs text-muted-foreground">{item.course}</p>
+                                                        <p className="text-xs text-muted-foreground">
+                                                            {item.course}
+                                                        </p>
                                                     )}
                                                 </div>
                                                 <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">

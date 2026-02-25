@@ -7,10 +7,7 @@ import Group from '@/models/Group';
 import bcrypt from 'bcryptjs';
 
 // GET - Get a single staff member with their teaching hours summary
-export async function GET(
-    request: Request,
-    { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         await verifyAuth();
 
@@ -30,12 +27,12 @@ export async function GET(
 
         const totalHours = await TeachingHours.aggregate([
             { $match: { staffId: staff._id } },
-            { $group: { _id: null, total: { $sum: '$hours' } } }
+            { $group: { _id: null, total: { $sum: '$hours' } } },
         ]);
 
         const monthlyHours = await TeachingHours.aggregate([
             { $match: { staffId: staff._id, date: { $gte: monthStart, $lte: monthEnd } } },
-            { $group: { _id: null, total: { $sum: '$hours' } } }
+            { $group: { _id: null, total: { $sum: '$hours' } } },
         ]);
 
         return NextResponse.json({
@@ -43,7 +40,7 @@ export async function GET(
             summary: {
                 totalHours: totalHours[0]?.total || 0,
                 monthlyHours: monthlyHours[0]?.total || 0,
-            }
+            },
         });
     } catch (error) {
         console.error('Error fetching staff:', error);
@@ -52,10 +49,7 @@ export async function GET(
 }
 
 // PUT - Update a staff member
-export async function PUT(
-    request: Request,
-    { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         await verifyAuth();
 
@@ -76,7 +70,7 @@ export async function PUT(
             if (existingStaff) {
                 return NextResponse.json(
                     { error: 'A staff member with this email already exists' },
-                    { status: 400 }
+                    { status: 400 },
                 );
             }
         }
@@ -103,16 +97,13 @@ export async function PUT(
         console.error('Error updating staff:', error);
         return NextResponse.json(
             { error: 'Internal server error: ' + error.message },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }
 
 // DELETE - Delete a staff member
-export async function DELETE(
-    request: Request,
-    { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         await verifyAuth();
 

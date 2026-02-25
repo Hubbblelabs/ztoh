@@ -1,24 +1,28 @@
 import mongoose from 'mongoose';
 
-const VerificationCodeSchema = new mongoose.Schema({
-    email: {
-        type: String,
-        required: true,
-        trim: true,
-        lowercase: true,
+const VerificationCodeSchema = new mongoose.Schema(
+    {
+        email: {
+            type: String,
+            required: true,
+            trim: true,
+            lowercase: true,
+        },
+        code: {
+            type: String,
+            required: true,
+        },
+        expiresAt: {
+            type: Date,
+            required: true,
+            index: { expires: '10m' }, // Automatically delete documents after 10 minutes
+        },
     },
-    code: {
-        type: String,
-        required: true,
-    },
-    expiresAt: {
-        type: Date,
-        required: true,
-        index: { expires: '10m' }, // Automatically delete documents after 10 minutes
-    },
-}, { timestamps: true });
+    { timestamps: true },
+);
 
 // Prevent recompilation of model
-const VerificationCode = mongoose.models.VerificationCode || mongoose.model('VerificationCode', VerificationCodeSchema);
+const VerificationCode =
+    mongoose.models.VerificationCode || mongoose.model('VerificationCode', VerificationCodeSchema);
 
 export default VerificationCode;

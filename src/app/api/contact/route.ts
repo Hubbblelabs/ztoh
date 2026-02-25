@@ -17,32 +17,29 @@ export async function POST(req: Request) {
         const isAllowed = await checkRateLimit(`contact_${ip}`, 5, 60 * 60 * 1000);
 
         if (!isAllowed) {
-            return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 });
+            return NextResponse.json(
+                { error: 'Too many requests. Please try again later.' },
+                { status: 429 },
+            );
         }
 
         // Verify Turnstile Token
         if (token) {
             const isVerified = await verifyTurnstileToken(token);
             if (!isVerified) {
-                return NextResponse.json(
-                    { error: 'Invalid captcha token' },
-                    { status: 400 }
-                );
+                return NextResponse.json({ error: 'Invalid captcha token' }, { status: 400 });
             }
         } else {
             // Optional: Enforce token presence if strict mode is desired.
             // For now, we'll return error if token is missing to enforce usage.
-            return NextResponse.json(
-                { error: 'Captcha token is required' },
-                { status: 400 }
-            );
+            return NextResponse.json({ error: 'Captcha token is required' }, { status: 400 });
         }
 
         // Validate input
         if (!name || !email || !message) {
             return NextResponse.json(
                 { error: 'Name, email, and message are required' },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
@@ -99,26 +96,21 @@ export async function POST(req: Request) {
                     `,
                     });
                 } else {
-                    console.warn("ADMIN_EMAIL or FROM_EMAIL not set in .env. Admin notification skipped.");
+                    console.warn(
+                        'ADMIN_EMAIL or FROM_EMAIL not set in .env. Admin notification skipped.',
+                    );
                 }
             } catch (emailError) {
-                console.error("Error sending email:", emailError);
+                console.error('Error sending email:', emailError);
                 // We don't fail the request if email fails, but we log it
             }
         } else {
-            console.warn("Resend API key not found. Email notification skipped.");
+            console.warn('Resend API key not found. Email notification skipped.');
         }
 
-        return NextResponse.json(
-            { message: 'Message sent successfully' },
-            { status: 201 }
-        );
-
+        return NextResponse.json({ message: 'Message sent successfully' }, { status: 201 });
     } catch (error) {
         console.error('Error processing contact request:', error);
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }

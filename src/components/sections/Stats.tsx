@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { motion, useInView, useSpring, useTransform } from "framer-motion";
-import { useEffect, useRef } from "react";
-import ScrollAnimation from "@/components/animations/ScrollAnimation";
+import { motion, useInView, useSpring, useTransform } from 'framer-motion';
+import { useEffect, useRef } from 'react';
+import ScrollAnimation from '@/components/animations/ScrollAnimation';
 
 const stats = [
-    { label: "Courses", value: 25, suffix: "+" },
-    { label: "Expert Tutors", value: 60, suffix: "+" },
-    { label: "Cities", value: 5, suffix: "+" },
-    { label: "Countries", value: 6, suffix: "+" },
+    { label: 'Courses', value: 25, suffix: '+' },
+    { label: 'Expert Tutors', value: 60, suffix: '+' },
+    { label: 'Cities', value: 10, suffix: '+' },
+    { label: 'Countries', value: 8, suffix: '+' },
 ];
 
 function Counter({ value, suffix }: { value: number; suffix: string }) {
@@ -38,7 +38,14 @@ export default function Stats() {
             <div className="absolute inset-0 opacity-10">
                 <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-secondary blur-3xl" />
                 <div className="absolute -bottom-24 -right-24 w-96 h-96 rounded-full bg-accent blur-3xl" />
-                <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '30px 30px', opacity: 0.3 }}></div>
+                <div
+                    className="absolute inset-0"
+                    style={{
+                        backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)',
+                        backgroundSize: '30px 30px',
+                        opacity: 0.3,
+                    }}
+                ></div>
             </div>
 
             <div className="container mx-auto px-4 md:px-6 relative z-10">
@@ -49,10 +56,12 @@ export default function Stats() {
                             delay={index * 0.1}
                             className="flex flex-col items-center p-4"
                         >
-                            <div className="text-4xl md:text-6xl font-bold font-heading text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-400 mb-2">
+                            <div className="text-4xl md:text-6xl font-bold font-heading text-transparent bg-clip-text bg-linear-to-b from-white to-slate-400 mb-2">
                                 <Counter value={stat.value} suffix={stat.suffix} />
                             </div>
-                            <div className="text-secondary font-bold text-lg md:text-xl tracking-wide uppercase">{stat.label}</div>
+                            <div className="text-secondary font-bold text-lg md:text-xl tracking-wide uppercase">
+                                {stat.label}
+                            </div>
                         </ScrollAnimation>
                     ))}
                 </div>

@@ -1,11 +1,11 @@
 import mongoose from 'mongoose';
 import Admin from '../src/models/Admin';
 
-
 const seedAdmin = async () => {
     try {
         // Clean URI if needed (remove empty appName)
-        const uri = 'mongodb+srv://kavinnandha:kavin4343@cluster0.ipg5jxa.mongodb.net/ztoh?appName=Cluster0';
+        const uri =
+            'mongodb+srv://kavinnandha:kavin4343@cluster0.ipg5jxa.mongodb.net/ztoh?appName=Cluster0';
 
         await mongoose.connect(uri);
         console.log('Connected to MongoDB');
@@ -21,13 +21,12 @@ const seedAdmin = async () => {
                 name: 'System Admin',
                 email,
                 password, // The model pre-save hook will hash this
-                role: 'superadmin'
+                role: 'superadmin',
             });
 
             await admin.save();
             console.log('Admin user created successfully');
         }
-
     } catch (error) {
         console.error('Error seeding admin:', error);
     } finally {

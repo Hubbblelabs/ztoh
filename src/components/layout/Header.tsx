@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { Menu, X } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
-import { useJoinUsModal } from "@/components/providers/ModalProvider";
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { Menu, X } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useJoinUsModal } from '@/components/providers/ModalProvider';
 
 const navLinks = [
-    { name: "Home", href: "/" },
-    { name: "About", href: "#about" },
-    { name: "Services", href: "#services" },
-    { name: "Testimonials", href: "#testimonials" },
-    { name: "Contact", href: "#contact" },
+    { name: 'Home', href: '/' },
+    { name: 'About', href: '#about' },
+    { name: 'Services', href: '#services' },
+    { name: 'Testimonials', href: '#testimonials' },
+    { name: 'Contact', href: '#contact' },
 ];
 
 export default function Header() {
@@ -25,16 +25,16 @@ export default function Header() {
         const handleScroll = () => {
             setScrolled(window.scrollY > 20);
         };
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
     return (
         <header
             className={cn(
-                "fixed top-0 w-full z-50 transition-all duration-300",
-                scrolled ? "py-3" : "py-5",
-                isOpen ? "bg-white" : (scrolled ? "bg-white/80 backdrop-blur-md" : "bg-transparent")
+                'fixed top-0 w-full z-50 transition-all duration-300',
+                scrolled ? 'py-3' : 'py-5',
+                isOpen ? 'bg-white' : scrolled ? 'bg-white/80 backdrop-blur-md' : 'bg-transparent',
             )}
         >
             <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
@@ -95,7 +95,7 @@ export default function Header() {
                 {isOpen && (
                     <motion.div
                         initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
+                        animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
                         className="md:hidden absolute top-full left-0 w-full bg-white shadow-xl border-t border-slate-100 overflow-hidden"
                     >

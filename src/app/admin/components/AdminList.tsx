@@ -17,13 +17,19 @@ export default function AdminList() {
 
     // Form States
     const [newAdmin, setNewAdmin] = useState({ name: '', email: '', password: '' });
-    const [addAdminStatus, setAddAdminStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+    const [addAdminStatus, setAddAdminStatus] = useState<'idle' | 'loading' | 'success' | 'error'>(
+        'idle',
+    );
     const [addAdminMessage, setAddAdminMessage] = useState('');
 
     const [editAdminData, setEditAdminData] = useState({ name: '', email: '', password: '' });
-    const [editAdminStatus, setEditAdminStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+    const [editAdminStatus, setEditAdminStatus] = useState<
+        'idle' | 'loading' | 'success' | 'error'
+    >('idle');
 
-    const [deleteAdminStatus, setDeleteAdminStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+    const [deleteAdminStatus, setDeleteAdminStatus] = useState<
+        'idle' | 'loading' | 'success' | 'error'
+    >('idle');
 
     useEffect(() => {
         fetchAdmins();
@@ -164,7 +170,10 @@ export default function AdminList() {
                         </div>
                     </div>
                     {[1, 2, 3, 4].map((i) => (
-                        <div key={i} className="flex items-center gap-8 px-6 py-4 border-b border-border">
+                        <div
+                            key={i}
+                            className="flex items-center gap-8 px-6 py-4 border-b border-border"
+                        >
                             <Skeleton className="h-5 w-32" />
                             <Skeleton className="h-4 w-48" />
                             <Skeleton className="h-4 w-36" />
@@ -178,7 +187,10 @@ export default function AdminList() {
                 {/* Mobile Skeleton */}
                 <div className="md:hidden space-y-4">
                     {[1, 2, 3].map((i) => (
-                        <div key={i} className="bg-card p-4 rounded-md border border-border shadow-sm space-y-3">
+                        <div
+                            key={i}
+                            className="bg-card p-4 rounded-md border border-border shadow-sm space-y-3"
+                        >
                             <div className="flex justify-between items-start">
                                 <div className="space-y-2">
                                     <Skeleton className="h-5 w-32" />
@@ -222,10 +234,19 @@ export default function AdminList() {
                     </thead>
                     <tbody className="divide-y divide-border">
                         {admins.map((admin) => (
-                            <tr key={admin._id} className="hover:bg-muted/50 transition-colors group">
-                                <td className="px-6 py-4 font-semibold text-foreground">{admin.name}</td>
-                                <td className="px-6 py-4 text-sm text-muted-foreground">{admin.email}</td>
-                                <td className="px-6 py-4 text-sm text-muted-foreground">{formatDate(admin.createdAt)}</td>
+                            <tr
+                                key={admin._id}
+                                className="hover:bg-muted/50 transition-colors group"
+                            >
+                                <td className="px-6 py-4 font-semibold text-foreground">
+                                    {admin.name}
+                                </td>
+                                <td className="px-6 py-4 text-sm text-muted-foreground">
+                                    {admin.email}
+                                </td>
+                                <td className="px-6 py-4 text-sm text-muted-foreground">
+                                    {formatDate(admin.createdAt)}
+                                </td>
                                 <td className="px-6 py-4 text-right">
                                     <div className="flex items-center justify-end gap-2 transition-opacity">
                                         <button
@@ -253,7 +274,10 @@ export default function AdminList() {
             {/* Mobile View */}
             <div className="md:hidden space-y-4">
                 {admins.map((admin) => (
-                    <div key={admin._id} className="bg-card p-4 rounded-md border border-border shadow-sm space-y-3">
+                    <div
+                        key={admin._id}
+                        className="bg-card p-4 rounded-md border border-border shadow-sm space-y-3"
+                    >
                         <div className="flex justify-between items-start">
                             <div>
                                 <h3 className="font-semibold text-foreground">{admin.name}</h3>
@@ -287,44 +311,61 @@ export default function AdminList() {
                     <div className="bg-card rounded-lg shadow-2xl max-w-md w-full">
                         <div className="p-6 border-b border-border flex justify-between items-center">
                             <h3 className="text-xl font-bold text-foreground">Add New Admin</h3>
-                            <button onClick={() => setShowAddAdminModal(false)} className="p-2 hover:bg-muted rounded-full transition-colors">
+                            <button
+                                onClick={() => setShowAddAdminModal(false)}
+                                className="p-2 hover:bg-muted rounded-full transition-colors"
+                            >
                                 <X size={20} className="text-muted-foreground" />
                             </button>
                         </div>
                         <form onSubmit={handleAddAdmin} className="p-6 space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-foreground mb-1">Name</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">
+                                    Name
+                                </label>
                                 <input
                                     type="text"
                                     required
                                     value={newAdmin.name}
-                                    onChange={(e) => setNewAdmin({ ...newAdmin, name: e.target.value })}
+                                    onChange={(e) =>
+                                        setNewAdmin({ ...newAdmin, name: e.target.value })
+                                    }
                                     className="w-full px-4 py-2 rounded-md border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-foreground mb-1">Email</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">
+                                    Email
+                                </label>
                                 <input
                                     type="email"
                                     required
                                     value={newAdmin.email}
-                                    onChange={(e) => setNewAdmin({ ...newAdmin, email: e.target.value })}
+                                    onChange={(e) =>
+                                        setNewAdmin({ ...newAdmin, email: e.target.value })
+                                    }
                                     className="w-full px-4 py-2 rounded-md border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-foreground mb-1">Password</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">
+                                    Password
+                                </label>
                                 <input
                                     type="password"
                                     required
                                     value={newAdmin.password}
-                                    onChange={(e) => setNewAdmin({ ...newAdmin, password: e.target.value })}
+                                    onChange={(e) =>
+                                        setNewAdmin({ ...newAdmin, password: e.target.value })
+                                    }
                                     className="w-full px-4 py-2 rounded-md border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                                 />
                             </div>
 
                             {addAdminMessage && (
-                                <div className={`text-sm text-center p-2 rounded-lg ${addAdminStatus === 'success' ? 'bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400' : 'bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400'}`}>
+                                <div
+                                    className={`text-sm text-center p-2 rounded-lg ${addAdminStatus === 'success' ? 'bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400' : 'bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400'}`}
+                                >
                                     {addAdminMessage}
                                 </div>
                             )}
@@ -342,7 +383,9 @@ export default function AdminList() {
                                     disabled={addAdminStatus === 'loading'}
                                     className="px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm font-semibold hover:bg-primary/90 transition-colors flex items-center gap-2"
                                 >
-                                    {addAdminStatus === 'loading' && <Loader2 className="animate-spin" size={16} />}
+                                    {addAdminStatus === 'loading' && (
+                                        <Loader2 className="animate-spin" size={16} />
+                                    )}
                                     Add Admin
                                 </button>
                             </div>
@@ -357,36 +400,57 @@ export default function AdminList() {
                     <div className="bg-card rounded-lg shadow-2xl max-w-md w-full">
                         <div className="p-6 border-b border-border flex justify-between items-center">
                             <h3 className="text-xl font-bold text-foreground">Edit Admin</h3>
-                            <button onClick={() => setShowEditAdminModal(false)} className="p-2 hover:bg-muted rounded-full transition-colors">
+                            <button
+                                onClick={() => setShowEditAdminModal(false)}
+                                className="p-2 hover:bg-muted rounded-full transition-colors"
+                            >
                                 <X size={20} className="text-muted-foreground" />
                             </button>
                         </div>
                         <form onSubmit={handleEditAdmin} className="p-6 space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-foreground mb-1">Name</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">
+                                    Name
+                                </label>
                                 <input
                                     type="text"
                                     value={editAdminData.name}
-                                    onChange={(e) => setEditAdminData({ ...editAdminData, name: e.target.value })}
+                                    onChange={(e) =>
+                                        setEditAdminData({ ...editAdminData, name: e.target.value })
+                                    }
                                     className="w-full px-4 py-2 rounded-md border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-foreground mb-1">Email</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">
+                                    Email
+                                </label>
                                 <input
                                     type="email"
                                     value={editAdminData.email}
-                                    onChange={(e) => setEditAdminData({ ...editAdminData, email: e.target.value })}
+                                    onChange={(e) =>
+                                        setEditAdminData({
+                                            ...editAdminData,
+                                            email: e.target.value,
+                                        })
+                                    }
                                     className="w-full px-4 py-2 rounded-md border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-foreground mb-1">New Password (Optional)</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">
+                                    New Password (Optional)
+                                </label>
                                 <input
                                     type="password"
                                     placeholder="Leave blank to keep current"
                                     value={editAdminData.password}
-                                    onChange={(e) => setEditAdminData({ ...editAdminData, password: e.target.value })}
+                                    onChange={(e) =>
+                                        setEditAdminData({
+                                            ...editAdminData,
+                                            password: e.target.value,
+                                        })
+                                    }
                                     className="w-full px-4 py-2 rounded-md border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                                 />
                             </div>
@@ -404,7 +468,9 @@ export default function AdminList() {
                                     disabled={editAdminStatus === 'loading'}
                                     className="px-4 py-2 bg-primary text-white rounded-md text-sm font-semibold hover:bg-primary/90 transition-colors flex items-center gap-2"
                                 >
-                                    {editAdminStatus === 'loading' && <Loader2 className="animate-spin" size={16} />}
+                                    {editAdminStatus === 'loading' && (
+                                        <Loader2 className="animate-spin" size={16} />
+                                    )}
                                     Save Changes
                                 </button>
                             </div>
@@ -422,7 +488,11 @@ export default function AdminList() {
                         </div>
                         <h3 className="text-xl font-bold text-foreground mb-2">Delete Admin?</h3>
                         <p className="text-muted-foreground mb-8">
-                            Are you sure you want to delete admin <span className="font-semibold text-foreground">{selectedAdmin.name}</span>? This action cannot be undone.
+                            Are you sure you want to delete admin{' '}
+                            <span className="font-semibold text-foreground">
+                                {selectedAdmin.name}
+                            </span>
+                            ? This action cannot be undone.
                         </p>
                         <div className="flex justify-center gap-3">
                             <button
@@ -436,7 +506,9 @@ export default function AdminList() {
                                 disabled={deleteAdminStatus === 'loading'}
                                 className="px-6 py-2 bg-red-600 text-white rounded-md text-sm font-semibold hover:bg-red-700 transition-colors flex items-center gap-2"
                             >
-                                {deleteAdminStatus === 'loading' && <Loader2 className="animate-spin" size={16} />}
+                                {deleteAdminStatus === 'loading' && (
+                                    <Loader2 className="animate-spin" size={16} />
+                                )}
                                 Delete
                             </button>
                         </div>
@@ -446,4 +518,3 @@ export default function AdminList() {
         </div>
     );
 }
-

@@ -19,11 +19,11 @@ export async function GET(request: Request) {
         const limit = parseInt(searchParams.get('limit') || '50');
 
         const query: any = {};
-        
+
         if (staffId) {
             query.staffId = staffId;
         }
-        
+
         if (startDate || endDate) {
             query.date = {};
             if (startDate) query.date.$gte = new Date(startDate);
@@ -31,14 +31,14 @@ export async function GET(request: Request) {
         }
 
         const skip = (page - 1) * limit;
-        
+
         const [teachingHours, total] = await Promise.all([
             TeachingHours.find(query)
                 .populate('staffId', 'name email')
                 .sort({ date: -1 })
                 .skip(skip)
                 .limit(limit),
-            TeachingHours.countDocuments(query)
+            TeachingHours.countDocuments(query),
         ]);
 
         return NextResponse.json({
@@ -47,8 +47,8 @@ export async function GET(request: Request) {
                 page,
                 limit,
                 total,
-                pages: Math.ceil(total / limit)
-            }
+                pages: Math.ceil(total / limit),
+            },
         });
     } catch (error) {
         console.error('Error fetching teaching hours:', error);
@@ -68,7 +68,7 @@ export async function POST(request: Request) {
         if (!staffId || !date || hours === undefined || !subject) {
             return NextResponse.json(
                 { error: 'Staff ID, date, hours, and subject are required' },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
@@ -92,7 +92,7 @@ export async function POST(request: Request) {
         console.error('Error creating teaching hours:', error);
         return NextResponse.json(
             { error: 'Internal server error: ' + error.message },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }

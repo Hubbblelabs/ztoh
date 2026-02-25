@@ -9,10 +9,7 @@ export async function POST(request: Request) {
         const session = await getServerSession(authOptions);
 
         if (!session || session.user?.role !== 'student') {
-            return NextResponse.json(
-                { error: 'Unauthorized' },
-                { status: 401 }
-            );
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
         const { currentPassword, newPassword } = await request.json();
@@ -20,7 +17,7 @@ export async function POST(request: Request) {
         if (!currentPassword || !newPassword) {
             return NextResponse.json(
                 { error: 'Current password and new password are required' },
-                { status: 400 }
+                { status: 400 },
             );
         }
 

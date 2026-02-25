@@ -10,15 +10,18 @@ export interface IGroup extends Document {
     updatedAt: Date;
 }
 
-const GroupSchema: Schema = new Schema({
-    name: { type: String, required: true },
-    staffIds: [{ type: Schema.Types.ObjectId, ref: 'Staff', required: true }],
-    studentIds: [{ type: Schema.Types.ObjectId, ref: 'Student' }],
-    description: { type: String },
-    isActive: { type: Boolean, default: true },
-}, {
-    timestamps: true,
-});
+const GroupSchema: Schema = new Schema(
+    {
+        name: { type: String, required: true },
+        staffIds: [{ type: Schema.Types.ObjectId, ref: 'Staff', required: true }],
+        studentIds: [{ type: Schema.Types.ObjectId, ref: 'Student' }],
+        description: { type: String },
+        isActive: { type: Boolean, default: true },
+    },
+    {
+        timestamps: true,
+    },
+);
 
 const Group: Model<IGroup> = mongoose.models.Group || mongoose.model<IGroup>('Group', GroupSchema);
 

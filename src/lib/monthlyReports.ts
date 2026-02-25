@@ -50,7 +50,9 @@ export async function generateMonthlyReports(options: GenerateReportOptions = {}
     const endDate = new Date(targetYear, targetMonth, 0, 23, 59, 59, 999);
 
     // Get all active staff or specific staff
-    const staffQuery = options.staffId ? { _id: options.staffId, isActive: true } : { isActive: true };
+    const staffQuery = options.staffId
+        ? { _id: options.staffId, isActive: true }
+        : { isActive: true };
     const staffMembers = await Staff.find(staffQuery);
 
     const reports = [];
@@ -59,7 +61,7 @@ export async function generateMonthlyReports(options: GenerateReportOptions = {}
         // Get teaching hours for the month
         const teachingHours = await TeachingHours.find({
             staffId: staff._id,
-            date: { $gte: startDate, $lte: endDate }
+            date: { $gte: startDate, $lte: endDate },
         });
 
         // Calculate total hours
@@ -76,7 +78,7 @@ export async function generateMonthlyReports(options: GenerateReportOptions = {}
                 subjectMap.set(key, {
                     subject: record.subject,
                     course: record.course || undefined,
-                    hours: record.hours
+                    hours: record.hours,
                 });
             }
         }
@@ -98,7 +100,7 @@ export async function generateMonthlyReports(options: GenerateReportOptions = {}
                 endDate,
                 generatedAt: new Date(),
             },
-            { upsert: true, new: true }
+            { upsert: true, new: true },
         );
 
         reports.push(report);
@@ -109,25 +111,43 @@ export async function generateMonthlyReports(options: GenerateReportOptions = {}
 
 function getMonthName(month: number): string {
     const months = [
-        'January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December',
     ];
     return months[month - 1] || '';
 }
 
-function generateConsolidatedEmailHtml(reports: ReportData[], monthName: string, year: number): string {
+function generateConsolidatedEmailHtml(
+    reports: ReportData[],
+    monthName: string,
+    year: number,
+): string {
     // Sort reports by staff name
     const sortedReports = [...reports].sort((a, b) => a.staffName.localeCompare(b.staffName));
 
     const totalHoursAllStaff = sortedReports.reduce((sum, r) => sum + r.totalHours, 0);
 
-    const rows = sortedReports.map(report => `
+    const rows = sortedReports
+        .map(
+            (report) => `
         <tr>
             <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">${report.staffName}</td>
             <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">${report.staffEmail}</td>
             <td style="padding: 12px; text-align: right; border-bottom: 1px solid #e2e8f0;"><strong>${report.totalHours.toFixed(1)}</strong></td>
         </tr>
-    `).join('');
+    `,
+        )
+        .join('');
 
     return `
     <!DOCTYPE html>
@@ -191,7 +211,10 @@ export async function sendAdminConsolidatedReport(reports: ReportData[]) {
 
     const settings = await Settings.findOne();
     const adminEmail = settings?.emailSettings?.adminEmail;
-    const fromEmail = settings?.emailSettings?.fromEmail || process.env.FROM_EMAIL || 'Zero To Hero <onboarding@resend.dev>';
+    const fromEmail =
+        settings?.emailSettings?.fromEmail ||
+        process.env.FROM_EMAIL ||
+        'Zero To Hero <onboarding@resend.dev>';
 
     if (!adminEmail) {
         console.error('Admin email not configured in settings');
@@ -214,31 +237,31 @@ export async function sendAdminConsolidatedReport(reports: ReportData[]) {
 
         if (!data.error) {
             // Mark all reports as email sent
-            const reportIds = reports.map(r => r._id);
+            const reportIds = reports.map((r) => r._id);
             await MonthlyReport.updateMany(
                 { _id: { $in: reportIds } },
-                { emailSentAt: new Date() }
+                { emailSentAt: new Date() },
             );
 
             return {
                 success: true,
                 adminEmail,
-                count: reports.length
+                count: reports.length,
             };
         } else {
             return {
                 success: false,
                 adminEmail,
-                error: data.error
+                error: data.error,
             };
         }
     } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : "Unknown error";
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         console.error(`Error sending consolidated email to ${adminEmail}:`, error);
         return {
             success: false,
             adminEmail,
-            error: errorMessage
+            error: errorMessage,
         };
     }
 }
@@ -252,6 +275,6 @@ export async function generateAndSendMonthlyReports(options: GenerateReportOptio
 
     return {
         reportsGenerated: reports.length,
-        emailResults
+        emailResults,
     };
 }

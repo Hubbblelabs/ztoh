@@ -1,50 +1,56 @@
-"use client";
+'use client';
 
-import { CheckCircle2, Star, Users, ArrowRight } from "lucide-react";
-import ScrollAnimation from "@/components/animations/ScrollAnimation";
-import ScrollHint from "@/components/ui/ScrollHint";
+import { CheckCircle2, Star, Users, ArrowRight } from 'lucide-react';
+import ScrollAnimation from '@/components/animations/ScrollAnimation';
+import ScrollHint from '@/components/ui/ScrollHint';
 
 const whyChooseUs = [
     "We firmly believe in the saying, 'The method of teaching and learning determines a student's knowledge and skills, not just their grades.'",
-    "Our approach encourages students to remain calm, confident, trust themselves, and stay focused.",
-    "We prioritize understanding concepts rather than rote memorization.",
-    "We provide highly qualified teachers who are easily accessible through your doorstep or gadgets.",
-    "We emphasis on practical knowledge and thorough training.",
-    "We offer an updated and personalized syllabus tailored to individual needs.",
-    "We follow a standardized syllabus for similar exams, ensuring consistency and clarity.",
-    "Our aim is to insist confidence in students and help them improve their grades."
+    'Our approach encourages students to remain calm, confident, trust themselves, and stay focused.',
+    'We prioritize understanding concepts rather than rote memorization.',
+    'We provide highly qualified teachers who are easily accessible through your doorstep or gadgets.',
+    'We emphasis on practical knowledge and thorough training.',
+    'We offer an updated and personalized syllabus tailored to individual needs.',
+    'We follow a standardized syllabus for similar exams, ensuring consistency and clarity.',
+    'Our aim is to insist confidence in students and help them improve their grades.',
 ];
 
 const featuresList = [
-    { text: "Online forum" },
-    { text: "Question of the Day" },
+    { text: 'Online forum' },
+    { text: 'Question of the Day' },
     {
-        text: "Flexible Module Option",
-        subtext: ["Register/enroll for specific lessons, chapters, or test series", "Pay only for what you need, not for the entire course"]
+        text: 'Flexible Module Option',
+        subtext: [
+            'Register/enroll for specific lessons, chapters, or test series',
+            'Pay only for what you need, not for the entire course',
+        ],
     },
     {
-        text: "Comprehensive Module Option",
-        subtext: ["Join the full module along with the test series"]
+        text: 'Comprehensive Module Option',
+        subtext: ['Join the full module along with the test series'],
     },
     {
-        text: "Free Counselling Sessions",
-        subtext: ["Available for both parents and students, if needed"]
-    }
+        text: 'Free Counselling Sessions',
+        subtext: ['Available for both parents and students, if needed'],
+    },
 ];
 
 const whoCanJoin = [
-    "Those tired of rote learning",
-    "Those tired of the general education system",
-    "Those expecting teachers who can teach at their level of understanding",
-    "Those eager to learn by understanding patterns",
-    "Those unable to afford expensive fees",
-    "Those seeking higher education in their preferred language, Tamil or English",
-    "Those searching for someone to explain a book or material in a simple and easier way"
+    'Those tired of rote learning',
+    'Those tired of the general education system',
+    'Those expecting teachers who can teach at their level of understanding',
+    'Those eager to learn by understanding patterns',
+    'Those unable to afford expensive fees',
+    'Those seeking higher education in their preferred language, Tamil or English',
+    'Those searching for someone to explain a book or material in a simple and easier way',
 ];
 
 export default function Features() {
     return (
-        <section id="features" className="py-10 bg-white border-t border-slate-200 relative overflow-hidden">
+        <section
+            id="features"
+            className="py-10 bg-white border-t border-slate-200 relative overflow-hidden"
+        >
             {/* Background Decoration */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
                 <div className="absolute top-[10%] -left-[5%] w-[30%] h-[30%] rounded-full bg-secondary/5 blur-3xl" />
@@ -60,18 +66,22 @@ export default function Features() {
                     </ScrollAnimation>
                     <ScrollAnimation delay={0.1}>
                         <h2 className="text-3xl md:text-5xl font-bold font-heading text-slate-900 mb-6">
-                            Why Choose <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">ZTOH</span>?
+                            Why Choose{' '}
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+                                ZTOH
+                            </span>
+                            ?
                         </h2>
                     </ScrollAnimation>
                     <ScrollAnimation delay={0.2}>
                         <p className="text-lg text-slate-600 leading-relaxed">
-                            We provide a comprehensive ecosystem for learning and growth. Here is what makes us different.
+                            We provide a comprehensive ecosystem for learning and growth. Here is
+                            what makes us different.
                         </p>
                     </ScrollAnimation>
                 </div>
 
                 <div className="flex overflow-x-auto pb-8 gap-6 snap-x snap-mandatory -mx-4 px-4 lg:mx-0 lg:px-0 lg:grid lg:grid-cols-3 lg:gap-8 lg:pb-0 lg:overflow-visible scrollbar-hide items-start pt-10">
-
                     {/* Why Choose Us */}
                     <ScrollAnimation
                         delay={0.2}
@@ -86,7 +96,10 @@ export default function Features() {
                             </div>
                             <ul className="space-y-5">
                                 {whyChooseUs.map((item, index) => (
-                                    <li key={index} className="flex items-start gap-3 text-slate-600 text-sm leading-relaxed group">
+                                    <li
+                                        key={index}
+                                        className="flex items-start gap-3 text-slate-600 text-sm leading-relaxed group"
+                                    >
                                         <div className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-2 shrink-0 group-hover:scale-150 transition-transform"></div>
                                         <span>{item}</span>
                                     </li>
@@ -113,7 +126,10 @@ export default function Features() {
                                 </div>
                                 <ul className="space-y-8">
                                     {featuresList.map((item, index) => (
-                                        <li key={index} className="text-slate-300 text-sm leading-relaxed">
+                                        <li
+                                            key={index}
+                                            className="text-slate-300 text-sm leading-relaxed"
+                                        >
                                             <div className="flex items-center gap-3 mb-2 font-bold text-white text-base">
                                                 <div className="w-2 h-2 rounded-full bg-secondary shrink-0 shadow-[0_0_10px_rgba(14,165,233,0.5)]"></div>
                                                 {item.text}
@@ -121,8 +137,14 @@ export default function Features() {
                                             {item.subtext && (
                                                 <ul className="pl-5 space-y-2 mt-2 border-l border-white/10 ml-1">
                                                     {item.subtext.map((sub, idx) => (
-                                                        <li key={idx} className="text-slate-400 text-xs flex items-center gap-2">
-                                                            <ArrowRight size={10} className="text-secondary/50" />
+                                                        <li
+                                                            key={idx}
+                                                            className="text-slate-400 text-xs flex items-center gap-2"
+                                                        >
+                                                            <ArrowRight
+                                                                size={10}
+                                                                className="text-secondary/50"
+                                                            />
                                                             {sub}
                                                         </li>
                                                     ))}
@@ -149,7 +171,10 @@ export default function Features() {
                             </div>
                             <ul className="space-y-5">
                                 {whoCanJoin.map((item, index) => (
-                                    <li key={index} className="flex items-start gap-3 text-slate-600 text-sm leading-relaxed group">
+                                    <li
+                                        key={index}
+                                        className="flex items-start gap-3 text-slate-600 text-sm leading-relaxed group"
+                                    >
                                         <div className="w-1.5 h-1.5 rounded-full bg-green-400 mt-2 shrink-0 group-hover:scale-150 transition-transform"></div>
                                         <span>{item}</span>
                                     </li>
@@ -157,7 +182,6 @@ export default function Features() {
                             </ul>
                         </div>
                     </ScrollAnimation>
-
                 </div>
                 <ScrollHint />
             </div>

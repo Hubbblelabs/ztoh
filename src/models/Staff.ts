@@ -13,16 +13,19 @@ export interface IStaff extends Document {
     comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
-const StaffSchema: Schema = new Schema({
-    name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    phone: { type: String },
-    subjects: [{ type: String }],
-    isActive: { type: Boolean, default: true },
-}, {
-    timestamps: true,
-});
+const StaffSchema: Schema = new Schema(
+    {
+        name: { type: String, required: true },
+        email: { type: String, required: true, unique: true },
+        password: { type: String, required: true },
+        phone: { type: String },
+        subjects: [{ type: String }],
+        isActive: { type: Boolean, default: true },
+    },
+    {
+        timestamps: true,
+    },
+);
 
 StaffSchema.pre('save', async function (this: IStaff) {
     if (!this.isModified('password')) return;

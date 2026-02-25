@@ -56,7 +56,9 @@ export default function TeachingHoursTab({ showToast }: TeachingHoursTabProps) {
 
     // Derived filter values
     const filterStartDate = dateRange?.from ? dateRange.from.toISOString().split('T')[0] : '';
-    const filterEndDate = dateRange?.to ? dateRange.to.toISOString().split('T')[0] : filterStartDate;
+    const filterEndDate = dateRange?.to
+        ? dateRange.to.toISOString().split('T')[0]
+        : filterStartDate;
 
     // Form fields
     const [selectedStaffId, setSelectedStaffId] = useState('');
@@ -167,8 +169,10 @@ export default function TeachingHoursTab({ showToast }: TeachingHoursTabProps) {
 
             if (res.ok) {
                 showToast(
-                    editingRecord ? 'Record updated successfully' : 'Teaching hours added successfully',
-                    'success'
+                    editingRecord
+                        ? 'Record updated successfully'
+                        : 'Teaching hours added successfully',
+                    'success',
                 );
                 setShowModal(false);
                 fetchRecords();
@@ -204,7 +208,7 @@ export default function TeachingHoursTab({ showToast }: TeachingHoursTabProps) {
             weekday: 'short',
             month: 'short',
             day: 'numeric',
-            year: 'numeric'
+            year: 'numeric',
         });
     };
 
@@ -249,15 +253,25 @@ export default function TeachingHoursTab({ showToast }: TeachingHoursTabProps) {
         <div className="space-y-6">
             {/* Filters */}
             <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end">
-                <Select value={filterStaffId || 'all'} onValueChange={(value) => { setFilterStaffId(value === 'all' ? '' : value); setPage(1); }}>
+                <Select
+                    value={filterStaffId || 'all'}
+                    onValueChange={(value) => {
+                        setFilterStaffId(value === 'all' ? '' : value);
+                        setPage(1);
+                    }}
+                >
                     <SelectTrigger className="w-full sm:w-[200px] h-9 rounded-md bg-card">
-                        <span className="text-xs font-semibold text-muted-foreground uppercase mr-2">Staff:</span>
+                        <span className="text-xs font-semibold text-muted-foreground uppercase mr-2">
+                            Staff:
+                        </span>
                         <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">All Staff</SelectItem>
                         {staff.map((s) => (
-                            <SelectItem key={s._id} value={s._id}>{s.name}</SelectItem>
+                            <SelectItem key={s._id} value={s._id}>
+                                {s.name}
+                            </SelectItem>
                         ))}
                     </SelectContent>
                 </Select>
@@ -295,17 +309,32 @@ export default function TeachingHoursTab({ showToast }: TeachingHoursTabProps) {
                         <table className="w-full">
                             <thead>
                                 <tr className="border-b border-border">
-                                    <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">Date</th>
-                                    <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">Staff</th>
-                                    <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">Subject</th>
-                                    <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">Course</th>
-                                    <th className="text-right py-3 px-4 text-sm font-semibold text-muted-foreground">Hours</th>
-                                    <th className="text-right py-3 px-4 text-sm font-semibold text-muted-foreground">Actions</th>
+                                    <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">
+                                        Date
+                                    </th>
+                                    <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">
+                                        Staff
+                                    </th>
+                                    <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">
+                                        Subject
+                                    </th>
+                                    <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">
+                                        Course
+                                    </th>
+                                    <th className="text-right py-3 px-4 text-sm font-semibold text-muted-foreground">
+                                        Hours
+                                    </th>
+                                    <th className="text-right py-3 px-4 text-sm font-semibold text-muted-foreground">
+                                        Actions
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {records.map((record) => (
-                                    <tr key={record._id} className="border-b border-border hover:bg-muted">
+                                    <tr
+                                        key={record._id}
+                                        className="border-b border-border hover:bg-muted"
+                                    >
                                         <td className="py-3 px-4 text-sm text-foreground">
                                             {formatDate(record.date)}
                                         </td>
@@ -313,16 +342,26 @@ export default function TeachingHoursTab({ showToast }: TeachingHoursTabProps) {
                                             <div>
                                                 {record.staffId ? (
                                                     <>
-                                                        <span className="font-medium text-foreground">{record.staffId.name}</span>
-                                                        <p className="text-xs text-muted-foreground">{record.staffId.email}</p>
+                                                        <span className="font-medium text-foreground">
+                                                            {record.staffId.name}
+                                                        </span>
+                                                        <p className="text-xs text-muted-foreground">
+                                                            {record.staffId.email}
+                                                        </p>
                                                     </>
                                                 ) : (
-                                                    <span className="font-medium text-muted-foreground italic">Unknown / Deleted Staff</span>
+                                                    <span className="font-medium text-muted-foreground italic">
+                                                        Unknown / Deleted Staff
+                                                    </span>
                                                 )}
                                             </div>
                                         </td>
-                                        <td className="py-3 px-4 text-sm text-foreground">{record.subject}</td>
-                                        <td className="py-3 px-4 text-sm text-muted-foreground">{record.course || '-'}</td>
+                                        <td className="py-3 px-4 text-sm text-foreground">
+                                            {record.subject}
+                                        </td>
+                                        <td className="py-3 px-4 text-sm text-muted-foreground">
+                                            {record.course || '-'}
+                                        </td>
                                         <td className="py-3 px-4 text-sm text-foreground text-right font-medium">
                                             {record.hours.toFixed(1)}
                                         </td>
@@ -333,7 +372,10 @@ export default function TeachingHoursTab({ showToast }: TeachingHoursTabProps) {
                                                     className="p-2 hover:bg-muted rounded-lg transition-colors"
                                                     title="Edit"
                                                 >
-                                                    <Edit2 size={16} className="text-muted-foreground" />
+                                                    <Edit2
+                                                        size={16}
+                                                        className="text-muted-foreground"
+                                                    />
                                                 </button>
                                                 <button
                                                     onClick={() => setShowDeleteConfirm(record._id)}
@@ -354,7 +396,7 @@ export default function TeachingHoursTab({ showToast }: TeachingHoursTabProps) {
                     {totalPages > 1 && (
                         <div className="flex items-center justify-center gap-2">
                             <button
-                                onClick={() => setPage(p => Math.max(1, p - 1))}
+                                onClick={() => setPage((p) => Math.max(1, p - 1))}
                                 disabled={page === 1}
                                 className="p-2 rounded-lg hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
                             >
@@ -364,7 +406,7 @@ export default function TeachingHoursTab({ showToast }: TeachingHoursTabProps) {
                                 Page {page} of {totalPages}
                             </span>
                             <button
-                                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                                 disabled={page === totalPages}
                                 className="p-2 rounded-lg hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
                             >
@@ -397,21 +439,31 @@ export default function TeachingHoursTab({ showToast }: TeachingHoursTabProps) {
                         <form onSubmit={handleSubmit} className="p-6 space-y-4">
                             {!editingRecord && (
                                 <div>
-                                    <label className="block text-sm font-medium text-foreground mb-1">Staff Member *</label>
-                                    <Select value={selectedStaffId} onValueChange={setSelectedStaffId} required>
+                                    <label className="block text-sm font-medium text-foreground mb-1">
+                                        Staff Member *
+                                    </label>
+                                    <Select
+                                        value={selectedStaffId}
+                                        onValueChange={setSelectedStaffId}
+                                        required
+                                    >
                                         <SelectTrigger className="w-full h-10 rounded-md">
                                             <SelectValue placeholder="Select staff member" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {staff.map((s) => (
-                                                <SelectItem key={s._id} value={s._id}>{s.name} ({s.email})</SelectItem>
+                                                <SelectItem key={s._id} value={s._id}>
+                                                    {s.name} ({s.email})
+                                                </SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
                                 </div>
                             )}
                             <div>
-                                <label className="block text-sm font-medium text-foreground mb-1">Date *</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">
+                                    Date *
+                                </label>
                                 <input
                                     type="date"
                                     required
@@ -421,7 +473,9 @@ export default function TeachingHoursTab({ showToast }: TeachingHoursTabProps) {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-foreground mb-1">Hours *</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">
+                                    Hours *
+                                </label>
                                 <input
                                     type="number"
                                     required
@@ -435,7 +489,9 @@ export default function TeachingHoursTab({ showToast }: TeachingHoursTabProps) {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-foreground mb-1">Subject *</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">
+                                    Subject *
+                                </label>
                                 <input
                                     type="text"
                                     required
@@ -446,7 +502,9 @@ export default function TeachingHoursTab({ showToast }: TeachingHoursTabProps) {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-foreground mb-1">Course</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">
+                                    Course
+                                </label>
                                 <input
                                     type="text"
                                     value={course}
@@ -456,7 +514,9 @@ export default function TeachingHoursTab({ showToast }: TeachingHoursTabProps) {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-foreground mb-1">Description</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">
+                                    Description
+                                </label>
                                 <textarea
                                     value={description}
                                     onChange={(e) => setDescription(e.target.value)}
@@ -520,4 +580,3 @@ export default function TeachingHoursTab({ showToast }: TeachingHoursTabProps) {
         </div>
     );
 }
-

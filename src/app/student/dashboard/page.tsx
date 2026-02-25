@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { useSession, signOut } from "next-auth/react";
+import { useState, useEffect } from 'react';
+import { useSession, signOut } from 'next-auth/react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { LogOut } from "lucide-react";
+import { LogOut } from 'lucide-react';
 import { useSetPageTitle } from '@/hooks/useSetPageTitle';
 
 interface TeachingHours {
@@ -30,13 +30,13 @@ export default function StudentDashboardPage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await fetch("/api/student/dashboard");
+                const res = await fetch('/api/student/dashboard');
                 if (res.ok) {
                     const dashboardData = await res.json();
                     setData(dashboardData);
                 }
             } catch (error) {
-                console.error("Failed to fetch dashboard data");
+                console.error('Failed to fetch dashboard data');
             } finally {
                 setLoading(false);
             }
@@ -103,8 +103,12 @@ export default function StudentDashboardPage() {
 
             {/* Stats */}
             <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-md border border-blue-100 dark:border-blue-900/30 mb-8 max-w-sm">
-                <h2 className="text-lg font-semibold text-blue-900 dark:text-blue-300 mb-2">Total Logged Hours</h2>
-                <div className="text-4xl font-bold text-blue-600 dark:text-blue-400">{data.totalHours.toFixed(1)} hrs</div>
+                <h2 className="text-lg font-semibold text-blue-900 dark:text-blue-300 mb-2">
+                    Total Logged Hours
+                </h2>
+                <div className="text-4xl font-bold text-blue-600 dark:text-blue-400">
+                    {data.totalHours.toFixed(1)} hrs
+                </div>
             </div>
 
             {/* History */}
@@ -118,22 +122,42 @@ export default function StudentDashboardPage() {
                     <table className="w-full">
                         <thead className="bg-muted/50 border-b border-border">
                             <tr>
-                                <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Date</th>
-                                <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Subject</th>
-                                <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Tutor</th>
-                                <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Course</th>
-                                <th className="px-6 py-3 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider">Hours</th>
+                                <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                                    Date
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                                    Subject
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                                    Tutor
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                                    Course
+                                </th>
+                                <th className="px-6 py-3 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                                    Hours
+                                </th>
                             </tr>
                         </thead>
                         <tbody className="bg-card divide-y divide-border">
                             {data.recentLogs.map((log) => (
                                 <tr key={log._id} className="hover:bg-muted/50 transition-colors">
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground font-medium">
-                                        {new Date(log.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                        {new Date(log.date).toLocaleDateString('en-US', {
+                                            month: 'short',
+                                            day: 'numeric',
+                                            year: 'numeric',
+                                        })}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">{log.subject}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">{log.staffId?.name || 'Unknown'}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">{log.course || '-'}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
+                                        {log.subject}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
+                                        {log.staffId?.name || 'Unknown'}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
+                                        {log.course || '-'}
+                                    </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground text-right font-bold">
                                         {log.hours.toFixed(1)}
                                     </td>
@@ -141,7 +165,10 @@ export default function StudentDashboardPage() {
                             ))}
                             {data.recentLogs.length === 0 && (
                                 <tr>
-                                    <td colSpan={5} className="px-6 py-12 text-center text-muted-foreground">
+                                    <td
+                                        colSpan={5}
+                                        className="px-6 py-12 text-center text-muted-foreground"
+                                    >
                                         No learning hours recorded yet.
                                     </td>
                                 </tr>
@@ -158,7 +185,11 @@ export default function StudentDashboardPage() {
                                 <div>
                                     <p className="font-bold text-foreground">{log.subject}</p>
                                     <p className="text-xs text-muted-foreground">
-                                        {new Date(log.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                                        {new Date(log.date).toLocaleDateString('en-US', {
+                                            weekday: 'short',
+                                            month: 'short',
+                                            day: 'numeric',
+                                        })}
                                     </p>
                                 </div>
                                 <div className="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 px-3 py-1 rounded-lg text-sm font-bold">
@@ -169,11 +200,17 @@ export default function StudentDashboardPage() {
                             <div className="grid grid-cols-2 gap-2 text-sm">
                                 <div>
                                     <p className="text-xs text-muted-foreground uppercase">Tutor</p>
-                                    <p className="text-foreground font-medium truncate">{log.staffId?.name || 'Unknown'}</p>
+                                    <p className="text-foreground font-medium truncate">
+                                        {log.staffId?.name || 'Unknown'}
+                                    </p>
                                 </div>
                                 <div>
-                                    <p className="text-xs text-muted-foreground uppercase">Course</p>
-                                    <p className="text-foreground font-medium truncate">{log.course || '-'}</p>
+                                    <p className="text-xs text-muted-foreground uppercase">
+                                        Course
+                                    </p>
+                                    <p className="text-foreground font-medium truncate">
+                                        {log.course || '-'}
+                                    </p>
                                 </div>
                             </div>
                         </div>

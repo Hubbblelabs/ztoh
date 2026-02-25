@@ -13,16 +13,19 @@ if (!MONGODB_URI) {
 const mongoUri: string = MONGODB_URI;
 
 // Staff Schema (duplicate here for script usage)
-const StaffSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    phone: { type: String },
-    subjects: [{ type: String }],
-    isActive: { type: Boolean, default: true },
-}, {
-    timestamps: true,
-});
+const StaffSchema = new mongoose.Schema(
+    {
+        name: { type: String, required: true },
+        email: { type: String, required: true, unique: true },
+        password: { type: String, required: true },
+        phone: { type: String },
+        subjects: [{ type: String }],
+        isActive: { type: Boolean, default: true },
+    },
+    {
+        timestamps: true,
+    },
+);
 
 import bcrypt from 'bcryptjs';
 
@@ -35,7 +38,7 @@ async function seedStaff() {
 
         // Check if staff already exists
         const existingStaff = await Staff.findOne({ email: 'staff@ztoh.com' });
-        
+
         if (existingStaff) {
             console.log('Staff member already exists:', existingStaff.email);
         } else {
@@ -57,7 +60,6 @@ async function seedStaff() {
             console.log('');
             console.log('Login at: http://localhost:3000/staff/login');
         }
-
     } catch (error) {
         console.error('Error seeding staff:', error);
     } finally {

@@ -68,17 +68,17 @@ export async function GET(request: Request) {
         // Calculate summaries
         const dailyHours = await TeachingHours.aggregate([
             { $match: { staffId: staff._id, date: { $gte: todayStart, $lte: todayEnd } } },
-            { $group: { _id: null, total: { $sum: '$hours' } } }
+            { $group: { _id: null, total: { $sum: '$hours' } } },
         ]);
 
         const weeklyHours = await TeachingHours.aggregate([
             { $match: { staffId: staff._id, date: { $gte: weekStart, $lte: weekEnd } } },
-            { $group: { _id: null, total: { $sum: '$hours' } } }
+            { $group: { _id: null, total: { $sum: '$hours' } } },
         ]);
 
         const monthlyHours = await TeachingHours.aggregate([
             { $match: { staffId: staff._id, date: { $gte: monthStart, $lte: monthEnd } } },
-            { $group: { _id: null, total: { $sum: '$hours' } } }
+            { $group: { _id: null, total: { $sum: '$hours' } } },
         ]);
 
         // Subject breakdown for current month
@@ -87,10 +87,10 @@ export async function GET(request: Request) {
             {
                 $group: {
                     _id: { subject: '$subject', course: '$course' },
-                    total: { $sum: '$hours' }
-                }
+                    total: { $sum: '$hours' },
+                },
             },
-            { $sort: { total: -1 } }
+            { $sort: { total: -1 } },
         ]);
 
         return NextResponse.json({
@@ -100,16 +100,16 @@ export async function GET(request: Request) {
                 weekly: weeklyHours[0]?.total || 0,
                 monthly: monthlyHours[0]?.total || 0,
             },
-            subjectBreakdown: subjectBreakdown.map(item => ({
+            subjectBreakdown: subjectBreakdown.map((item) => ({
                 subject: item._id.subject,
                 course: item._id.course || null,
-                hours: item.total
+                hours: item.total,
             })),
             dateRanges: {
                 today: { start: todayStart, end: todayEnd },
                 week: { start: weekStart, end: weekEnd },
-                month: { start: monthStart, end: monthEnd }
-            }
+                month: { start: monthStart, end: monthEnd },
+            },
         });
     } catch (error) {
         console.error('Error fetching teaching hours:', error);
@@ -138,11 +138,10 @@ export async function POST(request: Request) {
             course,
             description,
             groupId,
-            studentIds
+            studentIds,
         });
 
         return NextResponse.json(newRecord, { status: 201 });
-
     } catch (error) {
         console.error('Error adding teaching hours:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

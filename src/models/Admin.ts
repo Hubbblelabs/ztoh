@@ -10,13 +10,16 @@ export interface IAdmin extends Document {
     comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
-const AdminSchema: Schema = new Schema({
-    name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-}, {
-    timestamps: true,
-});
+const AdminSchema: Schema = new Schema(
+    {
+        name: { type: String, required: true },
+        email: { type: String, required: true, unique: true },
+        password: { type: String, required: true },
+    },
+    {
+        timestamps: true,
+    },
+);
 
 AdminSchema.pre('save', async function (this: IAdmin) {
     if (!this.isModified('password')) return;

@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation';
 import { Key, Check, X, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useSetPageTitle } from '@/hooks/useSetPageTitle';
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export default function StaffPasswordPage() {
     useSetPageTitle('Change Password', 'Update your account password');
@@ -63,10 +63,7 @@ export default function StaffPasswordPage() {
         <div className="space-y-6">
             {/* Back Button */}
             <div className="flex items-center">
-                <Link
-                    href="/staff"
-                    className="p-2 hover:bg-muted rounded-lg transition-colors"
-                >
+                <Link href="/staff" className="p-2 hover:bg-muted rounded-lg transition-colors">
                     <ArrowLeft className="w-5 h-5 text-muted-foreground hover:text-foreground" />
                 </Link>
             </div>
@@ -76,9 +73,7 @@ export default function StaffPasswordPage() {
                 <div className="bg-card rounded-lg shadow-sm border border-border p-6">
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="grid w-full gap-3">
-                            <Label htmlFor="currentPassword">
-                                Current Password
-                            </Label>
+                            <Label htmlFor="currentPassword">Current Password</Label>
                             <Input
                                 id="currentPassword"
                                 type="password"
@@ -89,9 +84,7 @@ export default function StaffPasswordPage() {
                             />
                         </div>
                         <div className="grid w-full gap-3">
-                            <Label htmlFor="newPassword">
-                                New Password
-                            </Label>
+                            <Label htmlFor="newPassword">New Password</Label>
                             <Input
                                 id="newPassword"
                                 type="password"
@@ -102,9 +95,7 @@ export default function StaffPasswordPage() {
                             />
                         </div>
                         <div className="grid w-full gap-3">
-                            <Label htmlFor="confirmPassword">
-                                Confirm New Password
-                            </Label>
+                            <Label htmlFor="confirmPassword">Confirm New Password</Label>
                             <Input
                                 id="confirmPassword"
                                 type="password"

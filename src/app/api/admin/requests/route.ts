@@ -21,12 +21,8 @@ export async function GET(request: Request) {
             const joinRequests = await JoinRequest.find({}).sort({ createdAt: -1 });
             return NextResponse.json({ contact: contactRequests, join: joinRequests });
         }
-
     } catch (error) {
         console.error('Error fetching requests:', error);
-        return NextResponse.json(
-            { error: 'Failed to fetch requests' },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: 'Failed to fetch requests' }, { status: 500 });
     }
 }

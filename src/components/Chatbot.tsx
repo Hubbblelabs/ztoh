@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { useState, useRef, useEffect } from "react";
-import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircle, X, Send, Loader2 } from "lucide-react";
-import ReactMarkdown from "react-markdown";
-import { cn } from "@/lib/utils";
+import { useState, useRef, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MessageCircle, X, Send, Loader2 } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import { cn } from '@/lib/utils';
 
 interface Message {
-    role: "user" | "assistant";
+    role: 'user' | 'assistant';
     content: string;
 }
 
@@ -16,14 +16,17 @@ export default function Chatbot() {
     const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<Message[]>([
-        { role: "assistant", content: "Hi! I can answer questions about this page. What would you like to know?" },
+        {
+            role: 'assistant',
+            content: 'Hi! I can answer questions about this page. What would you like to know?',
+        },
     ]);
-    const [input, setInput] = useState("");
+    const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
     useEffect(() => {
@@ -35,41 +38,39 @@ export default function Chatbot() {
         if (!input.trim() || isLoading) return;
 
         const userMessage = input.trim();
-        setInput("");
-        setMessages((prev) => [...prev, { role: "user", content: userMessage }]);
+        setInput('');
+        setMessages((prev) => [...prev, { role: 'user', content: userMessage }]);
         setIsLoading(true);
 
         try {
             // Capture page content
             const pageContent = document.body.innerText;
 
-            const response = await fetch("/api/chat", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    messages: [...messages, { role: "user", content: userMessage }],
+                    messages: [...messages, { role: 'user', content: userMessage }],
                     pageContent,
                 }),
             });
 
-            if (!response.ok) throw new Error("Failed to fetch response");
+            if (!response.ok) throw new Error('Failed to fetch response');
 
             const data = await response.json();
-            setMessages((prev) => [...prev, { role: "assistant", content: data.content }]);
+            setMessages((prev) => [...prev, { role: 'assistant', content: data.content }]);
         } catch (error) {
-            console.error("Chat error:", error);
+            console.error('Chat error:', error);
             setMessages((prev) => [
                 ...prev,
-                { role: "assistant", content: "Sorry, I encountered an error. Please try again." },
+                { role: 'assistant', content: 'Sorry, I encountered an error. Please try again.' },
             ]);
         } finally {
             setIsLoading(false);
         }
     };
 
-
-
-    if (pathname?.startsWith("/admin")) return null;
+    if (pathname?.startsWith('/admin')) return null;
 
     return (
         <>
@@ -103,21 +104,19 @@ export default function Chatbot() {
                                 <div
                                     key={idx}
                                     className={cn(
-                                        "flex w-full",
-                                        msg.role === "user" ? "justify-end" : "justify-start"
+                                        'flex w-full',
+                                        msg.role === 'user' ? 'justify-end' : 'justify-start',
                                     )}
                                 >
                                     <div
                                         className={cn(
-                                            "max-w-[80%] rounded-2xl px-4 py-2 text-sm prose prose-sm max-w-none dark:prose-invert",
-                                            msg.role === "user"
-                                                ? "bg-blue-600 text-white rounded-br-none prose-invert"
-                                                : "bg-white border border-slate-200 text-slate-800 rounded-bl-none shadow-sm"
+                                            'max-w-[80%] rounded-2xl px-4 py-2 text-sm prose prose-sm max-w-none dark:prose-invert',
+                                            msg.role === 'user'
+                                                ? 'bg-blue-600 text-white rounded-br-none prose-invert'
+                                                : 'bg-white border border-slate-200 text-slate-800 rounded-bl-none shadow-sm',
                                         )}
                                     >
-                                        <ReactMarkdown>
-                                            {msg.content}
-                                        </ReactMarkdown>
+                                        <ReactMarkdown>{msg.content}</ReactMarkdown>
                                     </div>
                                 </div>
                             ))}
@@ -132,7 +131,10 @@ export default function Chatbot() {
                         </div>
 
                         {/* Input */}
-                        <form onSubmit={handleSubmit} className="p-4 bg-white border-t border-slate-100">
+                        <form
+                            onSubmit={handleSubmit}
+                            className="p-4 bg-white border-t border-slate-100"
+                        >
                             <div className="flex gap-2">
                                 <input
                                     type="text"
@@ -161,7 +163,7 @@ export default function Chatbot() {
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setIsOpen(!isOpen)}
                 className="fixed bottom-4 right-4 z-50 p-4 bg-slate-900 text-white rounded-full shadow-lg hover:bg-slate-800 transition-colors"
-                aria-label={isOpen ? "Close chat" : "Open chat"}
+                aria-label={isOpen ? 'Close chat' : 'Open chat'}
             >
                 {isOpen ? <X className="w-6 h-6" /> : <MessageCircle className="w-6 h-6" />}
             </motion.button>

@@ -145,7 +145,6 @@ html.dark .admin-theme {
     --color-sidebar-ring: var(--sidebar-ring);
 }
 
-
 @layer base {
     .admin-theme * {
         @apply border-border;

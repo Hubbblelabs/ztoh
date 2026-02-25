@@ -18,8 +18,8 @@ export async function GET() {
             settings = await Settings.create({
                 emailSettings: {
                     fromEmail: 'noreply@ztoh.com', // Default
-                    adminEmail: 'admin@ztoh.com'   // Default
-                }
+                    adminEmail: 'admin@ztoh.com', // Default
+                },
             });
         }
 

@@ -1,5 +1,5 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/authOptions";
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/authOptions';
 
 export async function verifyAuth() {
     const session = await getServerSession(authOptions);
@@ -24,7 +24,7 @@ export async function verifyStaffAuth() {
     }
 
     if (session.user.role !== 'staff' && session.user.role !== 'admin') {
-         throw new Error('Unauthorized');
+        throw new Error('Unauthorized');
     }
 
     return session.user;

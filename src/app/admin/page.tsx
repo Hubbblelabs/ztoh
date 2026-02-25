@@ -12,7 +12,7 @@ import {
     ArrowUpRight,
     TrendingUp,
     Calendar,
-    ArrowRight
+    ArrowRight,
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -25,14 +25,14 @@ interface DashboardStats {
 }
 
 export default function AdminDashboard() {
-    useSetPageTitle('Dashboard', 'Welcome back! Here\'s an overview of your platform.');
+    useSetPageTitle('Dashboard', "Welcome back! Here's an overview of your platform.");
 
     const [stats, setStats] = useState<DashboardStats>({
         joinRequests: 0,
         contactRequests: 0,
         totalStaff: 0,
         totalHoursThisMonth: 0,
-        reportsGenerated: 0
+        reportsGenerated: 0,
     });
     const [loading, setLoading] = useState(true);
 
@@ -42,10 +42,12 @@ export default function AdminDashboard() {
                 // Fetch various stats
                 const [requestsRes, staffRes] = await Promise.all([
                     fetch('/api/admin/requests'),
-                    fetch('/api/admin/staff')
+                    fetch('/api/admin/staff'),
                 ]);
 
-                let joinCount = 0, contactCount = 0, staffCount = 0;
+                let joinCount = 0,
+                    contactCount = 0,
+                    staffCount = 0;
 
                 if (requestsRes.ok) {
                     const data = await requestsRes.json();
@@ -63,7 +65,7 @@ export default function AdminDashboard() {
                     contactRequests: contactCount,
                     totalStaff: staffCount,
                     totalHoursThisMonth: 0,
-                    reportsGenerated: 0
+                    reportsGenerated: 0,
                 });
             } catch (error) {
                 console.error('Error fetching stats:', error);
@@ -83,7 +85,7 @@ export default function AdminDashboard() {
             href: '/admin/requests',
             color: 'text-sky-500',
             bgColor: 'bg-sky-100 dark:bg-sky-900/20',
-            textColor: 'text-sky-600 dark:text-sky-400'
+            textColor: 'text-sky-600 dark:text-sky-400',
         },
         {
             title: 'Contact Requests',
@@ -92,7 +94,7 @@ export default function AdminDashboard() {
             href: '/admin/contacts',
             color: 'text-amber-500',
             bgColor: 'bg-amber-100 dark:bg-amber-900/20',
-            textColor: 'text-amber-600 dark:text-amber-400'
+            textColor: 'text-amber-600 dark:text-amber-400',
         },
         {
             title: 'Staff Members',
@@ -101,7 +103,7 @@ export default function AdminDashboard() {
             href: '/admin/staff',
             color: 'text-slate-500',
             bgColor: 'bg-slate-100 dark:bg-slate-800',
-            textColor: 'text-slate-700 dark:text-slate-300'
+            textColor: 'text-slate-700 dark:text-slate-300',
         },
         {
             title: 'Hours This Month',
@@ -110,8 +112,8 @@ export default function AdminDashboard() {
             href: '/admin/hours',
             color: 'text-orange-500',
             bgColor: 'bg-orange-100 dark:bg-orange-900/20',
-            textColor: 'text-orange-600 dark:text-orange-400'
-        }
+            textColor: 'text-orange-600 dark:text-orange-400',
+        },
     ];
 
     const quickLinks = [
@@ -127,7 +129,10 @@ export default function AdminDashboard() {
                 {/* Stats Grid Skeleton */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     {[1, 2, 3, 4].map((i) => (
-                        <div key={i} className="bg-card rounded-md p-6 shadow-sm border border-border">
+                        <div
+                            key={i}
+                            className="bg-card rounded-md p-6 shadow-sm border border-border"
+                        >
                             <div className="flex items-start justify-between mb-4">
                                 <Skeleton className="h-12 w-12 rounded-md" />
                                 <Skeleton className="h-5 w-5" />
@@ -146,7 +151,10 @@ export default function AdminDashboard() {
                         <Skeleton className="h-6 w-32 mb-4" />
                         <div className="space-y-3">
                             {[1, 2, 3, 4].map((i) => (
-                                <div key={i} className="flex items-center gap-4 p-4 rounded-lg bg-muted/50">
+                                <div
+                                    key={i}
+                                    className="flex items-center gap-4 p-4 rounded-lg bg-muted/50"
+                                >
                                     <Skeleton className="h-9 w-9 rounded-md" />
                                     <Skeleton className="h-5 w-32" />
                                     <Skeleton className="h-4 w-4 ml-auto" />
@@ -158,7 +166,10 @@ export default function AdminDashboard() {
                         <Skeleton className="h-6 w-40 mb-4" />
                         <div className="space-y-4">
                             {[1, 2, 3].map((i) => (
-                                <div key={i} className="flex items-center gap-4 p-4 rounded-lg bg-muted/30">
+                                <div
+                                    key={i}
+                                    className="flex items-center gap-4 p-4 rounded-lg bg-muted/30"
+                                >
                                     <Skeleton className="h-12 w-12 rounded-lg" />
                                     <div className="space-y-2">
                                         <Skeleton className="h-5 w-32" />
@@ -190,9 +201,7 @@ export default function AdminDashboard() {
                             <ArrowUpRight className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                         </div>
                         <div>
-                            <p className="text-3xl font-bold text-foreground">
-                                {card.value}
-                            </p>
+                            <p className="text-3xl font-bold text-foreground">{card.value}</p>
                             <p className="text-sm text-muted-foreground mt-1">{card.title}</p>
                         </div>
                     </Link>
@@ -215,7 +224,9 @@ export default function AdminDashboard() {
                                 <div className="p-2 bg-background rounded-md shadow-sm border border-border group-hover:border-primary/20">
                                     <link.icon className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
                                 </div>
-                                <span className="font-medium text-foreground group-hover:text-primary transition-colors">{link.title}</span>
+                                <span className="font-medium text-foreground group-hover:text-primary transition-colors">
+                                    {link.title}
+                                </span>
                                 <ArrowRight className="w-4 h-4 text-muted-foreground ml-auto group-hover:translate-x-1 group-hover:text-primary transition-all" />
                             </Link>
                         ))}
@@ -225,7 +236,9 @@ export default function AdminDashboard() {
                 {/* Recent Activity */}
                 {/* Recent Activity */}
                 <div className="bg-card rounded-md p-6 shadow-sm border border-border">
-                    <h2 className="text-lg font-semibold text-foreground mb-4">Platform Overview</h2>
+                    <h2 className="text-lg font-semibold text-foreground mb-4">
+                        Platform Overview
+                    </h2>
                     <div className="space-y-4">
                         <div className="flex items-center gap-4 p-4 rounded-lg bg-sky-50/50 dark:bg-sky-900/10 border border-sky-100 dark:border-sky-800/30">
                             <div className="p-3 bg-background rounded-lg shadow-sm">

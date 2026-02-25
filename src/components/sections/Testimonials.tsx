@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import ScrollAnimation from "@/components/animations/ScrollAnimation";
-import { Star, Quote } from "lucide-react";
+import { useState, useEffect } from 'react';
+import ScrollAnimation from '@/components/animations/ScrollAnimation';
+import { Star, Quote } from 'lucide-react';
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 interface Testimonial {
     _id: string;
@@ -77,11 +77,20 @@ export default function Testimonials({ initialData }: { initialData?: Testimonia
     const secondRow = testimonials.slice(Math.ceil(testimonials.length / 2));
 
     // Ensure we have enough items for the marquee effect by duplicating
-    const row1Items = [...firstRow, ...firstRow, ...firstRow, ...firstRow].slice(0, Math.max(firstRow.length * 4, 10));
-    const row2Items = [...secondRow, ...secondRow, ...secondRow, ...secondRow].slice(0, Math.max(secondRow.length * 4, 10));
+    const row1Items = [...firstRow, ...firstRow, ...firstRow, ...firstRow].slice(
+        0,
+        Math.max(firstRow.length * 4, 10),
+    );
+    const row2Items = [...secondRow, ...secondRow, ...secondRow, ...secondRow].slice(
+        0,
+        Math.max(secondRow.length * 4, 10),
+    );
 
     return (
-        <section id="testimonials" className="py-10 bg-slate-100 border-t border-slate-200 relative overflow-hidden">
+        <section
+            id="testimonials"
+            className="py-10 bg-slate-100 border-t border-slate-200 relative overflow-hidden"
+        >
             {/* Background Decoration */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-0 left-1/4 w-full h-full bg-[radial-gradient(circle_at_50%_50%,_rgba(14,165,233,0.05),_transparent_40%)]"></div>
@@ -97,12 +106,16 @@ export default function Testimonials({ initialData }: { initialData?: Testimonia
                         </ScrollAnimation>
                         <ScrollAnimation delay={0.1}>
                             <h2 className="text-3xl md:text-5xl font-bold font-heading text-slate-900 mb-6">
-                                Student <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Testimonials</span>
+                                Student{' '}
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+                                    Testimonials
+                                </span>
                             </h2>
                         </ScrollAnimation>
                         <ScrollAnimation delay={0.2}>
                             <p className="text-lg text-slate-600">
-                                See what our students and parents have to say about their experience with Zero to Hero.
+                                See what our students and parents have to say about their experience
+                                with Zero to Hero.
                             </p>
                         </ScrollAnimation>
                     </div>

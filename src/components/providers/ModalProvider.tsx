@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
-import JoinUsModal from "@/components/ui/JoinUsModal";
+import React, { createContext, useContext, useState, ReactNode } from 'react';
+import JoinUsModal from '@/components/ui/JoinUsModal';
 
 interface ModalContextType {
     openJoinUsModal: () => void;
@@ -18,9 +18,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
     const closeJoinUsModal = () => setIsJoinUsModalOpen(false);
 
     return (
-        <ModalContext.Provider
-            value={{ openJoinUsModal, closeJoinUsModal, isJoinUsModalOpen }}
-        >
+        <ModalContext.Provider value={{ openJoinUsModal, closeJoinUsModal, isJoinUsModalOpen }}>
             {children}
             <JoinUsModal isOpen={isJoinUsModalOpen} onClose={closeJoinUsModal} />
         </ModalContext.Provider>
@@ -30,7 +28,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
 export function useJoinUsModal() {
     const context = useContext(ModalContext);
     if (context === undefined) {
-        throw new Error("useJoinUsModal must be used within a ModalProvider");
+        throw new Error('useJoinUsModal must be used within a ModalProvider');
     }
     return context;
 }

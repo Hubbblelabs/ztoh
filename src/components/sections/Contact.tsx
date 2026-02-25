@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import ScrollAnimation from "@/components/animations/ScrollAnimation";
-import { MapPin, Mail, Phone, Send, Sparkles, CheckCircle, Loader2 } from "lucide-react";
-import { useState, useRef } from "react";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import ScrollAnimation from '@/components/animations/ScrollAnimation';
+import { MapPin, Mail, Phone, Send, Sparkles, CheckCircle, Loader2 } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
-import { useToast } from "@/components/providers/ToastProvider";
-import { motion, AnimatePresence } from "framer-motion";
+import { useToast } from '@/components/providers/ToastProvider';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Contact() {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
-        message: ''
+        message: '',
     });
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [token, setToken] = useState<string | null>(null);
@@ -22,15 +22,17 @@ export default function Contact() {
     const { addToast } = useToast();
 
     // Email Verification State
-    const [verificationStatus, setVerificationStatus] = useState<'unverified' | 'sent' | 'verified'>('unverified');
+    const [verificationStatus, setVerificationStatus] = useState<
+        'unverified' | 'sent' | 'verified'
+    >('unverified');
     const [verificationCode, setVerificationCode] = useState('');
     const [isVerifying, setIsVerifying] = useState(false);
     const [verificationMessage, setVerificationMessage] = useState('');
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setFormData(prev => ({
+        setFormData((prev) => ({
             ...prev,
-            [e.target.id]: e.target.value
+            [e.target.id]: e.target.value,
         }));
         if (e.target.id === 'email') {
             setVerificationStatus('unverified');
@@ -81,7 +83,10 @@ export default function Contact() {
             const res = await fetch('/api/verify/check', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: formData.email.trim(), code: verificationCode.trim() }),
+                body: JSON.stringify({
+                    email: formData.email.trim(),
+                    code: verificationCode.trim(),
+                }),
             });
             const data = await res.json();
             if (res.ok) {
@@ -101,12 +106,12 @@ export default function Contact() {
         e.preventDefault();
 
         if (!token) {
-            addToast("Please complete the captcha", "error");
+            addToast('Please complete the captcha', 'error');
             return;
         }
 
         if (verificationStatus !== 'verified') {
-            addToast("Please verify your email first", "error");
+            addToast('Please verify your email first', 'error');
             return;
         }
 
@@ -115,7 +120,7 @@ export default function Contact() {
         const trimmedData = {
             name: formData.name.trim(),
             email: formData.email.trim(),
-            message: formData.message.trim()
+            message: formData.message.trim(),
         };
 
         try {
@@ -139,23 +144,24 @@ export default function Contact() {
                 // setTimeout(() => setStatus('idle'), 3000);
             } else {
                 const data = await response.json();
-                addToast(data.error || "Failed to send message", "error");
+                addToast(data.error || 'Failed to send message', 'error');
                 setStatus('error');
                 turnstileRef.current?.reset();
                 setToken(null);
             }
         } catch (error) {
             setStatus('error');
-            addToast("Something went wrong", "error");
+            addToast('Something went wrong', 'error');
             turnstileRef.current?.reset();
             setToken(null);
         }
     };
 
-
-
     return (
-        <section id="contact" className="pt-6 pb-12 bg-white border-t border-slate-200 relative overflow-hidden">
+        <section
+            id="contact"
+            className="pt-6 pb-12 bg-white border-t border-slate-200 relative overflow-hidden"
+        >
             {/* Enhanced Background Decoration */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-20 right-20 w-96 h-96 bg-secondary/5 rounded-full blur-3xl animate-pulse-slow" />
@@ -173,12 +179,16 @@ export default function Contact() {
                     </ScrollAnimation>
                     <ScrollAnimation delay={0.1}>
                         <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold font-heading text-slate-900 mb-6">
-                            Contact <span className="text-transparent bg-clip-text bg-gradient-to-r from-secondary to-accent">Us</span>
+                            Contact{' '}
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-secondary to-accent">
+                                Us
+                            </span>
                         </h2>
                     </ScrollAnimation>
                     <ScrollAnimation delay={0.2}>
                         <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-                            Get in touch with us for any inquiries or to join our classes. We&apos;re here to help you succeed.
+                            Get in touch with us for any inquiries or to join our classes.
+                            We&apos;re here to help you succeed.
                         </p>
                     </ScrollAnimation>
                 </div>
@@ -188,9 +198,24 @@ export default function Contact() {
                     <ScrollAnimation className="space-y-8">
                         <div className="hidden md:grid grid-cols-1 md:grid-cols-3 gap-4">
                             {[
-                                { icon: MapPin, color: 'blue', title: 'Location', text: '9/13 Gandhi Road, Nehru Nagar East, Coimbatore - 641014' },
-                                { icon: Mail, color: 'green', title: 'Email', text: 'reachus@ztoh.org' },
-                                { icon: Phone, color: 'purple', title: 'Call', text: '+91 95643 21000' }
+                                {
+                                    icon: MapPin,
+                                    color: 'blue',
+                                    title: 'Location',
+                                    text: '9/13 Gandhi Road, Nehru Nagar East, Coimbatore - 641014',
+                                },
+                                {
+                                    icon: Mail,
+                                    color: 'green',
+                                    title: 'Email',
+                                    text: 'reachus@ztoh.org',
+                                },
+                                {
+                                    icon: Phone,
+                                    color: 'purple',
+                                    title: 'Call',
+                                    text: '+91 95643 21000',
+                                },
                             ].map((item, index) => (
                                 <motion.div
                                     key={item.title}
@@ -200,17 +225,18 @@ export default function Contact() {
                                 >
                                     <motion.div
                                         whileHover={{ scale: 1.1, rotate: 5 }}
-                                        className={`w-14 h-14 ${item.color === 'blue' ? 'bg-blue-50 text-blue-600' :
-                                            item.color === 'green' ? 'bg-green-50 text-green-600' :
-                                                'bg-purple-50 text-purple-600'
-                                            } rounded-2xl flex items-center justify-center mx-auto mb-4 transition-transform`}
+                                        className={`w-14 h-14 ${
+                                            item.color === 'blue'
+                                                ? 'bg-blue-50 text-blue-600'
+                                                : item.color === 'green'
+                                                  ? 'bg-green-50 text-green-600'
+                                                  : 'bg-purple-50 text-purple-600'
+                                        } rounded-2xl flex items-center justify-center mx-auto mb-4 transition-transform`}
                                     >
                                         <item.icon size={24} />
                                     </motion.div>
                                     <h4 className="font-bold text-slate-900 mb-2">{item.title}</h4>
-                                    <p className="text-slate-600 text-sm break-all">
-                                        {item.text}
-                                    </p>
+                                    <p className="text-slate-600 text-sm break-all">{item.text}</p>
                                 </motion.div>
                             ))}
                         </div>
@@ -253,9 +279,12 @@ export default function Contact() {
                                         <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
                                             <CheckCircle className="text-green-600" size={40} />
                                         </div>
-                                        <h3 className="text-2xl font-bold text-slate-900 mb-4">Message Sent Successfully!</h3>
+                                        <h3 className="text-2xl font-bold text-slate-900 mb-4">
+                                            Message Sent Successfully!
+                                        </h3>
                                         <p className="text-slate-600 mb-8 max-w-md">
-                                            Thank you for contacting us. We will get back to you shortly.
+                                            Thank you for contacting us. We will get back to you
+                                            shortly.
                                         </p>
                                         <button
                                             onClick={() => setStatus('idle')}
@@ -270,7 +299,9 @@ export default function Contact() {
                                             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-secondary to-primary flex items-center justify-center shadow-lg shadow-secondary/20">
                                                 <Send className="text-white" size={18} />
                                             </div>
-                                            <h3 className="text-2xl font-bold text-slate-900">Send Message</h3>
+                                            <h3 className="text-2xl font-bold text-slate-900">
+                                                Send Message
+                                            </h3>
                                         </div>
 
                                         <form onSubmit={handleSubmit} className="space-y-6">
@@ -280,7 +311,8 @@ export default function Contact() {
                                                     className="grid w-full gap-3 self-start"
                                                 >
                                                     <Label htmlFor="name">
-                                                        Your Name <span className="text-secondary">*</span>
+                                                        Your Name{' '}
+                                                        <span className="text-secondary">*</span>
                                                     </Label>
                                                     <Input
                                                         type="text"
@@ -295,7 +327,8 @@ export default function Contact() {
 
                                                 <div className="grid w-full gap-3">
                                                     <Label htmlFor="email">
-                                                        Your Email <span className="text-secondary">*</span>
+                                                        Your Email{' '}
+                                                        <span className="text-secondary">*</span>
                                                     </Label>
                                                     <div className="flex gap-2">
                                                         <Input
@@ -303,10 +336,17 @@ export default function Contact() {
                                                             id="email"
                                                             value={formData.email}
                                                             onChange={handleChange}
-                                                            className={verificationStatus === 'verified' ? 'bg-green-50/50 border-green-200' : ''}
+                                                            className={
+                                                                verificationStatus === 'verified'
+                                                                    ? 'bg-green-50/50 border-green-200'
+                                                                    : ''
+                                                            }
                                                             placeholder="Enter your email"
                                                             required
-                                                            disabled={status === 'loading' || verificationStatus === 'verified'}
+                                                            disabled={
+                                                                status === 'loading' ||
+                                                                verificationStatus === 'verified'
+                                                            }
                                                         />
                                                         {verificationStatus === 'unverified' && (
                                                             <motion.button
@@ -314,10 +354,19 @@ export default function Contact() {
                                                                 whileTap={{ scale: 0.98 }}
                                                                 type="button"
                                                                 onClick={handleSendCode}
-                                                                disabled={isVerifying || !formData.email}
+                                                                disabled={
+                                                                    isVerifying || !formData.email
+                                                                }
                                                                 className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-semibold disabled:opacity-50 whitespace-nowrap transition-all duration-200 shadow-md hover:shadow-lg"
                                                             >
-                                                                {isVerifying ? <Loader2 className="animate-spin" size={18} /> : 'Verify'}
+                                                                {isVerifying ? (
+                                                                    <Loader2
+                                                                        className="animate-spin"
+                                                                        size={18}
+                                                                    />
+                                                                ) : (
+                                                                    'Verify'
+                                                                )}
                                                             </motion.button>
                                                         )}
                                                         {verificationStatus === 'verified' && (
@@ -335,14 +384,21 @@ export default function Contact() {
                                                         {verificationStatus === 'sent' && (
                                                             <motion.div
                                                                 initial={{ opacity: 0, height: 0 }}
-                                                                animate={{ opacity: 1, height: 'auto' }}
+                                                                animate={{
+                                                                    opacity: 1,
+                                                                    height: 'auto',
+                                                                }}
                                                                 exit={{ opacity: 0, height: 0 }}
                                                                 className="mt-3 flex gap-2 overflow-hidden"
                                                             >
                                                                 <Input
                                                                     type="text"
                                                                     value={verificationCode}
-                                                                    onChange={(e) => setVerificationCode(e.target.value)}
+                                                                    onChange={(e) =>
+                                                                        setVerificationCode(
+                                                                            e.target.value,
+                                                                        )
+                                                                    }
                                                                     className="font-mono tracking-widest text-center"
                                                                     placeholder="Enter 6-digit code"
                                                                     maxLength={6}
@@ -355,7 +411,14 @@ export default function Contact() {
                                                                     disabled={isVerifying}
                                                                     className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-semibold hover:shadow-lg disabled:opacity-50 whitespace-nowrap transition-all duration-200"
                                                                 >
-                                                                    {isVerifying ? <Loader2 className="animate-spin" size={18} /> : 'Submit'}
+                                                                    {isVerifying ? (
+                                                                        <Loader2
+                                                                            className="animate-spin"
+                                                                            size={18}
+                                                                        />
+                                                                    ) : (
+                                                                        'Submit'
+                                                                    )}
                                                                 </motion.button>
                                                             </motion.div>
                                                         )}
@@ -374,7 +437,8 @@ export default function Contact() {
 
                                             <div className="grid w-full gap-3">
                                                 <Label htmlFor="message">
-                                                    Message <span className="text-secondary">*</span>
+                                                    Message{' '}
+                                                    <span className="text-secondary">*</span>
                                                 </Label>
                                                 <Textarea
                                                     id="message"
@@ -391,7 +455,10 @@ export default function Contact() {
                                             <div className="flex justify-center py-2">
                                                 <Turnstile
                                                     ref={turnstileRef}
-                                                    siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
+                                                    siteKey={
+                                                        process.env
+                                                            .NEXT_PUBLIC_TURNSTILE_SITE_KEY || ''
+                                                    }
                                                     onSuccess={setToken}
                                                     injectScript={true}
                                                     options={{
@@ -410,7 +477,10 @@ export default function Contact() {
                                             >
                                                 {status === 'loading' ? (
                                                     <>
-                                                        <Loader2 className="animate-spin" size={22} />
+                                                        <Loader2
+                                                            className="animate-spin"
+                                                            size={22}
+                                                        />
                                                         <span>Sending...</span>
                                                     </>
                                                 ) : (

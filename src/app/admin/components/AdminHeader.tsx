@@ -13,8 +13,12 @@ export default function AdminHeader({ onAddAdmin, onChangePassword, onLogout }: 
     return (
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-card p-6 rounded-2xl shadow-sm border border-border">
             <div>
-                <h1 className="text-2xl font-bold font-heading text-foreground">Dashboard Overview</h1>
-                <p className="text-muted-foreground text-sm">Manage your requests and administrators</p>
+                <h1 className="text-2xl font-bold font-heading text-foreground">
+                    Dashboard Overview
+                </h1>
+                <p className="text-muted-foreground text-sm">
+                    Manage your requests and administrators
+                </p>
             </div>
             <div className="flex flex-wrap gap-3">
                 {/* Add Admin button removed as it's now internal to the AdminList component */}
@@ -36,4 +40,3 @@ export default function AdminHeader({ onAddAdmin, onChangePassword, onLogout }: 
         </div>
     );
 }
-

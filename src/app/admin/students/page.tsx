@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -15,7 +14,7 @@ import {
     Loader2,
     Phone,
     Mail,
-    User
+    User,
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -47,7 +46,7 @@ export default function AdminStudentsPage() {
         email: '',
         password: '',
         phone: '',
-        isActive: true
+        isActive: true,
     });
     const [formLoading, setFormLoading] = useState(false);
     const [error, setError] = useState('');
@@ -84,7 +83,7 @@ export default function AdminStudentsPage() {
             email: '',
             password: '',
             phone: '',
-            isActive: true
+            isActive: true,
         });
         setEditingStudent(null);
         setError('');
@@ -103,7 +102,7 @@ export default function AdminStudentsPage() {
             email: student.email,
             password: '', // Don't fill password
             phone: student.phone || '',
-            isActive: student.isActive
+            isActive: student.isActive,
         });
         setEditingStudent(student);
         setShowModal(true);
@@ -170,9 +169,10 @@ export default function AdminStudentsPage() {
     };
 
     // Filter students
-    const filteredStudents = students.filter(student =>
-        student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        student.email.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredStudents = students.filter(
+        (student) =>
+            student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            student.email.toLowerCase().includes(searchTerm.toLowerCase()),
     );
 
     if (loading) {
@@ -220,7 +220,9 @@ export default function AdminStudentsPage() {
         <div className="space-y-6">
             {/* Toast */}
             {toast && (
-                <div className={`fixed bottom-4 right-4 z-50 px-6 py-3 rounded-md shadow-2xl flex items-center gap-3 ${toast.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-500 text-white'} transition-all duration-300 transform translate-y-0 opacity-100`}>
+                <div
+                    className={`fixed bottom-4 right-4 z-50 px-6 py-3 rounded-md shadow-2xl flex items-center gap-3 ${toast.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-500 text-white'} transition-all duration-300 transform translate-y-0 opacity-100`}
+                >
                     {toast.type === 'success' ? <Check size={18} /> : <X size={18} />}
                     <span className="font-medium text-sm">{toast.message}</span>
                 </div>
@@ -228,12 +230,14 @@ export default function AdminStudentsPage() {
 
             {/* Main Content Card */}
             <div className="bg-card rounded-lg shadow-sm border border-border p-6 space-y-6">
-
                 {/* Header Actions & Search */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="flex items-center gap-4 flex-1">
                         <div className="relative w-full sm:w-72">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+                            <Search
+                                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                                size={18}
+                            />
                             <input
                                 type="text"
                                 placeholder="Search students..."
@@ -244,7 +248,10 @@ export default function AdminStudentsPage() {
                         </div>
                         <div className="hidden md:flex items-center gap-4 text-sm text-muted-foreground">
                             <div className="px-3 py-1 bg-muted rounded-lg border border-border">
-                                Total: <span className="font-semibold text-foreground">{students.length}</span>
+                                Total:{' '}
+                                <span className="font-semibold text-foreground">
+                                    {students.length}
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -264,23 +271,38 @@ export default function AdminStudentsPage() {
                         <table className="w-full">
                             <thead className="bg-muted border-b border-border">
                                 <tr>
-                                    <th className="text-left py-4 px-6 text-sm font-semibold text-muted-foreground">Name</th>
-                                    <th className="text-left py-4 px-6 text-sm font-semibold text-muted-foreground">Contact Info</th>
-                                    <th className="text-left py-4 px-6 text-sm font-semibold text-muted-foreground">Status</th>
-                                    <th className="text-left py-4 px-6 text-sm font-semibold text-muted-foreground">Joined</th>
-                                    <th className="text-right py-4 px-6 text-sm font-semibold text-muted-foreground">Actions</th>
+                                    <th className="text-left py-4 px-6 text-sm font-semibold text-muted-foreground">
+                                        Name
+                                    </th>
+                                    <th className="text-left py-4 px-6 text-sm font-semibold text-muted-foreground">
+                                        Contact Info
+                                    </th>
+                                    <th className="text-left py-4 px-6 text-sm font-semibold text-muted-foreground">
+                                        Status
+                                    </th>
+                                    <th className="text-left py-4 px-6 text-sm font-semibold text-muted-foreground">
+                                        Joined
+                                    </th>
+                                    <th className="text-right py-4 px-6 text-sm font-semibold text-muted-foreground">
+                                        Actions
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100">
                                 {filteredStudents.length > 0 ? (
                                     filteredStudents.map((student) => (
-                                        <tr key={student._id} className="hover:bg-muted transition-colors">
+                                        <tr
+                                            key={student._id}
+                                            className="hover:bg-muted transition-colors"
+                                        >
                                             <td className="py-4 px-6">
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold">
                                                         {student.name.charAt(0)}
                                                     </div>
-                                                    <span className="font-medium text-foreground">{student.name}</span>
+                                                    <span className="font-medium text-foreground">
+                                                        {student.name}
+                                                    </span>
                                                 </div>
                                             </td>
                                             <td className="py-4 px-6">
@@ -298,10 +320,13 @@ export default function AdminStudentsPage() {
                                                 </div>
                                             </td>
                                             <td className="py-4 px-6">
-                                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${student.isActive
-                                                    ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400'
-                                                    : 'bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-400'
-                                                    }`}>
+                                                <span
+                                                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                                        student.isActive
+                                                            ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400'
+                                                            : 'bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-400'
+                                                    }`}
+                                                >
                                                     {student.isActive ? 'Active' : 'Inactive'}
                                                 </span>
                                             </td>
@@ -318,7 +343,9 @@ export default function AdminStudentsPage() {
                                                         <Edit2 size={18} />
                                                     </button>
                                                     <button
-                                                        onClick={() => setShowDeleteConfirm(student._id)}
+                                                        onClick={() =>
+                                                            setShowDeleteConfirm(student._id)
+                                                        }
                                                         className="p-2 hover:bg-red-50 rounded-lg text-muted-foreground hover:text-red-500 transition-colors"
                                                         title="Delete student"
                                                     >
@@ -330,7 +357,10 @@ export default function AdminStudentsPage() {
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan={5} className="py-8 text-center text-muted-foreground">
+                                        <td
+                                            colSpan={5}
+                                            className="py-8 text-center text-muted-foreground"
+                                        >
                                             No students found matching your search.
                                         </td>
                                     </tr>
@@ -366,14 +396,21 @@ export default function AdminStudentsPage() {
                             )}
 
                             <div>
-                                <label className="block text-sm font-medium text-foreground mb-1">Full Name *</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">
+                                    Full Name *
+                                </label>
                                 <div className="relative">
-                                    <User className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+                                    <User
+                                        className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                                        size={18}
+                                    />
                                     <input
                                         type="text"
                                         required
                                         value={formData.name}
-                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                        onChange={(e) =>
+                                            setFormData({ ...formData, name: e.target.value })
+                                        }
                                         className="w-full pl-10 pr-4 py-2 rounded-md border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                                         placeholder="John Doe"
                                     />
@@ -381,14 +418,21 @@ export default function AdminStudentsPage() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-foreground mb-1">Email Address *</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">
+                                    Email Address *
+                                </label>
                                 <div className="relative">
-                                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+                                    <Mail
+                                        className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                                        size={18}
+                                    />
                                     <input
                                         type="email"
                                         required
                                         value={formData.email}
-                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                        onChange={(e) =>
+                                            setFormData({ ...formData, email: e.target.value })
+                                        }
                                         className="w-full pl-10 pr-4 py-2 rounded-md border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                                         placeholder="john@example.com"
                                     />
@@ -397,27 +441,40 @@ export default function AdminStudentsPage() {
 
                             <div>
                                 <label className="block text-sm font-medium text-foreground mb-1">
-                                    {editingStudent ? 'Password (leave blank to keep current)' : 'Password *'}
+                                    {editingStudent
+                                        ? 'Password (leave blank to keep current)'
+                                        : 'Password *'}
                                 </label>
                                 <input
                                     type="password"
                                     required={!editingStudent}
                                     value={formData.password}
-                                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                    onChange={(e) =>
+                                        setFormData({ ...formData, password: e.target.value })
+                                    }
                                     className="w-full px-4 py-2 rounded-md border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-                                    placeholder={editingStudent ? "••••••••" : "Choose a secure password"}
+                                    placeholder={
+                                        editingStudent ? '••••••••' : 'Choose a secure password'
+                                    }
                                     minLength={6}
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-foreground mb-1">Phone Number</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">
+                                    Phone Number
+                                </label>
                                 <div className="relative">
-                                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+                                    <Phone
+                                        className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                                        size={18}
+                                    />
                                     <input
                                         type="tel"
                                         value={formData.phone}
-                                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                        onChange={(e) =>
+                                            setFormData({ ...formData, phone: e.target.value })
+                                        }
                                         className="w-full pl-10 pr-4 py-2 rounded-md border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                                         placeholder="+1 (555) 000-0000"
                                     />
@@ -429,10 +486,15 @@ export default function AdminStudentsPage() {
                                     type="checkbox"
                                     id="isActive"
                                     checked={formData.isActive}
-                                    onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                                    onChange={(e) =>
+                                        setFormData({ ...formData, isActive: e.target.checked })
+                                    }
                                     className="w-4 h-4 text-primary border-border rounded focus:ring-primary"
                                 />
-                                <label htmlFor="isActive" className="text-sm font-medium text-foreground">
+                                <label
+                                    htmlFor="isActive"
+                                    className="text-sm font-medium text-foreground"
+                                >
                                     Account is Active
                                 </label>
                             </div>
@@ -466,9 +528,12 @@ export default function AdminStudentsPage() {
                         <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mb-4 mx-auto">
                             <AlertCircle className="w-6 h-6 text-red-600" />
                         </div>
-                        <h3 className="text-lg font-bold text-center text-foreground mb-2">Delete Student</h3>
+                        <h3 className="text-lg font-bold text-center text-foreground mb-2">
+                            Delete Student
+                        </h3>
                         <p className="text-muted-foreground text-center mb-6">
-                            Are you sure you want to delete this student? This action cannot be undone.
+                            Are you sure you want to delete this student? This action cannot be
+                            undone.
                         </p>
                         <div className="flex justify-end gap-3">
                             <button
@@ -490,4 +555,3 @@ export default function AdminStudentsPage() {
         </div>
     );
 }
-

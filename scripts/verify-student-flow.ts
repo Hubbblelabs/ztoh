@@ -1,4 +1,3 @@
-
 import mongoose from 'mongoose';
 import * as dotenv from 'dotenv';
 import path from 'path';
@@ -43,7 +42,8 @@ const TeachingHoursSchema = new mongoose.Schema({
     groupId: { type: mongoose.Schema.Types.ObjectId, ref: 'Group' },
     studentIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Student' }],
 });
-const TeachingHours = mongoose.models.TeachingHours || mongoose.model('TeachingHours', TeachingHoursSchema);
+const TeachingHours =
+    mongoose.models.TeachingHours || mongoose.model('TeachingHours', TeachingHoursSchema);
 
 async function main() {
     await mongoose.connect(MONGODB_URI as string);
@@ -98,10 +98,7 @@ async function main() {
         const studentGroups = await Group.find({ studentIds: student._id }).distinct('_id');
 
         const logs = await TeachingHours.find({
-            $or: [
-                { studentIds: student._id },
-                { groupId: { $in: studentGroups } }
-            ]
+            $or: [{ studentIds: student._id }, { groupId: { $in: studentGroups } }],
         });
 
         const totalHours = logs.reduce((acc: number, curr: any) => acc + curr.hours, 0);
@@ -113,7 +110,6 @@ async function main() {
             console.error(`   FAILURE: Expected 3.5 hours, got ${totalHours}`);
             process.exit(1);
         }
-
     } catch (error) {
         console.error('Error in verification:', error);
         process.exit(1);

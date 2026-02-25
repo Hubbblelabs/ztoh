@@ -7,13 +7,17 @@ interface LoaderProps {
     className?: string;
 }
 
-export default function Loader({ fullScreen = false, text = 'Loading...', className = '' }: LoaderProps) {
+export default function Loader({
+    fullScreen = false,
+    text = 'Loading...',
+    className = '',
+}: LoaderProps) {
     const content = (
         <div className={`flex flex-col items-center justify-center gap-4 ${className}`}>
             <div className="relative flex items-center justify-center">
                 {/* Outer spinning ring */}
                 <div className="w-16 h-16 rounded-full border-4 border-slate-200 border-t-sky-500 animate-spin"></div>
-                
+
                 {/* Inner icon */}
                 <div className="absolute inset-0 flex items-center justify-center">
                     <div className="w-8 h-8 bg-sky-100 rounded-lg flex items-center justify-center animate-pulse">

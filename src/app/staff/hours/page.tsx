@@ -1,13 +1,27 @@
-
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Clock, TrendingUp, Calendar, CalendarDays, BookOpen, Plus, X, Check, Search, Users, User, Edit2, Trash2, Loader2 } from 'lucide-react';
+import {
+    Clock,
+    TrendingUp,
+    Calendar,
+    CalendarDays,
+    BookOpen,
+    Plus,
+    X,
+    Check,
+    Search,
+    Users,
+    User,
+    Edit2,
+    Trash2,
+    Loader2,
+} from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useSetPageTitle } from '@/hooks/useSetPageTitle';
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 
 interface TeachingHoursData {
     records: any[];
@@ -63,7 +77,7 @@ export default function StaffHoursPage() {
         course: '',
         description: '',
         groupId: '',
-        studentIds: [] as string[]
+        studentIds: [] as string[],
     });
 
     const fetchData = async () => {
@@ -84,7 +98,7 @@ export default function StaffHoursPage() {
         try {
             const [groupsRes, studentsRes] = await Promise.all([
                 fetch('/api/staff/groups'),
-                fetch('/api/staff/students')
+                fetch('/api/staff/students'),
             ]);
 
             if (groupsRes.ok) {
@@ -117,7 +131,7 @@ export default function StaffHoursPage() {
             course: '',
             description: '',
             groupId: '',
-            studentIds: []
+            studentIds: [],
         });
         setAssignmentType('group');
         setSearchQuery('');
@@ -145,7 +159,7 @@ export default function StaffHoursPage() {
             course: record.course || '',
             description: record.description || '',
             groupId: record.groupId || '',
-            studentIds: record.studentIds || []
+            studentIds: record.studentIds || [],
         });
 
         if (record.groupId) {
@@ -167,7 +181,7 @@ export default function StaffHoursPage() {
 
         try {
             const res = await fetch(`/api/staff/teaching-hours/${recordToDelete}`, {
-                method: 'DELETE'
+                method: 'DELETE',
             });
 
             if (res.ok) {
@@ -187,7 +201,7 @@ export default function StaffHoursPage() {
             const payload = {
                 ...formData,
                 groupId: assignmentType === 'group' ? formData.groupId : undefined,
-                studentIds: assignmentType === 'students' ? formData.studentIds : undefined
+                studentIds: assignmentType === 'students' ? formData.studentIds : undefined,
             };
 
             const url = editingId
@@ -199,7 +213,7 @@ export default function StaffHoursPage() {
             const res = await fetch(url, {
                 method,
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                body: JSON.stringify(payload),
             });
 
             if (res.ok) {
@@ -218,13 +232,14 @@ export default function StaffHoursPage() {
         return new Date(dateString).toLocaleDateString('en-US', {
             month: 'short',
             day: 'numeric',
-            year: 'numeric'
+            year: 'numeric',
         });
     };
 
-    const filteredStudents = students.filter(s =>
-        s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        s.email.toLowerCase().includes(searchQuery.toLowerCase())
+    const filteredStudents = students.filter(
+        (s) =>
+            s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            s.email.toLowerCase().includes(searchQuery.toLowerCase()),
     );
 
     if (loading) {
@@ -238,7 +253,10 @@ export default function StaffHoursPage() {
                 {/* Stats Skeleton */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     {[1, 2, 3].map((i) => (
-                        <div key={i} className="bg-card rounded-lg p-6 shadow-sm border border-border">
+                        <div
+                            key={i}
+                            className="bg-card rounded-lg p-6 shadow-sm border border-border"
+                        >
                             <div className="flex items-center gap-4">
                                 <Skeleton className="h-12 w-12 rounded-md" />
                                 <div className="space-y-2">
@@ -279,7 +297,10 @@ export default function StaffHoursPage() {
             {/* Action Button */}
             <div className="flex justify-end">
                 <button
-                    onClick={() => { resetForm(); setShowModal(true); }}
+                    onClick={() => {
+                        resetForm();
+                        setShowModal(true);
+                    }}
                     className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
                 >
                     <Plus size={20} />
@@ -318,7 +339,10 @@ export default function StaffHoursPage() {
                 <div className="bg-card rounded-lg p-6 shadow-sm border border-border">
                     <div className="flex items-center gap-4">
                         <div className="p-3 bg-emerald-50 dark:bg-emerald-900/30 rounded-md">
-                            <CalendarDays className="text-emerald-600 dark:text-emerald-400" size={24} />
+                            <CalendarDays
+                                className="text-emerald-600 dark:text-emerald-400"
+                                size={24}
+                            />
                         </div>
                         <div>
                             <p className="text-sm text-muted-foreground">This Month</p>
@@ -337,24 +361,41 @@ export default function StaffHoursPage() {
                         <div className="p-2 bg-violet-100 dark:bg-violet-900/30 rounded-lg">
                             <TrendingUp className="w-5 h-5 text-violet-600 dark:text-violet-400" />
                         </div>
-                        <h2 className="text-lg font-semibold text-foreground">This Month by Subject</h2>
+                        <h2 className="text-lg font-semibold text-foreground">
+                            This Month by Subject
+                        </h2>
                     </div>
                     <div className="overflow-x-auto">
                         <table className="w-full">
                             <thead>
                                 <tr className="border-b border-border">
-                                    <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">Subject</th>
-                                    <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">Course</th>
-                                    <th className="text-right py-3 px-4 text-sm font-semibold text-muted-foreground">Hours</th>
+                                    <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">
+                                        Subject
+                                    </th>
+                                    <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">
+                                        Course
+                                    </th>
+                                    <th className="text-right py-3 px-4 text-sm font-semibold text-muted-foreground">
+                                        Hours
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {teachingData.subjectBreakdown.map((item, index) => (
-                                    <tr key={index} className="border-b border-border hover:bg-muted/50">
-                                        <td className="py-3 px-4 text-sm text-foreground">{item.subject}</td>
-                                        <td className="py-3 px-4 text-sm text-muted-foreground">{item.course || '-'}</td>
+                                    <tr
+                                        key={index}
+                                        className="border-b border-border hover:bg-muted/50"
+                                    >
+                                        <td className="py-3 px-4 text-sm text-foreground">
+                                            {item.subject}
+                                        </td>
+                                        <td className="py-3 px-4 text-sm text-muted-foreground">
+                                            {item.course || '-'}
+                                        </td>
                                         <td className="py-3 px-4 text-sm text-right">
-                                            <span className="font-semibold text-emerald-600 dark:text-emerald-400">{item.hours.toFixed(1)}</span>
+                                            <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                                                {item.hours.toFixed(1)}
+                                            </span>
                                         </td>
                                     </tr>
                                 ))}
@@ -377,21 +418,34 @@ export default function StaffHoursPage() {
                         <table className="w-full">
                             <thead>
                                 <tr className="border-b border-border">
-                                    <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">Date</th>
-                                    <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">Subject</th>
-                                    <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">Attached To</th>
-                                    <th className="text-right py-3 px-4 text-sm font-semibold text-muted-foreground">Hours</th>
+                                    <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">
+                                        Date
+                                    </th>
+                                    <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">
+                                        Subject
+                                    </th>
+                                    <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">
+                                        Attached To
+                                    </th>
+                                    <th className="text-right py-3 px-4 text-sm font-semibold text-muted-foreground">
+                                        Hours
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {teachingData.records.map((record) => (
-                                    <tr key={record._id} className="border-b border-border hover:bg-muted/50 group">
+                                    <tr
+                                        key={record._id}
+                                        className="border-b border-border hover:bg-muted/50 group"
+                                    >
                                         <td className="py-3 px-4 text-sm text-foreground">
                                             {formatDate(record.date)}
                                         </td>
                                         <td className="py-3 px-4 text-sm text-foreground">
                                             <div className="font-medium">{record.subject}</div>
-                                            <div className="text-xs text-muted-foreground">{record.course}</div>
+                                            <div className="text-xs text-muted-foreground">
+                                                {record.course}
+                                            </div>
                                         </td>
                                         <td className="py-3 px-4 text-sm text-muted-foreground">
                                             {record.groupId ? (
@@ -399,17 +453,23 @@ export default function StaffHoursPage() {
                                                     <Users size={12} />
                                                     Group
                                                 </span>
-                                            ) : (record.studentIds && record.studentIds.length > 0) ? (
+                                            ) : record.studentIds &&
+                                              record.studentIds.length > 0 ? (
                                                 <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 rounded-lg text-xs font-medium">
                                                     <User size={12} />
-                                                    {record.studentIds.length} Student{record.studentIds.length !== 1 ? 's' : ''}
+                                                    {record.studentIds.length} Student
+                                                    {record.studentIds.length !== 1 ? 's' : ''}
                                                 </span>
                                             ) : (
-                                                <span className="text-muted-foreground italic">Subject only</span>
+                                                <span className="text-muted-foreground italic">
+                                                    Subject only
+                                                </span>
                                             )}
                                         </td>
                                         <td className="py-3 px-4 text-sm text-right">
-                                            <span className="font-semibold text-emerald-600 dark:text-emerald-400 block mb-1">{record.hours.toFixed(1)}</span>
+                                            <span className="font-semibold text-emerald-600 dark:text-emerald-400 block mb-1">
+                                                {record.hours.toFixed(1)}
+                                            </span>
                                             <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                 <button
                                                     onClick={() => handleEdit(record)}
@@ -446,8 +506,12 @@ export default function StaffHoursPage() {
                     <div className="bg-card rounded-lg w-full max-w-5xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 border border-border">
                         <div className="p-6 border-b border-border flex justify-between items-center bg-muted/30">
                             <div>
-                                <h2 className="text-xl font-bold text-foreground">{editingId ? 'Edit Teaching Hours' : 'Log Teaching Hours'}</h2>
-                                <p className="text-sm text-muted-foreground">Record your session details</p>
+                                <h2 className="text-xl font-bold text-foreground">
+                                    {editingId ? 'Edit Teaching Hours' : 'Log Teaching Hours'}
+                                </h2>
+                                <p className="text-sm text-muted-foreground">
+                                    Record your session details
+                                </p>
                             </div>
                             <button
                                 onClick={() => setShowModal(false)}
@@ -458,11 +522,16 @@ export default function StaffHoursPage() {
                         </div>
 
                         <div className="flex-1 overflow-y-auto p-6 md:p-8">
-                            <form id="log-hours-form" onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
-
+                            <form
+                                id="log-hours-form"
+                                onSubmit={handleSubmit}
+                                className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full"
+                            >
                                 {/* Left Column: Log Details */}
                                 <div className="space-y-6">
-                                    <h3 className="text-sm font-bold text-foreground border-b border-border pb-2">Session Details</h3>
+                                    <h3 className="text-sm font-bold text-foreground border-b border-border pb-2">
+                                        Session Details
+                                    </h3>
 
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="grid w-full gap-3">
@@ -471,7 +540,12 @@ export default function StaffHoursPage() {
                                                 type="date"
                                                 required
                                                 value={formData.date}
-                                                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                                                onChange={(e) =>
+                                                    setFormData({
+                                                        ...formData,
+                                                        date: e.target.value,
+                                                    })
+                                                }
                                             />
                                         </div>
                                         <div className="grid w-full gap-3">
@@ -482,7 +556,12 @@ export default function StaffHoursPage() {
                                                 min="0.5"
                                                 required
                                                 value={formData.hours}
-                                                onChange={(e) => setFormData({ ...formData, hours: e.target.value })}
+                                                onChange={(e) =>
+                                                    setFormData({
+                                                        ...formData,
+                                                        hours: e.target.value,
+                                                    })
+                                                }
                                                 placeholder="e.g. 1.5"
                                             />
                                         </div>
@@ -494,7 +573,12 @@ export default function StaffHoursPage() {
                                             type="text"
                                             required
                                             value={formData.subject}
-                                            onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                                            onChange={(e) =>
+                                                setFormData({
+                                                    ...formData,
+                                                    subject: e.target.value,
+                                                })
+                                            }
                                             placeholder="e.g. Mathematics"
                                         />
                                     </div>
@@ -504,7 +588,9 @@ export default function StaffHoursPage() {
                                         <Input
                                             type="text"
                                             value={formData.course}
-                                            onChange={(e) => setFormData({ ...formData, course: e.target.value })}
+                                            onChange={(e) =>
+                                                setFormData({ ...formData, course: e.target.value })
+                                            }
                                             placeholder="e.g. Grade 10 - Advanced"
                                         />
                                     </div>
@@ -513,7 +599,12 @@ export default function StaffHoursPage() {
                                         <Label className="mb-1">Description</Label>
                                         <Textarea
                                             value={formData.description}
-                                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                            onChange={(e) =>
+                                                setFormData({
+                                                    ...formData,
+                                                    description: e.target.value,
+                                                })
+                                            }
                                             className="resize-none h-32"
                                             placeholder="Optional: What topics were covered?"
                                         />
@@ -523,17 +614,21 @@ export default function StaffHoursPage() {
                                 {/* Right Column: Dynamic Selection with Tabs */}
                                 <div className="space-y-6 flex flex-col">
                                     <div className="flex items-center justify-between border-b border-border pb-2">
-                                        <h3 className="text-sm font-bold text-foreground">Who is this for?</h3>
+                                        <h3 className="text-sm font-bold text-foreground">
+                                            Who is this for?
+                                        </h3>
                                     </div>
 
                                     {/* Custom Tab Selector */}
                                     <div className="flex p-1 bg-muted rounded-md">
-
                                         <button
                                             type="button"
                                             onClick={() => setAssignmentType('group')}
-                                            className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm font-medium transition-all ${assignmentType === 'group' ? 'bg-background shadow text-primary' : 'text-muted-foreground hover:text-foreground'
-                                                }`}
+                                            className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm font-medium transition-all ${
+                                                assignmentType === 'group'
+                                                    ? 'bg-background shadow text-primary'
+                                                    : 'text-muted-foreground hover:text-foreground'
+                                            }`}
                                         >
                                             <Users size={16} />
                                             Group
@@ -541,8 +636,11 @@ export default function StaffHoursPage() {
                                         <button
                                             type="button"
                                             onClick={() => setAssignmentType('students')}
-                                            className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm font-medium transition-all ${assignmentType === 'students' ? 'bg-background shadow text-primary' : 'text-muted-foreground hover:text-foreground'
-                                                }`}
+                                            className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm font-medium transition-all ${
+                                                assignmentType === 'students'
+                                                    ? 'bg-background shadow text-primary'
+                                                    : 'text-muted-foreground hover:text-foreground'
+                                            }`}
                                         >
                                             <User size={16} />
                                             Students
@@ -551,11 +649,13 @@ export default function StaffHoursPage() {
 
                                     {/* Content Area */}
                                     <div className="flex-1 min-h-[300px] border border-border rounded-md p-4 bg-muted/10 overflow-hidden flex flex-col">
-
                                         {assignmentType === 'group' && (
                                             <div className="flex flex-col h-full">
                                                 <div className="mb-3 relative">
-                                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
+                                                    <Search
+                                                        className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                                                        size={16}
+                                                    />
                                                     <Input
                                                         type="text"
                                                         placeholder="Search groups..."
@@ -563,31 +663,56 @@ export default function StaffHoursPage() {
                                                     />
                                                 </div>
                                                 <div className="space-y-2 overflow-y-auto flex-1 pr-1">
-                                                    {groups.map(group => (
-                                                        <label key={group._id} className={`flex items-center gap-3 p-3 rounded-md border cursor-pointer transition-all bg-card ${formData.groupId === group._id
-                                                            ? 'border-primary ring-1 ring-primary'
-                                                            : 'border-border hover:border-primary/50'
-                                                            }`}>
-                                                            <div className={`w-5 h-5 rounded-full border flex items-center justify-center flex-shrink-0 ${formData.groupId === group._id ? 'border-primary bg-primary' : 'border-muted-foreground/30'
-                                                                }`}>
-                                                                {formData.groupId === group._id && <div className="w-2 h-2 bg-primary-foreground rounded-full" />}
+                                                    {groups.map((group) => (
+                                                        <label
+                                                            key={group._id}
+                                                            className={`flex items-center gap-3 p-3 rounded-md border cursor-pointer transition-all bg-card ${
+                                                                formData.groupId === group._id
+                                                                    ? 'border-primary ring-1 ring-primary'
+                                                                    : 'border-border hover:border-primary/50'
+                                                            }`}
+                                                        >
+                                                            <div
+                                                                className={`w-5 h-5 rounded-full border flex items-center justify-center flex-shrink-0 ${
+                                                                    formData.groupId === group._id
+                                                                        ? 'border-primary bg-primary'
+                                                                        : 'border-muted-foreground/30'
+                                                                }`}
+                                                            >
+                                                                {formData.groupId === group._id && (
+                                                                    <div className="w-2 h-2 bg-primary-foreground rounded-full" />
+                                                                )}
                                                             </div>
                                                             <input
                                                                 type="radio"
                                                                 name="group"
                                                                 className="hidden"
                                                                 value={group._id}
-                                                                checked={formData.groupId === group._id}
-                                                                onChange={(e) => setFormData({ ...formData, groupId: e.target.value })}
+                                                                checked={
+                                                                    formData.groupId === group._id
+                                                                }
+                                                                onChange={(e) =>
+                                                                    setFormData({
+                                                                        ...formData,
+                                                                        groupId: e.target.value,
+                                                                    })
+                                                                }
                                                             />
                                                             <div className="flex-1 min-w-0">
-                                                                <div className="font-semibold text-foreground truncate">{group.name}</div>
-                                                                <div className="text-xs text-muted-foreground">{group.studentIds.length} members</div>
+                                                                <div className="font-semibold text-foreground truncate">
+                                                                    {group.name}
+                                                                </div>
+                                                                <div className="text-xs text-muted-foreground">
+                                                                    {group.studentIds.length}{' '}
+                                                                    members
+                                                                </div>
                                                             </div>
                                                         </label>
                                                     ))}
                                                     {groups.length === 0 && (
-                                                        <div className="text-center py-8 text-muted-foreground text-sm">No groups found</div>
+                                                        <div className="text-center py-8 text-muted-foreground text-sm">
+                                                            No groups found
+                                                        </div>
                                                     )}
                                                 </div>
                                             </div>
@@ -596,48 +721,93 @@ export default function StaffHoursPage() {
                                         {assignmentType === 'students' && (
                                             <div className="flex flex-col h-full">
                                                 <div className="mb-3 relative">
-                                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
+                                                    <Search
+                                                        className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                                                        size={16}
+                                                    />
                                                     <Input
                                                         type="text"
                                                         value={searchQuery}
-                                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                                        onChange={(e) =>
+                                                            setSearchQuery(e.target.value)
+                                                        }
                                                         className="pl-9"
                                                         placeholder="Search students..."
                                                     />
                                                 </div>
                                                 <div className="flex-1 overflow-y-auto space-y-1 pr-1">
-                                                    {filteredStudents.map(student => (
-                                                        <label key={student._id} className={`flex items-center gap-3 p-2.5 rounded-lg cursor-pointer transition-colors border bg-card ${formData.studentIds.includes(student._id)
-                                                            ? 'border-primary ring-1 ring-primary'
-                                                            : 'border-border hover:border-primary/50'
-                                                            }`}>
-                                                            <div className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${formData.studentIds.includes(student._id) ? 'bg-primary border-primary' : 'border-muted-foreground/30'
-                                                                }`}>
-                                                                {formData.studentIds.includes(student._id) && <Check size={10} className="text-primary-foreground" />}
+                                                    {filteredStudents.map((student) => (
+                                                        <label
+                                                            key={student._id}
+                                                            className={`flex items-center gap-3 p-2.5 rounded-lg cursor-pointer transition-colors border bg-card ${
+                                                                formData.studentIds.includes(
+                                                                    student._id,
+                                                                )
+                                                                    ? 'border-primary ring-1 ring-primary'
+                                                                    : 'border-border hover:border-primary/50'
+                                                            }`}
+                                                        >
+                                                            <div
+                                                                className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${
+                                                                    formData.studentIds.includes(
+                                                                        student._id,
+                                                                    )
+                                                                        ? 'bg-primary border-primary'
+                                                                        : 'border-muted-foreground/30'
+                                                                }`}
+                                                            >
+                                                                {formData.studentIds.includes(
+                                                                    student._id,
+                                                                ) && (
+                                                                    <Check
+                                                                        size={10}
+                                                                        className="text-primary-foreground"
+                                                                    />
+                                                                )}
                                                             </div>
                                                             <input
                                                                 type="checkbox"
                                                                 className="hidden"
-                                                                checked={formData.studentIds.includes(student._id)}
-                                                                onChange={() => handleStudentToggle(student._id)}
+                                                                checked={formData.studentIds.includes(
+                                                                    student._id,
+                                                                )}
+                                                                onChange={() =>
+                                                                    handleStudentToggle(student._id)
+                                                                }
                                                             />
                                                             <div className="min-w-0">
-                                                                <div className="text-sm font-medium text-foreground truncate">{student.name}</div>
-                                                                <div className="text-xs text-muted-foreground truncate">{student.email}</div>
+                                                                <div className="text-sm font-medium text-foreground truncate">
+                                                                    {student.name}
+                                                                </div>
+                                                                <div className="text-xs text-muted-foreground truncate">
+                                                                    {student.email}
+                                                                </div>
                                                             </div>
                                                         </label>
                                                     ))}
                                                     {filteredStudents.length === 0 && (
-                                                        <div className="text-center py-8 text-muted-foreground text-sm">No students found</div>
+                                                        <div className="text-center py-8 text-muted-foreground text-sm">
+                                                            No students found
+                                                        </div>
                                                     )}
                                                 </div>
                                                 <div className="pt-3 mt-auto border-t border-border">
                                                     <div className="flex justify-between items-center text-xs text-muted-foreground">
-                                                        <span>Selected: <span className="font-semibold text-primary">{formData.studentIds.length}</span></span>
+                                                        <span>
+                                                            Selected:{' '}
+                                                            <span className="font-semibold text-primary">
+                                                                {formData.studentIds.length}
+                                                            </span>
+                                                        </span>
                                                         {formData.studentIds.length > 0 && (
                                                             <button
                                                                 type="button"
-                                                                onClick={() => setFormData({ ...formData, studentIds: [] })}
+                                                                onClick={() =>
+                                                                    setFormData({
+                                                                        ...formData,
+                                                                        studentIds: [],
+                                                                    })
+                                                                }
                                                                 className="text-destructive hover:underline"
                                                             >
                                                                 Clear all
@@ -663,10 +833,19 @@ export default function StaffHoursPage() {
                             <button
                                 type="submit"
                                 form="log-hours-form"
-                                disabled={submitting || (assignmentType === 'group' && !formData.groupId) || (assignmentType === 'students' && formData.studentIds.length === 0)}
+                                disabled={
+                                    submitting ||
+                                    (assignmentType === 'group' && !formData.groupId) ||
+                                    (assignmentType === 'students' &&
+                                        formData.studentIds.length === 0)
+                                }
                                 className="px-6 py-2.5 bg-primary text-primary-foreground rounded-md font-semibold hover:bg-primary/90 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                             >
-                                {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Clock size={18} />}
+                                {submitting ? (
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                    <Clock size={18} />
+                                )}
                                 {editingId ? 'Update Hours' : 'Log Hours'}
                             </button>
                         </div>
@@ -684,7 +863,8 @@ export default function StaffHoursPage() {
                             </div>
                             <h3 className="text-xl font-bold text-foreground mb-2">Delete Log?</h3>
                             <p className="text-muted-foreground mb-6">
-                                Are you sure you want to delete this teaching hour log? This action cannot be undone.
+                                Are you sure you want to delete this teaching hour log? This action
+                                cannot be undone.
                             </p>
                             <div className="flex gap-3 justify-center">
                                 <button

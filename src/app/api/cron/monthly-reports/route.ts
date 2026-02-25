@@ -14,17 +14,11 @@ export async function GET(request: Request) {
 
         if (!cronSecret) {
             console.warn('CRON_SECRET not set - cron endpoint is disabled');
-            return NextResponse.json(
-                { error: 'Cron endpoint not configured' },
-                { status: 503 }
-            );
+            return NextResponse.json({ error: 'Cron endpoint not configured' }, { status: 503 });
         }
 
         if (authHeader !== `Bearer ${cronSecret}`) {
-            return NextResponse.json(
-                { error: 'Unauthorized' },
-                { status: 401 }
-            );
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
         // Generate and send reports for the previous month
@@ -36,13 +30,13 @@ export async function GET(request: Request) {
             success: true,
             message: `Generated and sent ${result.reportsGenerated} monthly reports`,
             timestamp: new Date().toISOString(),
-            results: result.emailResults
+            results: result.emailResults,
         });
     } catch (error: any) {
         console.error('Monthly report cron error:', error);
         return NextResponse.json(
             { error: 'Failed to generate monthly reports: ' + error.message },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }

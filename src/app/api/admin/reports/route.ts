@@ -19,20 +19,20 @@ export async function GET(request: Request) {
         const limit = parseInt(searchParams.get('limit') || '20');
 
         const query: any = {};
-        
+
         if (staffId) query.staffId = staffId;
         if (year) query.year = parseInt(year);
         if (month) query.month = parseInt(month);
 
         const skip = (page - 1) * limit;
-        
+
         const [reports, total] = await Promise.all([
             MonthlyReport.find(query)
                 .populate('staffId', 'name email')
                 .sort({ year: -1, month: -1 })
                 .skip(skip)
                 .limit(limit),
-            MonthlyReport.countDocuments(query)
+            MonthlyReport.countDocuments(query),
         ]);
 
         return NextResponse.json({
@@ -41,8 +41,8 @@ export async function GET(request: Request) {
                 page,
                 limit,
                 total,
-                pages: Math.ceil(total / limit)
-            }
+                pages: Math.ceil(total / limit),
+            },
         });
     } catch (error) {
         console.error('Error fetching monthly reports:', error);
@@ -63,7 +63,7 @@ export async function POST(request: Request) {
             return NextResponse.json({
                 success: true,
                 message: `Generated ${result.reportsGenerated} reports`,
-                emailResults: result.emailResults
+                emailResults: result.emailResults,
             });
         } else {
             // Just generate reports
@@ -71,14 +71,14 @@ export async function POST(request: Request) {
             return NextResponse.json({
                 success: true,
                 message: `Generated ${reports.length} reports`,
-                reports
+                reports,
             });
         }
     } catch (error: any) {
         console.error('Error generating monthly reports:', error);
         return NextResponse.json(
             { error: 'Internal server error: ' + error.message },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }

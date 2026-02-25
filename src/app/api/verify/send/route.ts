@@ -20,7 +20,10 @@ export async function POST(req: Request) {
         const isAllowed = await checkRateLimit(`verify_send_${ip}`, 3, 10 * 60 * 1000);
 
         if (!isAllowed) {
-            return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 });
+            return NextResponse.json(
+                { error: 'Too many requests. Please try again later.' },
+                { status: 429 },
+            );
         }
 
         // Generate 6-digit code
@@ -38,7 +41,10 @@ export async function POST(req: Request) {
         if (process.env.RESEND_API_KEY) {
             const resend = new Resend(process.env.RESEND_API_KEY);
             const settings = await Settings.findOne();
-            const fromEmail = settings?.emailSettings?.fromEmail || process.env.FROM_EMAIL || 'onboarding@resend.dev';
+            const fromEmail =
+                settings?.emailSettings?.fromEmail ||
+                process.env.FROM_EMAIL ||
+                'onboarding@resend.dev';
 
             await resend.emails.send({
                 from: `Zero To Hero <${fromEmail}>`,
@@ -50,12 +56,11 @@ export async function POST(req: Request) {
                 `,
             });
         } else {
-            console.warn("RESEND_API_KEY not set. Code:", code);
+            console.warn('RESEND_API_KEY not set. Code:', code);
             // For development, you might want to return the code or log it
         }
 
         return NextResponse.json({ message: 'Verification code sent' });
-
     } catch (error) {
         console.error('Error sending verification code:', error);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

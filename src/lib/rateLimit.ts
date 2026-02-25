@@ -17,7 +17,11 @@ const RateLimit = mongoose.models.RateLimit || mongoose.model('RateLimit', RateL
  * @param windowMs Time window in milliseconds
  * @returns {Promise<boolean>} True if allowed, False if limit exceeded
  */
-export async function checkRateLimit(identifier: string, limit: number, windowMs: number): Promise<boolean> {
+export async function checkRateLimit(
+    identifier: string,
+    limit: number,
+    windowMs: number,
+): Promise<boolean> {
     try {
         await connectDB();
 
@@ -51,9 +55,8 @@ export async function checkRateLimit(identifier: string, limit: number, windowMs
 
         // Limit exceeded
         return false;
-
     } catch (error) {
-        console.error("Rate limit error:", error);
+        console.error('Rate limit error:', error);
         // Fail open (allow request) if rate limiter fails, to avoid blocking legitimate users due to DB errors
         return true;
     }

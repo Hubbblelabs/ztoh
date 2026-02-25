@@ -1,11 +1,9 @@
-"use client"
+'use client';
 
-import * as React from "react"
-import {
-    GraduationCap,
-} from "lucide-react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+import * as React from 'react';
+import { GraduationCap } from 'lucide-react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 import {
     Sidebar,
@@ -18,18 +16,13 @@ import {
     SidebarGroup,
     SidebarGroupLabel,
     SidebarGroupContent,
-
     SidebarRail,
-} from "@/components/ui/sidebar"
+} from '@/components/ui/sidebar';
 
-
-
-
-// We need to access the AuthContext. Since it's defined in admin/layout, 
-// checking if it's exported or if we need to refactor. 
+// We need to access the AuthContext. Since it's defined in admin/layout,
+// checking if it's exported or if we need to refactor.
 // Ideally, AppSidebar receives user/logout as props or uses a hook.
 // The previous layout exported `useAuth`.
-
 
 interface NavItem {
     href: string;
@@ -49,16 +42,20 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
     title?: string;
 }
 
-export function AppSidebar({ navGroups, title = "Zero to Hero", ...props }: AppSidebarProps) {
-    const pathname = usePathname()
+export function AppSidebar({ navGroups, title = 'Zero to Hero', ...props }: AppSidebarProps) {
+    const pathname = usePathname();
 
     const isActive = (href: string, exact = false) => {
-        if (exact) return pathname === href
-        return pathname.startsWith(href)
-    }
+        if (exact) return pathname === href;
+        return pathname.startsWith(href);
+    };
 
     return (
-        <Sidebar collapsible="icon" {...props} className="border-r border-sidebar-border bg-sidebar">
+        <Sidebar
+            collapsible="icon"
+            {...props}
+            className="border-r border-sidebar-border bg-sidebar"
+        >
             <SidebarHeader className="h-16 items-center justify-center">
                 <SidebarMenu>
                     <SidebarMenuItem>
@@ -101,9 +98,8 @@ export function AppSidebar({ navGroups, title = "Zero to Hero", ...props }: AppS
                     </SidebarGroup>
                 ))}
             </SidebarContent>
-            <SidebarFooter>
-            </SidebarFooter>
+            <SidebarFooter></SidebarFooter>
             <SidebarRail />
         </Sidebar>
-    )
+    );
 }

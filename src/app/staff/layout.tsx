@@ -8,11 +8,7 @@ import { ModeToggle } from '@/components/mode-toggle';
 import { ThemeProvider } from '@/components/theme-provider';
 import { AuthProvider, useAuth } from '@/app/admin/auth-context'; // Reusing context
 import { PageHeaderProvider, usePageHeader } from '@/contexts/PageHeaderContext';
-import {
-    SidebarInset,
-    SidebarProvider,
-    SidebarTrigger,
-} from '@/components/ui/sidebar';
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { Separator } from '@/components/ui/separator';
 import {
     DropdownMenu,
@@ -23,26 +19,20 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import {
-    LayoutDashboard,
-    Clock,
-    FileText,
-    LogOut,
-    User,
-} from 'lucide-react';
+import { LayoutDashboard, Clock, FileText, LogOut, User } from 'lucide-react';
 import Loader from '@/components/ui/Loader';
 import { ChangePasswordDialog } from '@/components/ChangePasswordDialog';
 
 const staffNavGroups = [
     {
-        label: "Menu",
+        label: 'Menu',
         items: [
             { href: '/staff', icon: LayoutDashboard, label: 'Dashboard', exact: true },
             { href: '/staff/hours', icon: Clock, label: 'My Hours' },
             { href: '/staff/groups', icon: User, label: 'Groups' },
             { href: '/staff/reports', icon: FileText, label: 'Reports' },
-        ]
-    }
+        ],
+    },
 ];
 
 function StaffLayoutContent({ children }: { children: React.ReactNode }) {
@@ -53,8 +43,8 @@ function StaffLayoutContent({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         if (!loading && session?.user?.role !== 'staff') {
-            // Redirect if not staff. 
-            // Note: AuthProvider handles unauthenticated. 
+            // Redirect if not staff.
+            // Note: AuthProvider handles unauthenticated.
             // We handle role mismatch here.
             // If user is admin, maybe allowed? Usually strictly separated.
             if (session?.user) router.push('/login');
@@ -66,8 +56,6 @@ function StaffLayoutContent({ children }: { children: React.ReactNode }) {
     }
 
     if (!user || session?.user?.role !== 'staff') return null;
-
-
 
     return (
         <SidebarProvider>
@@ -96,11 +84,17 @@ function StaffLayoutContent({ children }: { children: React.ReactNode }) {
                                 </Avatar>
                                 <div className="grid flex-1 text-left text-sm leading-tight max-w-[100px] lg:max-w-none">
                                     <span className="truncate font-semibold">{user.name}</span>
-                                    <span className="truncate text-xs text-muted-foreground">Staff</span>
+                                    <span className="truncate text-xs text-muted-foreground">
+                                        Staff
+                                    </span>
                                 </div>
                             </button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-56 admin-theme border border-border" align="end" sideOffset={4}>
+                        <DropdownMenuContent
+                            className="w-56 admin-theme border border-border"
+                            align="end"
+                            sideOffset={4}
+                        >
                             <DropdownMenuLabel>My Account</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuLabel className="p-0 font-normal">
@@ -113,12 +107,17 @@ function StaffLayoutContent({ children }: { children: React.ReactNode }) {
                                     </Avatar>
                                     <div className="grid flex-1 text-left text-sm leading-tight">
                                         <span className="truncate font-semibold">{user.name}</span>
-                                        <span className="truncate text-xs text-muted-foreground">{user.email}</span>
+                                        <span className="truncate text-xs text-muted-foreground">
+                                            {user.email}
+                                        </span>
                                     </div>
                                 </div>
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <ChangePasswordDialog userEmail={user.email} apiEndpoint="/api/staff/change-password" />
+                            <ChangePasswordDialog
+                                userEmail={user.email}
+                                apiEndpoint="/api/staff/change-password"
+                            />
                             <DropdownMenuItem onClick={logout}>
                                 <LogOut className="mr-2 h-4 w-4" />
                                 Log out
@@ -138,7 +137,13 @@ function StaffLayoutContent({ children }: { children: React.ReactNode }) {
 
 export default function StaffLayout({ children }: { children: React.ReactNode }) {
     return (
-        <ThemeProvider attribute="class" defaultTheme="system" storageKey="dashboard-theme" enableSystem={true} disableTransitionOnChange>
+        <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            storageKey="dashboard-theme"
+            enableSystem={true}
+            disableTransitionOnChange
+        >
             <div className="admin-theme min-h-screen bg-background text-foreground">
                 <AuthProvider>
                     <PageHeaderProvider>

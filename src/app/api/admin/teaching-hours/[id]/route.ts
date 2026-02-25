@@ -4,10 +4,7 @@ import dbConnect from '@/lib/db';
 import TeachingHours from '@/models/TeachingHours';
 
 // GET - Get a single teaching hour record
-export async function GET(
-    request: Request,
-    { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         await verifyAuth();
 
@@ -15,7 +12,7 @@ export async function GET(
         await dbConnect();
 
         const record = await TeachingHours.findById(id).populate('staffId', 'name email');
-        
+
         if (!record) {
             return NextResponse.json({ error: 'Record not found' }, { status: 404 });
         }
@@ -28,10 +25,7 @@ export async function GET(
 }
 
 // PUT - Update a teaching hour record
-export async function PUT(
-    request: Request,
-    { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         await verifyAuth();
 
@@ -41,7 +35,7 @@ export async function PUT(
         const { date, hours, subject, course, description } = await request.json();
 
         const record = await TeachingHours.findById(id);
-        
+
         if (!record) {
             return NextResponse.json({ error: 'Record not found' }, { status: 404 });
         }
@@ -59,16 +53,13 @@ export async function PUT(
         console.error('Error updating teaching hour record:', error);
         return NextResponse.json(
             { error: 'Internal server error: ' + error.message },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }
 
 // DELETE - Delete a teaching hour record
-export async function DELETE(
-    request: Request,
-    { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         await verifyAuth();
 
@@ -76,7 +67,7 @@ export async function DELETE(
         await dbConnect();
 
         const record = await TeachingHours.findByIdAndDelete(id);
-        
+
         if (!record) {
             return NextResponse.json({ error: 'Record not found' }, { status: 404 });
         }

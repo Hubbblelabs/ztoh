@@ -13,12 +13,31 @@ export async function POST(request: Request) {
         const body = await request.json();
 
         const {
-            type, email, name, gender, mobile, address,
+            type,
+            email,
+            name,
+            gender,
+            mobile,
+            address,
             // Student fields
-            applyingAs, currentStatus, gradeYear, boardUniversity, subjectDetails, modeOfStudy,
+            applyingAs,
+            currentStatus,
+            gradeYear,
+            boardUniversity,
+            subjectDetails,
+            modeOfStudy,
             // Teacher fields
-            qualification, nationality, state, city, currentJobDetails, experience, subjectWillingToHandle, modeOfTutoring, workType,
-            token, attachments
+            qualification,
+            nationality,
+            state,
+            city,
+            currentJobDetails,
+            experience,
+            subjectWillingToHandle,
+            modeOfTutoring,
+            workType,
+            token,
+            attachments,
         } = body;
 
         // Rate Limiting: 5 requests per hour per IP
@@ -26,37 +45,65 @@ export async function POST(request: Request) {
         const isAllowed = await checkRateLimit(`join_${ip}`, 5, 60 * 60 * 1000);
 
         if (!isAllowed) {
-            return NextResponse.json({ success: false, error: 'Too many requests. Please try again later.' }, { status: 429 });
+            return NextResponse.json(
+                { success: false, error: 'Too many requests. Please try again later.' },
+                { status: 429 },
+            );
         }
 
         // Verify Turnstile Token
         if (token) {
             const isVerified = await verifyTurnstileToken(token);
             if (!isVerified) {
-                return NextResponse.json({ success: false, error: 'Invalid captcha token' }, { status: 400 });
+                return NextResponse.json(
+                    { success: false, error: 'Invalid captcha token' },
+                    { status: 400 },
+                );
             }
         } else {
-            return NextResponse.json({ success: false, error: 'Captcha token is required' }, { status: 400 });
+            return NextResponse.json(
+                { success: false, error: 'Captcha token is required' },
+                { status: 400 },
+            );
         }
 
         // 1. Validate Common Fields
         if (!type || !['student', 'teacher'].includes(type)) {
-            return NextResponse.json({ success: false, error: 'Invalid or missing user type' }, { status: 400 });
+            return NextResponse.json(
+                { success: false, error: 'Invalid or missing user type' },
+                { status: 400 },
+            );
         }
         if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            return NextResponse.json({ success: false, error: 'Invalid email address' }, { status: 400 });
+            return NextResponse.json(
+                { success: false, error: 'Invalid email address' },
+                { status: 400 },
+            );
         }
         if (!name || name.trim().length < 2) {
-            return NextResponse.json({ success: false, error: 'Name is required' }, { status: 400 });
+            return NextResponse.json(
+                { success: false, error: 'Name is required' },
+                { status: 400 },
+            );
         }
         if (!gender) {
-            return NextResponse.json({ success: false, error: 'Gender is required' }, { status: 400 });
+            return NextResponse.json(
+                { success: false, error: 'Gender is required' },
+                { status: 400 },
+            );
         }
-        if (!mobile || !/^\+?[\d\s-]{10,15}$/.test(mobile)) { // Allow international formats
-            return NextResponse.json({ success: false, error: 'Valid mobile number is required' }, { status: 400 });
+        if (!mobile || !/^\+?[\d\s-]{10,15}$/.test(mobile)) {
+            // Allow international formats
+            return NextResponse.json(
+                { success: false, error: 'Valid mobile number is required' },
+                { status: 400 },
+            );
         }
         if (!address || address.trim().length < 5) {
-            return NextResponse.json({ success: false, error: 'Address is required' }, { status: 400 });
+            return NextResponse.json(
+                { success: false, error: 'Address is required' },
+                { status: 400 },
+            );
         }
 
         // 2. Validate Type-Specific Fields
@@ -70,10 +117,13 @@ export async function POST(request: Request) {
             if (!modeOfStudy) missingFields.push('Mode of Study');
 
             if (missingFields.length > 0) {
-                return NextResponse.json({
-                    success: false,
-                    error: `Missing required fields for student: ${missingFields.join(', ')}`
-                }, { status: 400 });
+                return NextResponse.json(
+                    {
+                        success: false,
+                        error: `Missing required fields for student: ${missingFields.join(', ')}`,
+                    },
+                    { status: 400 },
+                );
             }
         } else if (type === 'teacher') {
             const missingFields = [];
@@ -88,10 +138,13 @@ export async function POST(request: Request) {
             if (!workType) missingFields.push('Work Type');
 
             if (missingFields.length > 0) {
-                return NextResponse.json({
-                    success: false,
-                    error: `Missing required fields for teacher: ${missingFields.join(', ')}`
-                }, { status: 400 });
+                return NextResponse.json(
+                    {
+                        success: false,
+                        error: `Missing required fields for teacher: ${missingFields.join(', ')}`,
+                    },
+                    { status: 400 },
+                );
             }
         }
 
@@ -105,7 +158,7 @@ export async function POST(request: Request) {
             address,
             trackingId: generateTrackingId('join'),
             status: 'pending',
-            teleCallingStatus: 'pending'
+            teleCallingStatus: 'pending',
         };
 
         // Add type-specific fields
@@ -127,7 +180,7 @@ export async function POST(request: Request) {
             requestData.subjectWillingToHandle = subjectWillingToHandle;
             requestData.modeOfTutoring = modeOfTutoring;
             requestData.workType = workType;
-            
+
             // Add attachments only for teachers if they exist
             if (attachments && Array.isArray(attachments) && attachments.length > 0) {
                 requestData.attachments = attachments;
@@ -144,8 +197,18 @@ export async function POST(request: Request) {
 
                 // Format details for email
                 const detailsHtml = Object.entries(body)
-                    .filter(([key]) => key !== 'type' && key !== 'name' && key !== 'email' && key !== 'token' && key !== 'attachments')
-                    .map(([key, value]) => `<p><strong>${key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}:</strong> ${value}</p>`)
+                    .filter(
+                        ([key]) =>
+                            key !== 'type' &&
+                            key !== 'name' &&
+                            key !== 'email' &&
+                            key !== 'token' &&
+                            key !== 'attachments',
+                    )
+                    .map(
+                        ([key, value]) =>
+                            `<p><strong>${key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())}:</strong> ${value}</p>`,
+                    )
                     .join('');
 
                 const settings = await Settings.findOne();
@@ -153,17 +216,18 @@ export async function POST(request: Request) {
                 const fromEmail = settings?.emailSettings?.fromEmail || process.env.FROM_EMAIL;
 
                 // Prepare attachments for Resend
-                const emailAttachments = attachments?.map((att: any) => {
-                    // Extract base64 content (remove data:image/png;base64, prefix)
-                    const base64Content = att.content.split(',')[1] || att.content;
-                    return {
-                        filename: att.name,
-                        content: Buffer.from(base64Content, 'base64'),
-                    };
-                }) || [];
+                const emailAttachments =
+                    attachments?.map((att: any) => {
+                        // Extract base64 content (remove data:image/png;base64, prefix)
+                        const base64Content = att.content.split(',')[1] || att.content;
+                        return {
+                            filename: att.name,
+                            content: Buffer.from(base64Content, 'base64'),
+                        };
+                    }) || [];
 
                 if (!adminEmail || !fromEmail) {
-                    console.warn("ADMIN_EMAIL or FROM_EMAIL not set in .env");
+                    console.warn('ADMIN_EMAIL or FROM_EMAIL not set in .env');
                     // We continue to return success even if email fails, as the data is saved.
                 } else {
                     // Send email to Admin
@@ -181,7 +245,7 @@ export async function POST(request: Request) {
                         <h4>Details:</h4>
                         ${detailsHtml}
                     `,
-                        attachments: emailAttachments
+                        attachments: emailAttachments,
                     });
 
                     // Send acknowledgement email to User
@@ -200,15 +264,17 @@ export async function POST(request: Request) {
                     `,
                     });
                 }
-
             } catch (emailError) {
-                console.error("Error sending email:", emailError);
+                console.error('Error sending email:', emailError);
             }
         }
 
         return NextResponse.json({ success: true, data: joinRequest }, { status: 201 });
     } catch (error) {
         console.error('Error submitting join request:', error);
-        return NextResponse.json({ success: false, error: 'Failed to submit request' }, { status: 500 });
+        return NextResponse.json(
+            { success: false, error: 'Failed to submit request' },
+            { status: 500 },
+        );
     }
 }

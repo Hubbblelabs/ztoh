@@ -4,10 +4,7 @@ import MonthlyReport from '@/models/MonthlyReport';
 import dbConnect from '@/lib/db';
 
 // GET - Get a specific report
-export async function GET(
-    request: Request,
-    { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         await verifyAuth();
 
@@ -15,7 +12,7 @@ export async function GET(
         await dbConnect();
 
         const report = await MonthlyReport.findById(id).populate('staffId', 'name email');
-        
+
         if (!report) {
             return NextResponse.json({ error: 'Report not found' }, { status: 404 });
         }
@@ -28,10 +25,7 @@ export async function GET(
 }
 
 // DELETE - Delete a specific report
-export async function DELETE(
-    request: Request,
-    { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         await verifyAuth();
 
@@ -39,7 +33,7 @@ export async function DELETE(
         await dbConnect();
 
         const report = await MonthlyReport.findByIdAndDelete(id);
-        
+
         if (!report) {
             return NextResponse.json({ error: 'Report not found' }, { status: 404 });
         }

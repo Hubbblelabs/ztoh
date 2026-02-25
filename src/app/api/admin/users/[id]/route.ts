@@ -24,18 +24,15 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
             await admin.save();
             return NextResponse.json({ message: 'Admin updated successfully', admin });
         } else {
-            const admin = await Admin.findByIdAndUpdate(
-                id,
-                { name, email },
-                { new: true }
-            ).select('-password');
+            const admin = await Admin.findByIdAndUpdate(id, { name, email }, { new: true }).select(
+                '-password',
+            );
 
             if (!admin) {
                 return NextResponse.json({ error: 'Admin not found' }, { status: 404 });
             }
             return NextResponse.json({ message: 'Admin updated successfully', admin });
         }
-
     } catch (_error) {
         return NextResponse.json({ error: 'Failed to update admin' }, { status: 500 });
     }
@@ -54,6 +51,9 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
         return NextResponse.json({ message: 'Admin deleted successfully' });
     } catch (error: any) {
         console.error('Error deleting admin:', error);
-        return NextResponse.json({ error: error.message || 'Failed to delete admin' }, { status: 500 });
+        return NextResponse.json(
+            { error: error.message || 'Failed to delete admin' },
+            { status: 500 },
+        );
     }
 }

@@ -43,8 +43,8 @@ export async function proxy(request: NextRequest) {
             return NextResponse.redirect(url);
         }
 
-        // Allow both staff and admin to access staff routes? 
-        // Or strictly staff? The previous logic allowed staff. 
+        // Allow both staff and admin to access staff routes?
+        // Or strictly staff? The previous logic allowed staff.
         // Usually admins might want to see staff view, but let's enforce role check.
         if (token.role !== 'staff' && token.role !== 'admin') {
             return NextResponse.redirect(new URL('/login', request.url));

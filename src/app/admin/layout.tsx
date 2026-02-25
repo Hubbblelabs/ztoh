@@ -6,11 +6,7 @@ import { ModeToggle } from '@/components/mode-toggle';
 import { ThemeProvider } from '@/components/theme-provider';
 import { AuthProvider, useAuth } from './auth-context'; // Import from new file
 import { PageHeaderProvider, usePageHeader } from '@/contexts/PageHeaderContext';
-import {
-    SidebarInset,
-    SidebarProvider,
-    SidebarTrigger,
-} from '@/components/ui/sidebar';
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { Separator } from '@/components/ui/separator';
 import {
     DropdownMenu,
@@ -32,46 +28,44 @@ import {
     LogOut,
     GraduationCap,
     Shield,
-    Star
+    Star,
 } from 'lucide-react';
 
 const adminNavGroups = [
     {
-        label: "Overview",
-        items: [
-            { href: '/admin', icon: LayoutDashboard, label: 'Dashboard', exact: true },
-        ]
+        label: 'Overview',
+        items: [{ href: '/admin', icon: LayoutDashboard, label: 'Dashboard', exact: true }],
     },
     {
-        label: "Requests",
+        label: 'Requests',
         items: [
             { href: '/admin/requests', icon: UserPlus, label: 'Join Requests' },
             { href: '/admin/contacts', icon: MessageSquare, label: 'Contact Requests' },
-        ]
+        ],
     },
     {
-        label: "Management",
+        label: 'Management',
         items: [
             { href: '/admin/admins', icon: Shield, label: 'Admins' },
             { href: '/admin/staff', icon: Users, label: 'Staffs' },
             { href: '/admin/students', icon: GraduationCap, label: 'Students' },
             { href: '/admin/groups', icon: Users, label: 'Groups' },
-        ]
+        ],
     },
     {
-        label: "Academic",
+        label: 'Academic',
         items: [
             { href: '/admin/hours', icon: Clock, label: 'Teaching Hours' },
             { href: '/admin/reports', icon: FileText, label: 'Monthly Reports' },
-        ]
+        ],
     },
     {
-        label: "System",
+        label: 'System',
         items: [
             { href: '/admin/testimonials', icon: Star, label: 'Testimonials' },
             { href: '/admin/settings', icon: Settings, label: 'Settings' },
-        ]
-    }
+        ],
+    },
 ];
 
 import Loader from '@/components/ui/Loader';
@@ -86,7 +80,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
         return <Loader fullScreen />;
     }
 
-    // Check if user exists to avoid flashing content before redirect? 
+    // Check if user exists to avoid flashing content before redirect?
     // The AuthProvider handles redirect but we might want to return null if no user.
     if (!user) return null;
 
@@ -122,7 +116,9 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                                 </Avatar>
                                 <div className="grid flex-1 text-left text-sm leading-tight max-w-[100px] lg:max-w-none">
                                     <span className="truncate font-semibold">{user.name}</span>
-                                    <span className="truncate text-xs text-muted-foreground">Admin</span>
+                                    <span className="truncate text-xs text-muted-foreground">
+                                        Admin
+                                    </span>
                                 </div>
                             </button>
                         </DropdownMenuTrigger>
@@ -143,12 +139,17 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                                     </Avatar>
                                     <div className="grid flex-1 text-left text-sm leading-tight">
                                         <span className="truncate font-semibold">{user.name}</span>
-                                        <span className="truncate text-xs text-muted-foreground">{user.email}</span>
+                                        <span className="truncate text-xs text-muted-foreground">
+                                            {user.email}
+                                        </span>
                                     </div>
                                 </div>
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <ChangePasswordDialog userEmail={user.email} apiEndpoint="/api/admin/change-password" />
+                            <ChangePasswordDialog
+                                userEmail={user.email}
+                                apiEndpoint="/api/admin/change-password"
+                            />
                             <DropdownMenuItem onClick={logout}>
                                 <LogOut className="mr-2 h-4 w-4" />
                                 Log out
@@ -166,11 +167,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
     );
 }
 
-export default function AdminLayout({
-    children,
-}: {
-    children: React.ReactNode;
-}) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
     return (
         <ThemeProvider
             attribute="class"

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { Plus, Edit2, Trash2, X, Eye, Clock, Mail, Search } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Checkbox } from "@/components/ui/checkbox";
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface Staff {
     _id: string;
@@ -40,7 +40,7 @@ export default function StaffList({ showToast }: StaffListProps) {
     const fetchStaff = async () => {
         try {
             const res = await fetch(`/api/admin/staff?includeInactive=${includeInactive}`, {
-                credentials: 'include'
+                credentials: 'include',
             });
             if (res.ok) {
                 const data = await res.json();
@@ -85,12 +85,13 @@ export default function StaffList({ showToast }: StaffListProps) {
         e.preventDefault();
         setFormError('');
 
-        const subjectsArray = subjects.split(',').map(s => s.trim()).filter(s => s);
+        const subjectsArray = subjects
+            .split(',')
+            .map((s) => s.trim())
+            .filter((s) => s);
 
         try {
-            const url = editingStaff
-                ? `/api/admin/staff/${editingStaff._id}`
-                : '/api/admin/staff';
+            const url = editingStaff ? `/api/admin/staff/${editingStaff._id}` : '/api/admin/staff';
 
             const body: any = {
                 name,
@@ -118,8 +119,10 @@ export default function StaffList({ showToast }: StaffListProps) {
 
             if (res.ok) {
                 showToast(
-                    editingStaff ? 'Staff member updated successfully' : 'Staff member created successfully',
-                    'success'
+                    editingStaff
+                        ? 'Staff member updated successfully'
+                        : 'Staff member created successfully',
+                    'success',
                 );
                 setShowModal(false);
                 fetchStaff();
@@ -155,7 +158,7 @@ export default function StaffList({ showToast }: StaffListProps) {
         return new Date(dateString).toLocaleDateString('en-US', {
             month: 'short',
             day: 'numeric',
-            year: 'numeric'
+            year: 'numeric',
         });
     };
 
@@ -199,7 +202,10 @@ export default function StaffList({ showToast }: StaffListProps) {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div className="flex items-center gap-4 flex-1">
                     <div className="relative">
-                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
+                        <Search
+                            className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground"
+                            size={16}
+                        />
                         <input
                             type="text"
                             placeholder="Search staff..."
@@ -211,7 +217,9 @@ export default function StaffList({ showToast }: StaffListProps) {
                     <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
                         <Checkbox
                             checked={includeInactive}
-                            onCheckedChange={(checked: boolean | 'indeterminate') => setIncludeInactive(checked === true)}
+                            onCheckedChange={(checked: boolean | 'indeterminate') =>
+                                setIncludeInactive(checked === true)
+                            }
                             className="rounded-sm"
                         />
                         Show inactive
@@ -227,77 +235,113 @@ export default function StaffList({ showToast }: StaffListProps) {
             </div>
 
             {/* Filtered Staff List */}
-            {staff.filter(member =>
-                member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                member.email.toLowerCase().includes(searchTerm.toLowerCase())
+            {staff.filter(
+                (member) =>
+                    member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    member.email.toLowerCase().includes(searchTerm.toLowerCase()),
             ).length > 0 ? (
                 <div className="overflow-x-auto">
                     <table className="w-full">
                         <thead>
                             <tr className="border-b border-border">
-                                <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">Name</th>
-                                <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">Email</th>
-                                <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">Subjects</th>
-                                <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">Status</th>
-                                <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">Joined</th>
-                                <th className="text-right py-3 px-4 text-sm font-semibold text-muted-foreground">Actions</th>
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">
+                                    Name
+                                </th>
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">
+                                    Email
+                                </th>
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">
+                                    Subjects
+                                </th>
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">
+                                    Status
+                                </th>
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">
+                                    Joined
+                                </th>
+                                <th className="text-right py-3 px-4 text-sm font-semibold text-muted-foreground">
+                                    Actions
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
-                            {staff.filter(member =>
-                                member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                member.email.toLowerCase().includes(searchTerm.toLowerCase())
-                            ).map((member) => (
-                                <tr key={member._id} className="border-b border-border hover:bg-muted/50 transition-colors">
-                                    <td className="py-3 px-4">
-                                        <span className="font-medium text-foreground">{member.name}</span>
-                                    </td>
-                                    <td className="py-3 px-4 text-sm text-muted-foreground">{member.email}</td>
-                                    <td className="py-3 px-4">
-                                        <div className="flex flex-wrap gap-1">
-                                            {member.subjects.slice(0, 3).map((subject, i) => (
-                                                <span key={i} className="px-2 py-0.5 bg-muted text-muted-foreground rounded text-xs">
-                                                    {subject}
-                                                </span>
-                                            ))}
-                                            {member.subjects.length > 3 && (
-                                                <span className="px-2 py-0.5 bg-muted text-muted-foreground rounded text-xs">
-                                                    +{member.subjects.length - 3}
-                                                </span>
-                                            )}
-                                        </div>
-                                    </td>
-                                    <td className="py-3 px-4">
-                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${member.isActive
-                                            ? 'bg-green-100 text-green-700'
-                                            : 'bg-red-100 text-red-700'
-                                            }`}>
-                                            {member.isActive ? 'Active' : 'Inactive'}
-                                        </span>
-                                    </td>
-                                    <td className="py-3 px-4 text-sm text-muted-foreground">
-                                        {formatDate(member.createdAt)}
-                                    </td>
-                                    <td className="py-3 px-4">
-                                        <div className="flex items-center justify-end gap-2">
-                                            <button
-                                                onClick={() => openEditModal(member)}
-                                                className="p-2 hover:bg-muted rounded-lg transition-colors"
-                                                title="Edit"
+                            {staff
+                                .filter(
+                                    (member) =>
+                                        member.name
+                                            .toLowerCase()
+                                            .includes(searchTerm.toLowerCase()) ||
+                                        member.email
+                                            .toLowerCase()
+                                            .includes(searchTerm.toLowerCase()),
+                                )
+                                .map((member) => (
+                                    <tr
+                                        key={member._id}
+                                        className="border-b border-border hover:bg-muted/50 transition-colors"
+                                    >
+                                        <td className="py-3 px-4">
+                                            <span className="font-medium text-foreground">
+                                                {member.name}
+                                            </span>
+                                        </td>
+                                        <td className="py-3 px-4 text-sm text-muted-foreground">
+                                            {member.email}
+                                        </td>
+                                        <td className="py-3 px-4">
+                                            <div className="flex flex-wrap gap-1">
+                                                {member.subjects.slice(0, 3).map((subject, i) => (
+                                                    <span
+                                                        key={i}
+                                                        className="px-2 py-0.5 bg-muted text-muted-foreground rounded text-xs"
+                                                    >
+                                                        {subject}
+                                                    </span>
+                                                ))}
+                                                {member.subjects.length > 3 && (
+                                                    <span className="px-2 py-0.5 bg-muted text-muted-foreground rounded text-xs">
+                                                        +{member.subjects.length - 3}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </td>
+                                        <td className="py-3 px-4">
+                                            <span
+                                                className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                                    member.isActive
+                                                        ? 'bg-green-100 text-green-700'
+                                                        : 'bg-red-100 text-red-700'
+                                                }`}
                                             >
-                                                <Edit2 size={16} className="text-muted-foreground hover:text-foreground" />
-                                            </button>
-                                            <button
-                                                onClick={() => setShowDeleteConfirm(member._id)}
-                                                className="p-2 hover:bg-red-50 rounded-lg transition-colors"
-                                                title="Delete"
-                                            >
-                                                <Trash2 size={16} className="text-red-500" />
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
+                                                {member.isActive ? 'Active' : 'Inactive'}
+                                            </span>
+                                        </td>
+                                        <td className="py-3 px-4 text-sm text-muted-foreground">
+                                            {formatDate(member.createdAt)}
+                                        </td>
+                                        <td className="py-3 px-4">
+                                            <div className="flex items-center justify-end gap-2">
+                                                <button
+                                                    onClick={() => openEditModal(member)}
+                                                    className="p-2 hover:bg-muted rounded-lg transition-colors"
+                                                    title="Edit"
+                                                >
+                                                    <Edit2
+                                                        size={16}
+                                                        className="text-muted-foreground hover:text-foreground"
+                                                    />
+                                                </button>
+                                                <button
+                                                    onClick={() => setShowDeleteConfirm(member._id)}
+                                                    className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                                                    title="Delete"
+                                                >
+                                                    <Trash2 size={16} className="text-red-500" />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
                         </tbody>
                     </table>
                 </div>
@@ -324,7 +368,9 @@ export default function StaffList({ showToast }: StaffListProps) {
                         </div>
                         <form onSubmit={handleSubmit} className="p-6 space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-muted-foreground mb-1">Name *</label>
+                                <label className="block text-sm font-medium text-muted-foreground mb-1">
+                                    Name *
+                                </label>
                                 <input
                                     type="text"
                                     required
@@ -334,7 +380,9 @@ export default function StaffList({ showToast }: StaffListProps) {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-muted-foreground mb-1">Email *</label>
+                                <label className="block text-sm font-medium text-muted-foreground mb-1">
+                                    Email *
+                                </label>
                                 <input
                                     type="email"
                                     required
@@ -345,7 +393,9 @@ export default function StaffList({ showToast }: StaffListProps) {
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-muted-foreground mb-1">
-                                    {editingStaff ? 'New Password (leave blank to keep current)' : 'Password *'}
+                                    {editingStaff
+                                        ? 'New Password (leave blank to keep current)'
+                                        : 'Password *'}
                                 </label>
                                 <input
                                     type="password"
@@ -356,7 +406,9 @@ export default function StaffList({ showToast }: StaffListProps) {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-muted-foreground mb-1">Phone</label>
+                                <label className="block text-sm font-medium text-muted-foreground mb-1">
+                                    Phone
+                                </label>
                                 <input
                                     type="tel"
                                     value={phone}
@@ -381,9 +433,14 @@ export default function StaffList({ showToast }: StaffListProps) {
                                     <Checkbox
                                         id="isActive"
                                         checked={isActive}
-                                        onCheckedChange={(checked: boolean | 'indeterminate') => setIsActive(checked === true)}
+                                        onCheckedChange={(checked: boolean | 'indeterminate') =>
+                                            setIsActive(checked === true)
+                                        }
                                     />
-                                    <label htmlFor="isActive" className="text-sm text-foreground cursor-pointer">
+                                    <label
+                                        htmlFor="isActive"
+                                        className="text-sm text-foreground cursor-pointer"
+                                    >
                                         Active
                                     </label>
                                 </div>
@@ -419,9 +476,12 @@ export default function StaffList({ showToast }: StaffListProps) {
             {showDeleteConfirm && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
                     <div className="bg-card rounded-md shadow-2xl max-w-sm w-full p-6 border border-border">
-                        <h3 className="text-lg font-bold text-foreground mb-2">Delete Staff Member</h3>
+                        <h3 className="text-lg font-bold text-foreground mb-2">
+                            Delete Staff Member
+                        </h3>
                         <p className="text-muted-foreground mb-6">
-                            Are you sure you want to delete this staff member? This will also delete all their teaching hours records.
+                            Are you sure you want to delete this staff member? This will also delete
+                            all their teaching hours records.
                         </p>
                         <div className="flex justify-end gap-3">
                             <button

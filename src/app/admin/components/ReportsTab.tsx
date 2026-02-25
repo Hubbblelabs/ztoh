@@ -47,8 +47,18 @@ interface ReportsTabProps {
 }
 
 const MONTH_NAMES = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
 ];
 
 export default function ReportsTab({ showToast }: ReportsTabProps) {
@@ -168,7 +178,7 @@ export default function ReportsTab({ showToast }: ReportsTabProps) {
         return new Date(dateString).toLocaleDateString('en-US', {
             month: 'short',
             day: 'numeric',
-            year: 'numeric'
+            year: 'numeric',
         });
     };
 
@@ -215,39 +225,69 @@ export default function ReportsTab({ showToast }: ReportsTabProps) {
         <div className="space-y-6">
             {/* Header and Filters */}
             <div className="flex flex-wrap gap-4 items-end">
-                <Select value={filterStaffId || 'all'} onValueChange={(value) => { setFilterStaffId(value === 'all' ? '' : value); setPage(1); }}>
+                <Select
+                    value={filterStaffId || 'all'}
+                    onValueChange={(value) => {
+                        setFilterStaffId(value === 'all' ? '' : value);
+                        setPage(1);
+                    }}
+                >
                     <SelectTrigger className="w-[180px] h-9 rounded-md bg-card">
-                        <span className="text-xs font-semibold text-muted-foreground uppercase mr-2">Staff:</span>
+                        <span className="text-xs font-semibold text-muted-foreground uppercase mr-2">
+                            Staff:
+                        </span>
                         <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">All Staff</SelectItem>
                         {staff.map((s) => (
-                            <SelectItem key={s._id} value={s._id}>{s.name}</SelectItem>
+                            <SelectItem key={s._id} value={s._id}>
+                                {s.name}
+                            </SelectItem>
                         ))}
                     </SelectContent>
                 </Select>
-                <Select value={filterYear || 'all'} onValueChange={(value) => { setFilterYear(value === 'all' ? '' : value); setPage(1); }}>
+                <Select
+                    value={filterYear || 'all'}
+                    onValueChange={(value) => {
+                        setFilterYear(value === 'all' ? '' : value);
+                        setPage(1);
+                    }}
+                >
                     <SelectTrigger className="w-[160px] h-9 rounded-md bg-card">
-                        <span className="text-xs font-semibold text-muted-foreground uppercase mr-2">Year:</span>
+                        <span className="text-xs font-semibold text-muted-foreground uppercase mr-2">
+                            Year:
+                        </span>
                         <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">All Years</SelectItem>
                         {yearOptions.map((y) => (
-                            <SelectItem key={y} value={y.toString()}>{y}</SelectItem>
+                            <SelectItem key={y} value={y.toString()}>
+                                {y}
+                            </SelectItem>
                         ))}
                     </SelectContent>
                 </Select>
-                <Select value={filterMonth || 'all'} onValueChange={(value) => { setFilterMonth(value === 'all' ? '' : value); setPage(1); }}>
+                <Select
+                    value={filterMonth || 'all'}
+                    onValueChange={(value) => {
+                        setFilterMonth(value === 'all' ? '' : value);
+                        setPage(1);
+                    }}
+                >
                     <SelectTrigger className="w-[180px] h-9 rounded-md bg-card">
-                        <span className="text-xs font-semibold text-muted-foreground uppercase mr-2">Month:</span>
+                        <span className="text-xs font-semibold text-muted-foreground uppercase mr-2">
+                            Month:
+                        </span>
                         <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">All Months</SelectItem>
                         {MONTH_NAMES.map((m, i) => (
-                            <SelectItem key={i} value={(i + 1).toString()}>{m}</SelectItem>
+                            <SelectItem key={i} value={(i + 1).toString()}>
+                                {m}
+                            </SelectItem>
                         ))}
                     </SelectContent>
                 </Select>
@@ -275,17 +315,32 @@ export default function ReportsTab({ showToast }: ReportsTabProps) {
                         <table className="w-full">
                             <thead>
                                 <tr className="border-b border-border">
-                                    <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">Period</th>
-                                    <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">Staff</th>
-                                    <th className="text-right py-3 px-4 text-sm font-semibold text-muted-foreground">Total Hours</th>
-                                    <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">Generated</th>
-                                    <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">Email Sent</th>
-                                    <th className="text-right py-3 px-4 text-sm font-semibold text-muted-foreground">Actions</th>
+                                    <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">
+                                        Period
+                                    </th>
+                                    <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">
+                                        Staff
+                                    </th>
+                                    <th className="text-right py-3 px-4 text-sm font-semibold text-muted-foreground">
+                                        Total Hours
+                                    </th>
+                                    <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">
+                                        Generated
+                                    </th>
+                                    <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">
+                                        Email Sent
+                                    </th>
+                                    <th className="text-right py-3 px-4 text-sm font-semibold text-muted-foreground">
+                                        Actions
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {reports.map((report) => (
-                                    <tr key={report._id} className="border-b border-border hover:bg-muted">
+                                    <tr
+                                        key={report._id}
+                                        className="border-b border-border hover:bg-muted"
+                                    >
                                         <td className="py-3 px-4">
                                             <span className="font-medium text-foreground">
                                                 {MONTH_NAMES[report.month - 1]} {report.year}
@@ -293,8 +348,12 @@ export default function ReportsTab({ showToast }: ReportsTabProps) {
                                         </td>
                                         <td className="py-3 px-4">
                                             <div>
-                                                <span className="font-medium text-foreground">{report.staffName}</span>
-                                                <p className="text-xs text-muted-foreground">{report.staffEmail}</p>
+                                                <span className="font-medium text-foreground">
+                                                    {report.staffName}
+                                                </span>
+                                                <p className="text-xs text-muted-foreground">
+                                                    {report.staffEmail}
+                                                </p>
                                             </div>
                                         </td>
                                         <td className="py-3 px-4 text-right">
@@ -312,7 +371,9 @@ export default function ReportsTab({ showToast }: ReportsTabProps) {
                                                     {formatDate(report.emailSentAt)}
                                                 </span>
                                             ) : (
-                                                <span className="text-muted-foreground text-sm">Not sent</span>
+                                                <span className="text-muted-foreground text-sm">
+                                                    Not sent
+                                                </span>
                                             )}
                                         </td>
                                         <td className="py-3 px-4">
@@ -336,7 +397,7 @@ export default function ReportsTab({ showToast }: ReportsTabProps) {
                     {totalPages > 1 && (
                         <div className="flex items-center justify-center gap-2">
                             <button
-                                onClick={() => setPage(p => Math.max(1, p - 1))}
+                                onClick={() => setPage((p) => Math.max(1, p - 1))}
                                 disabled={page === 1}
                                 className="p-2 rounded-lg hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
                             >
@@ -346,7 +407,7 @@ export default function ReportsTab({ showToast }: ReportsTabProps) {
                                 Page {page} of {totalPages}
                             </span>
                             <button
-                                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                                 disabled={page === totalPages}
                                 className="p-2 rounded-lg hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
                             >
@@ -359,7 +420,9 @@ export default function ReportsTab({ showToast }: ReportsTabProps) {
                 <div className="text-center py-12 text-muted-foreground">
                     <FileText size={48} className="mx-auto mb-4 opacity-50" />
                     <p>No monthly reports found.</p>
-                    <p className="text-sm mt-2">Click "Generate Reports" to create monthly reports for staff.</p>
+                    <p className="text-sm mt-2">
+                        Click "Generate Reports" to create monthly reports for staff.
+                    </p>
                 </div>
             )}
 
@@ -368,7 +431,9 @@ export default function ReportsTab({ showToast }: ReportsTabProps) {
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
                     <div className="bg-card rounded-2xl shadow-2xl max-w-md w-full">
                         <div className="p-6 border-b border-border">
-                            <h3 className="text-xl font-bold text-foreground">Generate Monthly Reports</h3>
+                            <h3 className="text-xl font-bold text-foreground">
+                                Generate Monthly Reports
+                            </h3>
                             <p className="text-sm text-muted-foreground mt-1">
                                 Generate teaching hours reports for the selected period.
                             </p>
@@ -376,42 +441,65 @@ export default function ReportsTab({ showToast }: ReportsTabProps) {
                         <div className="p-6 space-y-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-foreground mb-1">Month</label>
-                                    <Select value={generateMonth.toString()} onValueChange={(value) => setGenerateMonth(parseInt(value))}>
+                                    <label className="block text-sm font-medium text-foreground mb-1">
+                                        Month
+                                    </label>
+                                    <Select
+                                        value={generateMonth.toString()}
+                                        onValueChange={(value) => setGenerateMonth(parseInt(value))}
+                                    >
                                         <SelectTrigger className="w-full h-10 rounded-md">
                                             <SelectValue placeholder="Select month" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {MONTH_NAMES.map((m, i) => (
-                                                <SelectItem key={i} value={(i + 1).toString()}>{m}</SelectItem>
+                                                <SelectItem key={i} value={(i + 1).toString()}>
+                                                    {m}
+                                                </SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-foreground mb-1">Year</label>
-                                    <Select value={generateYear.toString()} onValueChange={(value) => setGenerateYear(parseInt(value))}>
+                                    <label className="block text-sm font-medium text-foreground mb-1">
+                                        Year
+                                    </label>
+                                    <Select
+                                        value={generateYear.toString()}
+                                        onValueChange={(value) => setGenerateYear(parseInt(value))}
+                                    >
                                         <SelectTrigger className="w-full h-10 rounded-md">
                                             <SelectValue placeholder="Select year" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {yearOptions.map((y) => (
-                                                <SelectItem key={y} value={y.toString()}>{y}</SelectItem>
+                                                <SelectItem key={y} value={y.toString()}>
+                                                    {y}
+                                                </SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-foreground mb-1">Staff Member</label>
-                                <Select value={generateStaffId || 'all'} onValueChange={(value) => setGenerateStaffId(value === 'all' ? '' : value)}>
+                                <label className="block text-sm font-medium text-foreground mb-1">
+                                    Staff Member
+                                </label>
+                                <Select
+                                    value={generateStaffId || 'all'}
+                                    onValueChange={(value) =>
+                                        setGenerateStaffId(value === 'all' ? '' : value)
+                                    }
+                                >
                                     <SelectTrigger className="w-full h-10 rounded-md">
                                         <SelectValue placeholder="All Staff Members" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="all">All Staff Members</SelectItem>
                                         {staff.map((s) => (
-                                            <SelectItem key={s._id} value={s._id}>{s.name}</SelectItem>
+                                            <SelectItem key={s._id} value={s._id}>
+                                                {s.name}
+                                            </SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
@@ -460,4 +548,3 @@ export default function ReportsTab({ showToast }: ReportsTabProps) {
         </div>
     );
 }
-
