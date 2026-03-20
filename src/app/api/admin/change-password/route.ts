@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
+import { verifyAuth } from '@/lib/auth';
 import dbConnect from '@/lib/db';
 import Admin from '@/models/Admin';
 
 export async function POST(request: Request) {
     try {
+        await verifyAuth();
         await dbConnect();
         const { email, currentPassword, newPassword } = await request.json();
 

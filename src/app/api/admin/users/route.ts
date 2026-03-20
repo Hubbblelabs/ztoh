@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
+import { verifyAuth } from '@/lib/auth';
 import dbConnect from '@/lib/db';
 import Admin from '@/models/Admin';
 
 export async function POST(request: Request) {
     try {
+        await verifyAuth();
         await dbConnect();
         const body = await request.json();
         const { name, email, password } = body;
@@ -47,6 +49,7 @@ export async function POST(request: Request) {
 
 export async function GET() {
     try {
+        await verifyAuth();
         await dbConnect();
         const admins = await Admin.find({}).select('-password').sort({ createdAt: -1 });
         return NextResponse.json(admins);

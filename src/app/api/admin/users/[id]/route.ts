@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
+import { verifyAuth } from '@/lib/auth';
 import dbConnect from '@/lib/db';
 import Admin from '@/models/Admin';
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
+        await verifyAuth();
         await dbConnect();
         const { id } = await params;
         const { name, email, password } = await request.json();
@@ -40,6 +42,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
+        await verifyAuth();
         await dbConnect();
         const { id } = await params;
         const admin = await Admin.findByIdAndDelete(id);

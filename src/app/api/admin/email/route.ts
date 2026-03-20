@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { verifyAuth } from '@/lib/auth';
 import { Resend } from 'resend';
 import mongoose from 'mongoose';
 import Settings from '@/models/Settings';
@@ -12,6 +13,7 @@ const connectDB = async () => {
 
 export async function POST(request: Request) {
     try {
+        await verifyAuth();
         const body = await request.json();
         const { to, subject, html, attachments } = body;
 

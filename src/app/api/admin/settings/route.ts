@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { verifyAuth } from '@/lib/auth';
 import mongoose from 'mongoose';
 import Settings from '@/models/Settings';
 
@@ -10,6 +11,7 @@ const connectDB = async () => {
 
 export async function GET() {
     try {
+        await verifyAuth();
         await connectDB();
         let settings = await Settings.findOne();
 
@@ -32,6 +34,7 @@ export async function GET() {
 
 export async function PUT(req: Request) {
     try {
+        await verifyAuth();
         await connectDB();
         const body = await req.json();
         const { emailSettings } = body;
