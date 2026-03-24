@@ -24,8 +24,6 @@ export async function GET(request: Request) {
         // Generate and send reports for the previous month
         const result = await generateAndSendMonthlyReports();
 
-        console.log(`Monthly report cron completed: ${result.reportsGenerated} reports generated`);
-
         return NextResponse.json({
             success: true,
             message: `Generated and sent ${result.reportsGenerated} monthly reports`,
