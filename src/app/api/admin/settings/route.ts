@@ -1,16 +1,12 @@
 import { NextResponse } from 'next/server';
-import mongoose from 'mongoose';
+import { verifyAuth } from '@/lib/auth';
+import dbConnect from '@/lib/db';
 import Settings from '@/models/Settings';
-
-// Helper to ensure DB connection
-const connectDB = async () => {
-    if (mongoose.connections[0].readyState) return;
-    await mongoose.connect(process.env.MONGODB_URI as string);
-};
 
 export async function GET() {
     try {
-        await connectDB();
+        await verifyAuth();
+        await dbConnect();
         let settings = await Settings.findOne();
 
         if (!settings) {
@@ -24,7 +20,10 @@ export async function GET() {
         }
 
         return NextResponse.json(settings);
-    } catch (error) {
+    } catch (error: any) {
+        if (error.message === 'Unauthorized') {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
         console.error('Failed to fetch settings:', error);
         return NextResponse.json({ error: 'Failed to fetch settings' }, { status: 500 });
     }
@@ -32,7 +31,8 @@ export async function GET() {
 
 export async function PUT(req: Request) {
     try {
-        await connectDB();
+        await verifyAuth();
+        await dbConnect();
         const body = await req.json();
         const { emailSettings } = body;
 
@@ -47,7 +47,10 @@ export async function PUT(req: Request) {
         await settings.save();
 
         return NextResponse.json(settings);
-    } catch (error) {
+    } catch (error: any) {
+        if (error.message === 'Unauthorized') {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
         console.error('Failed to update settings:', error);
         return NextResponse.json({ error: 'Failed to update settings' }, { status: 500 });
     }
