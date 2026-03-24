@@ -13,5 +13,5 @@ export function generateTrackingId(_type: 'contact' | 'join'): string {
     const day = String(date.getDate()).padStart(2, '0');
     const random = Math.floor(1000 + Math.random() * 9000).toString(); // 4 digit random number
 
-    return `${year}${month}${day}${random}`;
+    return `${year}${month}${day}-${random}`;
 }
