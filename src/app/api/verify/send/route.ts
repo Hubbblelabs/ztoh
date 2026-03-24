@@ -4,6 +4,7 @@ import VerificationCode from '@/models/VerificationCode';
 import { Resend } from 'resend';
 import { checkRateLimit } from '@/lib/rateLimit';
 import Settings from '@/models/Settings';
+import { randomInt } from 'node:crypto';
 
 export async function POST(req: Request) {
     try {
@@ -27,7 +28,7 @@ export async function POST(req: Request) {
         }
 
         // Generate 6-digit code
-        const code = Math.floor(100000 + Math.random() * 900000).toString();
+        const code = randomInt(100000, 1000000).toString();
         const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
         // Save to DB
