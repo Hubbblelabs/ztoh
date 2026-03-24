@@ -1,9 +1,16 @@
 import { NextResponse } from 'next/server';
+import { verifyAuth } from '@/lib/auth';
 import dbConnect from '@/lib/db';
 import ContactRequest from '@/models/ContactRequest';
 import JoinRequest from '@/models/JoinRequest';
 
 export async function DELETE(request: Request, props: { params: Promise<{ id: string }> }) {
+    try {
+        await verifyAuth();
+    } catch (error) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     try {
         await dbConnect();
         const params = await props.params;
@@ -31,6 +38,12 @@ export async function DELETE(request: Request, props: { params: Promise<{ id: st
 }
 
 export async function PUT(request: Request, props: { params: Promise<{ id: string }> }) {
+    try {
+        await verifyAuth();
+    } catch (error) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     try {
         await dbConnect();
         const params = await props.params;

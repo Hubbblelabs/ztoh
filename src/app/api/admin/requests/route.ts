@@ -1,9 +1,16 @@
 import { NextResponse } from 'next/server';
+import { verifyAuth } from '@/lib/auth';
 import dbConnect from '@/lib/db';
 import ContactRequest from '@/models/ContactRequest';
 import JoinRequest from '@/models/JoinRequest';
 
 export async function GET(request: Request) {
+    try {
+        await verifyAuth();
+    } catch (error) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     try {
         await dbConnect();
         const { searchParams } = new URL(request.url);
