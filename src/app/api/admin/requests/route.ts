@@ -25,7 +25,10 @@ export async function GET(request: Request) {
             ]);
             return NextResponse.json({ contact: contactRequests, join: joinRequests });
         }
-    } catch (error) {
+    } catch (error: any) {
+        if (error.message === 'Unauthorized') {
+            return new NextResponse('Unauthorized', { status: 401 });
+        }
         console.error('Error fetching requests:', error);
         return NextResponse.json({ error: 'Failed to fetch requests' }, { status: 500 });
     }
