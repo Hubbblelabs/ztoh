@@ -19,8 +19,10 @@ export async function GET(request: Request) {
             return NextResponse.json(requests);
         } else {
             // Fetch both if no type specified or invalid type (could be improved)
-            const contactRequests = await ContactRequest.find({}).sort({ createdAt: -1 });
-            const joinRequests = await JoinRequest.find({}).sort({ createdAt: -1 });
+            const [contactRequests, joinRequests] = await Promise.all([
+                ContactRequest.find({}).sort({ createdAt: -1 }),
+                JoinRequest.find({}).sort({ createdAt: -1 }),
+            ]);
             return NextResponse.json({ contact: contactRequests, join: joinRequests });
         }
     } catch (error) {
