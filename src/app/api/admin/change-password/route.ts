@@ -6,6 +6,11 @@ import Admin from '@/models/Admin';
 export async function POST(request: Request) {
     try {
         await verifyAuth();
+    } catch (error) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    try {
         await dbConnect();
         const { email, currentPassword, newPassword } = await request.json();
 

@@ -7,6 +7,11 @@ import JoinRequest from '@/models/JoinRequest';
 export async function GET(request: Request) {
     try {
         await verifyAuth();
+    } catch (error) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    try {
         await dbConnect();
         const { searchParams } = new URL(request.url);
         const type = searchParams.get('type');
