@@ -1,6 +1,6 @@
 import { test, describe, afterEach } from 'node:test';
 import assert from 'node:assert';
-import { generateTrackingId } from './utils.ts';
+import { generateTrackingId } from './utils';
 
 describe('generateTrackingId', () => {
     const originalDate = global.Date;

@@ -3,18 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import {
-    Facebook,
-    Twitter,
-    Instagram,
-    Linkedin,
-    Mail,
-    Phone,
-    MapPin,
-    ArrowRight,
-    Send,
-    Heart,
-} from 'lucide-react';
+import { Mail, Phone, MapPin, ArrowRight, Send, Heart } from 'lucide-react';
+import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from 'react-icons/fa';
 
 export default function Footer() {
     const [email, setEmail] = useState('');
@@ -72,25 +62,25 @@ export default function Footer() {
                             <div className="flex gap-3">
                                 {[
                                     {
-                                        icon: <Facebook size={18} />,
+                                        icon: <FaFacebook size={18} />,
                                         href: '#',
                                         label: 'Facebook',
                                         hoverBg: 'hover:bg-blue-600',
                                     },
                                     {
-                                        icon: <Twitter size={18} />,
+                                        icon: <FaTwitter size={18} />,
                                         href: '#',
                                         label: 'Twitter',
                                         hoverBg: 'hover:bg-sky-500',
                                     },
                                     {
-                                        icon: <Instagram size={18} />,
+                                        icon: <FaInstagram size={18} />,
                                         href: '#',
                                         label: 'Instagram',
                                         hoverBg: 'hover:bg-pink-600',
                                     },
                                     {
-                                        icon: <Linkedin size={18} />,
+                                        icon: <FaLinkedin size={18} />,
                                         href: '#',
                                         label: 'LinkedIn',
                                         hoverBg: 'hover:bg-blue-700',
