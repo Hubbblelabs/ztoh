@@ -5,7 +5,20 @@ export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
 
-export function generateTrackingId(_type: 'contact' | 'join'): string {
+const HTML_ESCAPES: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+};
+
+// For interpolating user-supplied text into HTML (e.g. notification emails).
+export function escapeHtml(value: string): string {
+    return value.replace(/[&<>"']/g, (char) => HTML_ESCAPES[char]);
+}
+
+export function generateTrackingId(_type: 'contact' | 'join' | 'feedback'): string {
     // Format: YYYYMMDD-XXXX (e.g., 20231201-1234)
     const date = new Date();
     const year = date.getFullYear();

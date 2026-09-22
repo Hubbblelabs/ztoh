@@ -108,6 +108,7 @@ export default function Footer() {
                                     { name: 'Our Services', href: '#services' },
                                     { name: 'Testimonials', href: '#testimonials' },
                                     { name: 'Contact', href: '#contact' },
+                                    { name: 'Feedback & Suggestions', href: '/feedback' },
                                     { name: 'Privacy Policy', href: '/privacy-policy' },
                                     { name: 'Terms of Service', href: '/terms-of-service' },
                                 ].map((item) => (

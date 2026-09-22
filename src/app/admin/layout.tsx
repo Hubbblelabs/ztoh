@@ -5,6 +5,7 @@ import { AppSidebar } from '@/components/app-sidebar';
 import { ModeToggle } from '@/components/mode-toggle';
 import { ThemeProvider } from '@/components/theme-provider';
 import { AuthProvider, useAuth } from './auth-context'; // Import from new file
+import { FeedbackCountProvider, useFeedbackCount } from './feedback-count-context';
 import { PageHeaderProvider, usePageHeader } from '@/contexts/PageHeaderContext';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { Separator } from '@/components/ui/separator';
@@ -29,6 +30,7 @@ import {
     GraduationCap,
     Shield,
     Star,
+    MessageSquareHeart,
 } from 'lucide-react';
 
 const adminNavGroups = [
@@ -41,6 +43,7 @@ const adminNavGroups = [
         items: [
             { href: '/admin/requests', icon: UserPlus, label: 'Join Requests' },
             { href: '/admin/contacts', icon: MessageSquare, label: 'Contact Requests' },
+            { href: '/admin/feedback', icon: MessageSquareHeart, label: 'Feedback' },
         ],
     },
     {
@@ -75,6 +78,7 @@ import { ChangePasswordDialog } from '@/components/ChangePasswordDialog';
 function AdminLayoutContent({ children }: { children: React.ReactNode }) {
     const { user, loading, logout } = useAuth();
     const { title, subtitle } = usePageHeader();
+    const { newCount: newFeedbackCount } = useFeedbackCount();
 
     if (loading) {
         return <Loader fullScreen />;
@@ -86,7 +90,12 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
 
     return (
         <SidebarProvider>
-            <AppSidebar navGroups={adminNavGroups} user={user} title="Zero to Hero" />
+            <AppSidebar
+                navGroups={adminNavGroups}
+                badges={{ '/admin/feedback': newFeedbackCount }}
+                user={user}
+                title="Zero to Hero"
+            />
             <SidebarInset>
                 <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-2 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
                     <SidebarTrigger className="-ml-1" />
@@ -179,7 +188,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <div className="admin-theme min-h-screen bg-background text-foreground">
                 <AuthProvider>
                     <PageHeaderProvider>
-                        <AdminLayoutContent>{children}</AdminLayoutContent>
+                        <FeedbackCountProvider>
+                            <AdminLayoutContent>{children}</AdminLayoutContent>
+                        </FeedbackCountProvider>
                     </PageHeaderProvider>
                 </AuthProvider>
             </div>

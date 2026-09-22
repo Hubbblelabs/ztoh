@@ -13,8 +13,10 @@ import {
     TrendingUp,
     Calendar,
     ArrowRight,
+    MessageSquareHeart,
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useFeedbackCount } from './feedback-count-context';
 
 interface DashboardStats {
     joinRequests: number;
@@ -26,6 +28,7 @@ interface DashboardStats {
 
 export default function AdminDashboard() {
     useSetPageTitle('Dashboard', "Welcome back! Here's an overview of your platform.");
+    const { newCount: newFeedbackCount } = useFeedbackCount();
 
     const [stats, setStats] = useState<DashboardStats>({
         joinRequests: 0,
@@ -118,6 +121,12 @@ export default function AdminDashboard() {
 
     const quickLinks = [
         { title: 'View Join Requests', href: '/admin/requests', icon: UserPlus },
+        {
+            title: 'Review Feedback',
+            href: '/admin/feedback',
+            icon: MessageSquareHeart,
+            badge: newFeedbackCount,
+        },
         { title: 'Manage Staff', href: '/admin/staff', icon: Users },
         { title: 'Teaching Hours', href: '/admin/hours', icon: Clock },
         { title: 'Monthly Reports', href: '/admin/reports', icon: FileText },
@@ -227,6 +236,11 @@ export default function AdminDashboard() {
                                 <span className="font-medium text-foreground group-hover:text-primary transition-colors">
                                     {link.title}
                                 </span>
+                                {link.badge ? (
+                                    <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
+                                        {link.badge} new
+                                    </span>
+                                ) : null}
                                 <ArrowRight className="w-4 h-4 text-muted-foreground ml-auto group-hover:translate-x-1 group-hover:text-primary transition-all" />
                             </Link>
                         ))}

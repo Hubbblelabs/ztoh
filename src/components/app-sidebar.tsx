@@ -13,6 +13,7 @@ import {
     SidebarMenu,
     SidebarMenuItem,
     SidebarMenuButton,
+    SidebarMenuBadge,
     SidebarGroup,
     SidebarGroupLabel,
     SidebarGroupContent,
@@ -40,9 +41,16 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
     navGroups: NavGroup[];
     user?: { name: string; email: string } | null;
     title?: string;
+    // Optional counts shown next to nav items, keyed by item href
+    badges?: Record<string, number>;
 }
 
-export function AppSidebar({ navGroups, title = 'Zero to Hero', ...props }: AppSidebarProps) {
+export function AppSidebar({
+    navGroups,
+    title = 'Zero to Hero',
+    badges,
+    ...props
+}: AppSidebarProps) {
     const pathname = usePathname();
 
     const isActive = (href: string, exact = false) => {
@@ -79,20 +87,28 @@ export function AppSidebar({ navGroups, title = 'Zero to Hero', ...props }: AppS
                         {group.label && <SidebarGroupLabel>{group.label}</SidebarGroupLabel>}
                         <SidebarGroupContent>
                             <SidebarMenu>
-                                {group.items.map((item) => (
-                                    <SidebarMenuItem key={item.href}>
-                                        <SidebarMenuButton
-                                            asChild
-                                            isActive={isActive(item.href, item.exact)}
-                                            tooltip={item.label}
-                                        >
-                                            <Link href={item.href}>
-                                                <item.icon />
-                                                <span>{item.label}</span>
-                                            </Link>
-                                        </SidebarMenuButton>
-                                    </SidebarMenuItem>
-                                ))}
+                                {group.items.map((item) => {
+                                    const badge = badges?.[item.href];
+                                    return (
+                                        <SidebarMenuItem key={item.href}>
+                                            <SidebarMenuButton
+                                                asChild
+                                                isActive={isActive(item.href, item.exact)}
+                                                tooltip={item.label}
+                                            >
+                                                <Link href={item.href}>
+                                                    <item.icon />
+                                                    <span>{item.label}</span>
+                                                </Link>
+                                            </SidebarMenuButton>
+                                            {badge ? (
+                                                <SidebarMenuBadge className="rounded-full bg-primary text-primary-foreground peer-hover/menu-button:text-primary-foreground peer-data-[active=true]/menu-button:text-primary-foreground">
+                                                    {badge > 99 ? '99+' : badge}
+                                                </SidebarMenuBadge>
+                                            ) : null}
+                                        </SidebarMenuItem>
+                                    );
+                                })}
                             </SidebarMenu>
                         </SidebarGroupContent>
                     </SidebarGroup>

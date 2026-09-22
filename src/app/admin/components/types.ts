@@ -1,3 +1,5 @@
+import type { FeedbackStatus, FeedbackTopic, FeedbackType } from '@/lib/feedback';
+
 export interface ContactRequest {
     _id: string;
     name: string;
@@ -44,4 +46,19 @@ export interface AdminUser {
     name: string;
     email: string;
     createdAt: string;
+}
+
+export interface FeedbackEntry {
+    _id: string;
+    type: FeedbackType;
+    topic: FeedbackTopic;
+    rating?: number;
+    subject: string;
+    message: string;
+    name: string;
+    email: string;
+    status: FeedbackStatus;
+    trackingId: string;
+    createdAt: string;
+    updatedAt: string;
 }

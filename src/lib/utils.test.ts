@@ -1,6 +1,6 @@
 import { test, describe, afterEach } from 'node:test';
 import assert from 'node:assert';
-import { generateTrackingId } from './utils';
+import { escapeHtml, generateTrackingId } from './utils.ts';
 
 describe('generateTrackingId', () => {
     const originalDate = global.Date;
@@ -60,5 +60,18 @@ describe('generateTrackingId', () => {
         const id = generateTrackingId('contact');
         const randomPart = id.split('-')[1] || id.slice(8); // Handle both current and fixed versions for now in this internal variable
         assert.strictEqual(randomPart.length, 4);
+    });
+});
+
+describe('escapeHtml', () => {
+    test('escapes characters that are significant in HTML', () => {
+        assert.strictEqual(
+            escapeHtml(`<img src="x" onerror='alert(1)'> & more`),
+            '&lt;img src=&quot;x&quot; onerror=&#39;alert(1)&#39;&gt; &amp; more',
+        );
+    });
+
+    test('leaves plain text unchanged', () => {
+        assert.strictEqual(escapeHtml('Great classes, thank you!'), 'Great classes, thank you!');
     });
 });
