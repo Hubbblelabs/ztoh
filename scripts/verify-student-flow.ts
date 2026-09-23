@@ -1,9 +1,5 @@
+import 'dotenv/config';
 import mongoose from 'mongoose';
-import * as dotenv from 'dotenv';
-import path from 'path';
-
-// Load env
-dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
 // Import models (using require to avoid issue with ts-node needing .ts extension vs compilation)
 // But since we use tsx, we can import if we point to the right place.
@@ -15,7 +11,8 @@ dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
-    throw new Error('Please define the MONGODB_URI environment variable inside .env');
+    console.error('MONGODB_URI is not set. Add it to .env (see .env.example) and try again.');
+    process.exit(1);
 }
 
 // Minimal Schema Definitions for the script to avoid import issues

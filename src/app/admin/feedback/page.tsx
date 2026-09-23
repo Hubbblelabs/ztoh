@@ -3,19 +3,19 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import {
+    BookOpen,
+    Building2,
     Check,
-    Clock,
+    CircleCheck,
     Eye,
-    Heart,
+    GraduationCap,
     Inbox,
-    Lightbulb,
     Loader2,
-    MessageSquare,
-    MessageSquareWarning,
+    PhoneCall,
     Search,
     Sparkles,
-    Star,
     Trash2,
+    Users,
     X,
     type LucideIcon,
 } from 'lucide-react';
@@ -36,44 +36,47 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { useSetPageTitle } from '@/hooks/useSetPageTitle';
-import { cn } from '@/lib/utils';
+import { cn, toWhatsAppUrl } from '@/lib/utils';
 import {
+    ACADEMIC_SUPPORT_LABELS,
+    CURRICULUM_LABELS,
+    EXAM_LABELS,
+    FEEDBACK_FIELD_LABELS,
+    FEEDBACK_NEEDS,
     FEEDBACK_STATUSES,
     FEEDBACK_STATUS_LABELS,
-    FEEDBACK_TOPICS,
-    FEEDBACK_TOPIC_LABELS,
-    FEEDBACK_TYPES,
-    FEEDBACK_TYPE_LABELS,
-    RATING_LABELS,
+    JOB_TYPE_LABELS,
+    NEED_LABELS,
+    REGISTRATION_TYPES,
+    REGISTRATION_TYPE_LABELS,
+    type FeedbackNeed,
     type FeedbackStatus,
-    type FeedbackTopic,
-    type FeedbackType,
+    type RegistrationType,
 } from '@/lib/feedback';
 import { FeedbackEntry } from '../components/types';
 import { useFeedbackCount } from '../feedback-count-context';
 
-type SortOrder = 'newest' | 'oldest' | 'rating_high' | 'rating_low';
+type SortOrder = 'newest' | 'oldest';
 
 const STATUS_STYLES: Record<FeedbackStatus, string> = {
     new: 'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300',
-    in_review: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
-    planned: 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300',
-    resolved: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300',
-    dismissed: 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400',
+    contacted: 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300',
+    no_answer: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300',
+    follow_up: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
+    converted: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300',
+    not_interested: 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400',
 };
 
-const TYPE_ICONS: Record<FeedbackType, { icon: LucideIcon; className: string }> = {
-    general: { icon: MessageSquare, className: 'text-sky-500' },
-    suggestion: { icon: Lightbulb, className: 'text-amber-500' },
-    complaint: { icon: MessageSquareWarning, className: 'text-rose-500' },
-    praise: { icon: Heart, className: 'text-emerald-500' },
+const REGISTRATION_TYPE_ICONS: Record<RegistrationType, { icon: LucideIcon; className: string }> = {
+    student: { icon: GraduationCap, className: 'text-sky-500' },
+    parent: { icon: Users, className: 'text-violet-500' },
+    teacher: { icon: BookOpen, className: 'text-emerald-500' },
+    institution: { icon: Building2, className: 'text-amber-500' },
 };
 
 const SORT_LABELS: Record<SortOrder, string> = {
     newest: 'Newest',
     oldest: 'Oldest',
-    rating_high: 'Highest rated',
-    rating_low: 'Lowest rated',
 };
 
 const formatDate = (dateString: string) =>
@@ -84,6 +87,31 @@ const formatDate = (dateString: string) =>
         hour: '2-digit',
         minute: '2-digit',
     });
+
+// Numbers are stored as typed; a tel: link only needs the digits and a leading +
+const telHref = (phone: string) => `tel:${phone.replace(/[^\d+]/g, '')}`;
+
+const yesNo = (value?: boolean) => (value === undefined ? 'Not answered' : value ? 'Yes' : 'No');
+
+// Contact details, the reference number and the names of the options picked (e.g. "IGCSE"),
+// with digits-only copies of the phone numbers so "9876543210" finds "98765 43210"
+function searchText(item: FeedbackEntry) {
+    const phones = [item.phone, item.alternativePhone, item.whatsapp];
+    return [
+        item.name,
+        item.email,
+        item.address,
+        item.trackingId,
+        ...phones,
+        ...phones.map((phone) => phone?.replace(/\D/g, '')),
+        ...item.needs.map((need) => NEED_LABELS[need]),
+        ...item.curriculums.map((curriculum) => CURRICULUM_LABELS[curriculum]),
+        ...item.exams.map((exam) => EXAM_LABELS[exam]),
+        ...item.academicSupport.map((support) => ACADEMIC_SUPPORT_LABELS[support]),
+    ]
+        .join(' ')
+        .toLowerCase();
+}
 
 function StatusBadge({ status }: { status: FeedbackStatus }) {
     return (
@@ -98,42 +126,58 @@ function StatusBadge({ status }: { status: FeedbackStatus }) {
     );
 }
 
-function TypeChip({ type }: { type: FeedbackType }) {
-    const { icon: Icon, className } = TYPE_ICONS[type];
+function RegistrationTypeChip({ type }: { type: RegistrationType }) {
+    const { icon: Icon, className } = REGISTRATION_TYPE_ICONS[type];
     return (
         <span className="inline-flex items-center gap-1 whitespace-nowrap rounded-md border border-border px-2 py-0.5 text-xs font-medium text-foreground">
             <Icon size={12} className={className} />
-            {FEEDBACK_TYPE_LABELS[type]}
+            {REGISTRATION_TYPE_LABELS[type]}
         </span>
     );
 }
 
-function RatingStars({ rating, size = 14 }: { rating?: number; size?: number }) {
-    if (!rating) return <span className="text-xs text-muted-foreground">Not rated</span>;
+// The options someone ticked in one section of the form, e.g. their needs or boards
+function OptionChips<T extends string>({
+    values,
+    labels,
+}: {
+    values: readonly T[];
+    labels: Record<T, string>;
+}) {
+    if (values.length === 0) return <span className="text-sm text-muted-foreground">None</span>;
     return (
-        <span
-            className="inline-flex items-center gap-0.5"
-            title={`${rating}/5 · ${RATING_LABELS[rating - 1]}`}
-        >
-            {[1, 2, 3, 4, 5].map((value) => (
-                <Star
+        <div className="flex flex-wrap gap-1.5">
+            {values.map((value) => (
+                <span
                     key={value}
-                    size={size}
-                    aria-hidden="true"
-                    className={
-                        value <= rating
-                            ? 'fill-amber-400 text-amber-400'
-                            : 'text-muted-foreground/30'
-                    }
-                />
+                    className="whitespace-nowrap rounded-md border border-border bg-card px-2 py-0.5 text-xs font-medium text-foreground"
+                >
+                    {labels[value]}
+                </span>
             ))}
-            <span className="sr-only">{rating} out of 5</span>
-        </span>
+        </div>
+    );
+}
+
+function DetailItem({
+    label,
+    className,
+    children,
+}: {
+    label: string;
+    className?: string;
+    children: React.ReactNode;
+}) {
+    return (
+        <div className={cn('min-w-0', className)}>
+            <dt className="text-xs font-semibold text-muted-foreground uppercase mb-1">{label}</dt>
+            <dd className="text-sm text-foreground break-words">{children}</dd>
+        </div>
     );
 }
 
 export default function FeedbackPage() {
-    useSetPageTitle('Feedback', 'Review feedback and suggestions from the website');
+    useSetPageTitle('Feedback', 'Review submissions from the website feedback form');
     const { setNewCount } = useFeedbackCount();
 
     const [feedback, setFeedback] = useState<FeedbackEntry[]>([]);
@@ -143,8 +187,8 @@ export default function FeedbackPage() {
     // Search, Sort, Filter
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState<FeedbackStatus | 'all'>('all');
-    const [typeFilter, setTypeFilter] = useState<FeedbackType | 'all'>('all');
-    const [topicFilter, setTopicFilter] = useState<FeedbackTopic | 'all'>('all');
+    const [typeFilter, setTypeFilter] = useState<RegistrationType | 'all'>('all');
+    const [needFilter, setNeedFilter] = useState<FeedbackNeed | 'all'>('all');
     const [sortOrder, setSortOrder] = useState<SortOrder>('newest');
 
     // Dialogs
@@ -186,17 +230,13 @@ export default function FeedbackPage() {
     }, [feedback, loading, setNewCount]);
 
     const stats = useMemo(() => {
-        const ratings = feedback.flatMap((item) => (item.rating ? [item.rating] : []));
+        const countWith = (...statuses: FeedbackStatus[]) =>
+            feedback.filter((item) => statuses.includes(item.status)).length;
         return {
             total: feedback.length,
-            new: feedback.filter((item) => item.status === 'new').length,
-            inProgress: feedback.filter(
-                (item) => item.status === 'in_review' || item.status === 'planned',
-            ).length,
-            averageRating: ratings.length
-                ? ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length
-                : null,
-            ratingCount: ratings.length,
+            new: countWith('new'),
+            followUp: countWith('follow_up', 'no_answer'),
+            converted: countWith('converted'),
         };
     }, [feedback]);
 
@@ -207,41 +247,25 @@ export default function FeedbackPage() {
             .filter(
                 (item) =>
                     (statusFilter === 'all' || item.status === statusFilter) &&
-                    (typeFilter === 'all' || item.type === typeFilter) &&
-                    (topicFilter === 'all' || item.topic === topicFilter) &&
-                    (!term ||
-                        [item.name, item.email, item.subject, item.message, item.trackingId].some(
-                            (value) => value.toLowerCase().includes(term),
-                        )),
+                    (typeFilter === 'all' || item.registrationType === typeFilter) &&
+                    (needFilter === 'all' || item.needs.includes(needFilter)) &&
+                    (!term || searchText(item).includes(term)),
             )
             .sort((a, b) => {
-                if (sortOrder === 'rating_high' || sortOrder === 'rating_low') {
-                    const ratingA = a.rating ?? 0;
-                    const ratingB = b.rating ?? 0;
-                    if (ratingA !== ratingB) {
-                        // Unrated feedback always goes last
-                        if (!ratingA) return 1;
-                        if (!ratingB) return -1;
-                        return sortOrder === 'rating_high' ? ratingB - ratingA : ratingA - ratingB;
-                    }
-                }
                 const newestFirst =
                     new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
                 return sortOrder === 'oldest' ? -newestFirst : newestFirst;
             });
-    }, [feedback, searchTerm, statusFilter, typeFilter, topicFilter, sortOrder]);
+    }, [feedback, searchTerm, statusFilter, typeFilter, needFilter, sortOrder]);
 
     const hasActiveFilters =
-        searchTerm !== '' ||
-        statusFilter !== 'all' ||
-        typeFilter !== 'all' ||
-        topicFilter !== 'all';
+        searchTerm !== '' || statusFilter !== 'all' || typeFilter !== 'all' || needFilter !== 'all';
 
     const clearFilters = () => {
         setSearchTerm('');
         setStatusFilter('all');
         setTypeFilter('all');
-        setTopicFilter('all');
+        setNeedFilter('all');
     };
 
     const handleStatusChange = async (status: FeedbackStatus) => {
@@ -286,13 +310,13 @@ export default function FeedbackPage() {
             if (response.ok) {
                 setFeedback((prev) => prev.filter((item) => item._id !== deleteTarget._id));
                 setDeleteTarget(null);
-                showToast('Feedback deleted', 'success');
+                showToast('Submission deleted', 'success');
             } else {
-                showToast('Failed to delete feedback', 'error');
+                showToast('Failed to delete submission', 'error');
             }
         } catch (error) {
-            console.error('Failed to delete feedback:', error);
-            showToast('Failed to delete feedback', 'error');
+            console.error('Failed to delete submission:', error);
+            showToast('Failed to delete submission', 'error');
         } finally {
             setDeleting(false);
         }
@@ -300,7 +324,7 @@ export default function FeedbackPage() {
 
     const statCards = [
         {
-            title: 'Total Feedback',
+            title: 'Total Submissions',
             value: stats.total,
             icon: Inbox,
             bgColor: 'bg-slate-100 dark:bg-slate-800',
@@ -314,19 +338,18 @@ export default function FeedbackPage() {
             textColor: 'text-sky-600 dark:text-sky-400',
         },
         {
-            title: 'In Review / Planned',
-            value: stats.inProgress,
-            icon: Clock,
-            bgColor: 'bg-violet-100 dark:bg-violet-900/20',
-            textColor: 'text-violet-600 dark:text-violet-400',
-        },
-        {
-            title:
-                stats.ratingCount > 0 ? `Avg. Rating (${stats.ratingCount} rated)` : 'Avg. Rating',
-            value: stats.averageRating === null ? '—' : stats.averageRating.toFixed(1),
-            icon: Star,
+            title: 'Follow-up / No Answer',
+            value: stats.followUp,
+            icon: PhoneCall,
             bgColor: 'bg-amber-100 dark:bg-amber-900/20',
             textColor: 'text-amber-600 dark:text-amber-400',
+        },
+        {
+            title: 'Converted',
+            value: stats.converted,
+            icon: CircleCheck,
+            bgColor: 'bg-emerald-100 dark:bg-emerald-900/20',
+            textColor: 'text-emerald-600 dark:text-emerald-400',
         },
     ];
 
@@ -362,7 +385,7 @@ export default function FeedbackPage() {
                                     <Skeleton className="h-5 w-1/2" />
                                     <Skeleton className="h-3 w-1/3" />
                                 </div>
-                                <Skeleton className="h-4 w-20" />
+                                <Skeleton className="h-4 w-32" />
                                 <Skeleton className="h-6 w-20" />
                                 <Skeleton className="h-4 w-28" />
                             </div>
@@ -411,7 +434,7 @@ export default function FeedbackPage() {
                         />
                         <input
                             type="text"
-                            placeholder="Search feedback..."
+                            placeholder="Search name, phone, board..."
                             aria-label="Search feedback"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -423,7 +446,7 @@ export default function FeedbackPage() {
                         value={statusFilter}
                         onValueChange={(value) => setStatusFilter(value as FeedbackStatus | 'all')}
                     >
-                        <SelectTrigger className="w-[180px] h-9 rounded-md bg-card">
+                        <SelectTrigger className="w-[200px] h-9 rounded-md bg-card">
                             <span className="text-xs font-semibold text-muted-foreground uppercase mr-2">
                                 Status:
                             </span>
@@ -441,9 +464,9 @@ export default function FeedbackPage() {
 
                     <Select
                         value={typeFilter}
-                        onValueChange={(value) => setTypeFilter(value as FeedbackType | 'all')}
+                        onValueChange={(value) => setTypeFilter(value as RegistrationType | 'all')}
                     >
-                        <SelectTrigger className="w-[170px] h-9 rounded-md bg-card">
+                        <SelectTrigger className="w-[240px] h-9 rounded-md bg-card">
                             <span className="text-xs font-semibold text-muted-foreground uppercase mr-2">
                                 Type:
                             </span>
@@ -451,29 +474,29 @@ export default function FeedbackPage() {
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="all">All</SelectItem>
-                            {FEEDBACK_TYPES.map((type) => (
+                            {REGISTRATION_TYPES.map((type) => (
                                 <SelectItem key={type} value={type}>
-                                    {FEEDBACK_TYPE_LABELS[type]}
+                                    {REGISTRATION_TYPE_LABELS[type]}
                                 </SelectItem>
                             ))}
                         </SelectContent>
                     </Select>
 
                     <Select
-                        value={topicFilter}
-                        onValueChange={(value) => setTopicFilter(value as FeedbackTopic | 'all')}
+                        value={needFilter}
+                        onValueChange={(value) => setNeedFilter(value as FeedbackNeed | 'all')}
                     >
                         <SelectTrigger className="w-[220px] h-9 rounded-md bg-card">
                             <span className="text-xs font-semibold text-muted-foreground uppercase mr-2">
-                                Topic:
+                                Need:
                             </span>
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="all">All</SelectItem>
-                            {FEEDBACK_TOPICS.map((topic) => (
-                                <SelectItem key={topic} value={topic}>
-                                    {FEEDBACK_TOPIC_LABELS[topic]}
+                            {FEEDBACK_NEEDS.map((need) => (
+                                <SelectItem key={need} value={need}>
+                                    {NEED_LABELS[need]}
                                 </SelectItem>
                             ))}
                         </SelectContent>
@@ -483,7 +506,7 @@ export default function FeedbackPage() {
                         value={sortOrder}
                         onValueChange={(value) => setSortOrder(value as SortOrder)}
                     >
-                        <SelectTrigger className="w-[190px] h-9 rounded-md bg-card">
+                        <SelectTrigger className="w-[160px] h-9 rounded-md bg-card">
                             <span className="text-xs font-semibold text-muted-foreground uppercase mr-2">
                                 Sort:
                             </span>
@@ -514,7 +537,7 @@ export default function FeedbackPage() {
                         <div className="p-4 rounded-full bg-muted mb-4">
                             <Inbox className="w-8 h-8 text-muted-foreground" />
                         </div>
-                        <h3 className="font-semibold text-foreground">No feedback yet</h3>
+                        <h3 className="font-semibold text-foreground">No submissions yet</h3>
                         <p className="text-sm text-muted-foreground mt-1 max-w-sm">
                             Submissions from the public{' '}
                             <Link
@@ -522,14 +545,14 @@ export default function FeedbackPage() {
                                 target="_blank"
                                 className="text-primary hover:underline"
                             >
-                                Feedback &amp; Suggestions
+                                Feedback Form
                             </Link>{' '}
                             page will appear here.
                         </p>
                     </div>
                 ) : displayedFeedback.length === 0 ? (
                     <div className="text-center py-16 text-muted-foreground">
-                        <p>No feedback matches your filters.</p>
+                        <p>No submissions match your filters.</p>
                         <button
                             onClick={clearFilters}
                             className="mt-3 text-sm font-medium text-primary hover:underline"
@@ -539,15 +562,15 @@ export default function FeedbackPage() {
                     </div>
                 ) : (
                     <>
-                        {/* Desktop View: fixed layout so long subjects truncate instead of
+                        {/* Desktop View: fixed layout so long names truncate instead of
                             widening the page */}
                         <div className="hidden xl:block rounded-md border border-border overflow-hidden">
                             <table className="w-full table-fixed text-left border-collapse">
                                 <thead>
                                     <tr className="bg-muted border-b border-border text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                                        <th className="px-4 py-4">Feedback</th>
-                                        <th className="px-4 py-4 w-28">Rating</th>
-                                        <th className="px-4 py-4 w-32">Status</th>
+                                        <th className="px-4 py-4">Submission</th>
+                                        <th className="px-4 py-4 w-56">Need</th>
+                                        <th className="px-4 py-4 w-40">Status</th>
                                         <th className="px-4 py-4 w-36">Submitted</th>
                                         <th className="px-4 py-4 w-28 text-right">Actions</th>
                                     </tr>
@@ -568,19 +591,23 @@ export default function FeedbackPage() {
                                                         />
                                                     )}
                                                     <span className="font-semibold text-foreground truncate">
-                                                        {item.subject}
+                                                        {item.name}
                                                     </span>
                                                 </div>
                                                 <div className="flex items-center gap-2 mt-1.5 text-xs text-muted-foreground">
-                                                    <TypeChip type={item.type} />
+                                                    <RegistrationTypeChip
+                                                        type={item.registrationType}
+                                                    />
                                                     <span className="truncate">
-                                                        {FEEDBACK_TOPIC_LABELS[item.topic]} ·{' '}
-                                                        {item.name}
+                                                        {item.phone} · {item.email}
                                                     </span>
                                                 </div>
                                             </td>
                                             <td className="px-4 py-4">
-                                                <RatingStars rating={item.rating} />
+                                                <OptionChips
+                                                    values={item.needs}
+                                                    labels={NEED_LABELS}
+                                                />
                                             </td>
                                             <td className="px-4 py-4">
                                                 <StatusBadge status={item.status} />
@@ -597,7 +624,7 @@ export default function FeedbackPage() {
                                                         }}
                                                         className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-md transition-colors"
                                                         title="View Details"
-                                                        aria-label={`View feedback: ${item.subject}`}
+                                                        aria-label={`View submission from ${item.name}`}
                                                     >
                                                         <Eye size={18} />
                                                     </button>
@@ -608,7 +635,7 @@ export default function FeedbackPage() {
                                                         }}
                                                         className="p-2 text-muted-foreground hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"
                                                         title="Delete"
-                                                        aria-label={`Delete feedback: ${item.subject}`}
+                                                        aria-label={`Delete submission from ${item.name}`}
                                                     >
                                                         <Trash2 size={18} />
                                                     </button>
@@ -630,39 +657,42 @@ export default function FeedbackPage() {
                                     <div className="flex justify-between items-start gap-3">
                                         <div className="min-w-0">
                                             <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                                                <TypeChip type={item.type} />
+                                                <RegistrationTypeChip
+                                                    type={item.registrationType}
+                                                />
                                                 <span className="font-mono text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
                                                     {item.trackingId}
                                                 </span>
                                             </div>
                                             <h3 className="font-semibold text-foreground break-words">
-                                                {item.subject}
+                                                {item.name}
                                             </h3>
                                             <p className="text-sm text-muted-foreground truncate">
-                                                {item.name} · {item.email}
+                                                {item.phone} · {item.email}
                                             </p>
                                         </div>
                                         <div className="flex gap-1 shrink-0">
                                             <button
                                                 onClick={() => setSelected(item)}
                                                 className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-md transition-colors"
-                                                aria-label={`View feedback: ${item.subject}`}
+                                                aria-label={`View submission from ${item.name}`}
                                             >
                                                 <Eye size={18} />
                                             </button>
                                             <button
                                                 onClick={() => setDeleteTarget(item)}
                                                 className="p-2 text-muted-foreground hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"
-                                                aria-label={`Delete feedback: ${item.subject}`}
+                                                aria-label={`Delete submission from ${item.name}`}
                                             >
                                                 <Trash2 size={18} />
                                             </button>
                                         </div>
                                     </div>
 
+                                    <OptionChips values={item.needs} labels={NEED_LABELS} />
+
                                     <div className="flex flex-wrap gap-2 items-center text-xs">
                                         <StatusBadge status={item.status} />
-                                        <RatingStars rating={item.rating} size={12} />
                                         <span className="text-muted-foreground ml-auto">
                                             {formatDate(item.createdAt)}
                                         </span>
@@ -685,14 +715,11 @@ export default function FeedbackPage() {
                     {selected && (
                         <>
                             <DialogHeader className="pr-8 space-y-2">
-                                <div className="flex flex-wrap items-center gap-2">
-                                    <TypeChip type={selected.type} />
-                                    <span className="text-xs text-muted-foreground">
-                                        {FEEDBACK_TOPIC_LABELS[selected.topic]}
-                                    </span>
+                                <div>
+                                    <RegistrationTypeChip type={selected.registrationType} />
                                 </div>
                                 <DialogTitle className="text-xl leading-snug break-words">
-                                    {selected.subject}
+                                    {selected.name}
                                 </DialogTitle>
                                 <DialogDescription>
                                     Ref. <span className="font-mono">{selected.trackingId}</span> ·
@@ -732,50 +759,126 @@ export default function FeedbackPage() {
                                 </div>
                                 <div>
                                     <p className="text-xs font-semibold text-muted-foreground uppercase mb-1">
-                                        Rating
+                                        {FEEDBACK_FIELD_LABELS.needs}
                                     </p>
-                                    <div className="flex h-10 items-center gap-2">
-                                        <RatingStars rating={selected.rating} size={18} />
-                                        {selected.rating && (
-                                            <span className="text-sm text-muted-foreground">
-                                                {RATING_LABELS[selected.rating - 1]}
-                                            </span>
-                                        )}
+                                    <div className="flex min-h-10 items-center">
+                                        <OptionChips values={selected.needs} labels={NEED_LABELS} />
                                     </div>
                                 </div>
                             </div>
 
-                            <div>
-                                <h4 className="text-xs font-semibold text-muted-foreground uppercase mb-2">
-                                    Message
+                            <section>
+                                <h4 className="text-sm font-semibold text-foreground mb-3">
+                                    Contact Details
                                 </h4>
-                                <p className="text-sm leading-relaxed text-foreground whitespace-pre-wrap break-words">
-                                    {selected.message}
-                                </p>
-                            </div>
+                                <dl className="grid gap-4 sm:grid-cols-2">
+                                    <DetailItem label={FEEDBACK_FIELD_LABELS.phone}>
+                                        <a
+                                            href={telHref(selected.phone)}
+                                            className="text-primary hover:underline"
+                                        >
+                                            {selected.phone}
+                                        </a>
+                                    </DetailItem>
+                                    {selected.alternativePhone && (
+                                        <DetailItem label={FEEDBACK_FIELD_LABELS.alternativePhone}>
+                                            <a
+                                                href={telHref(selected.alternativePhone)}
+                                                className="text-primary hover:underline"
+                                            >
+                                                {selected.alternativePhone}
+                                            </a>
+                                        </DetailItem>
+                                    )}
+                                    <DetailItem label={FEEDBACK_FIELD_LABELS.whatsapp}>
+                                        <a
+                                            href={toWhatsAppUrl(selected.whatsapp)}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-primary hover:underline"
+                                        >
+                                            {selected.whatsapp}
+                                        </a>
+                                        {selected.whatsapp === selected.phone && (
+                                            <span className="text-muted-foreground">
+                                                {' '}
+                                                (same as phone)
+                                            </span>
+                                        )}
+                                    </DetailItem>
+                                    <DetailItem label={FEEDBACK_FIELD_LABELS.email}>
+                                        <a
+                                            href={`mailto:${selected.email}`}
+                                            className="text-primary hover:underline break-all"
+                                        >
+                                            {selected.email}
+                                        </a>
+                                    </DetailItem>
+                                    {selected.address && (
+                                        <DetailItem
+                                            label={FEEDBACK_FIELD_LABELS.address}
+                                            className="sm:col-span-2"
+                                        >
+                                            <span className="whitespace-pre-wrap">
+                                                {selected.address}
+                                            </span>
+                                        </DetailItem>
+                                    )}
+                                </dl>
+                            </section>
 
-                            <div className="grid gap-4 sm:grid-cols-2 pt-4 border-t border-border text-sm">
-                                <div className="min-w-0">
-                                    <h4 className="text-xs font-semibold text-muted-foreground uppercase mb-1">
-                                        From
-                                    </h4>
-                                    <p className="font-medium text-foreground">{selected.name}</p>
-                                    <a
-                                        href={`mailto:${selected.email}`}
-                                        className="text-primary hover:underline break-all"
-                                    >
-                                        {selected.email}
-                                    </a>
-                                </div>
-                                <div>
-                                    <h4 className="text-xs font-semibold text-muted-foreground uppercase mb-1">
-                                        Last Updated
-                                    </h4>
-                                    <p className="text-foreground">
+                            <section className="pt-4 border-t border-border">
+                                <h4 className="text-sm font-semibold text-foreground mb-3">
+                                    Support Requested
+                                </h4>
+                                <dl className="space-y-4">
+                                    <DetailItem label={FEEDBACK_FIELD_LABELS.curriculums}>
+                                        <OptionChips
+                                            values={selected.curriculums}
+                                            labels={CURRICULUM_LABELS}
+                                        />
+                                    </DetailItem>
+                                    <DetailItem label={FEEDBACK_FIELD_LABELS.exams}>
+                                        <OptionChips values={selected.exams} labels={EXAM_LABELS} />
+                                    </DetailItem>
+                                    <DetailItem label={FEEDBACK_FIELD_LABELS.academicSupport}>
+                                        <OptionChips
+                                            values={selected.academicSupport}
+                                            labels={ACADEMIC_SUPPORT_LABELS}
+                                        />
+                                    </DetailItem>
+                                </dl>
+                            </section>
+
+                            <section className="pt-4 border-t border-border">
+                                <h4 className="text-sm font-semibold text-foreground mb-3">
+                                    Other Answers
+                                </h4>
+                                <dl className="grid gap-4 sm:grid-cols-2">
+                                    {selected.registrationType === 'teacher' && (
+                                        <DetailItem label={FEEDBACK_FIELD_LABELS.jobTypes}>
+                                            {selected.jobTypes.length > 0
+                                                ? selected.jobTypes
+                                                      .map((type) => JOB_TYPE_LABELS[type])
+                                                      .join(', ')
+                                                : 'Not looking'}
+                                        </DetailItem>
+                                    )}
+                                    {selected.registrationType === 'institution' && (
+                                        <DetailItem
+                                            label={FEEDBACK_FIELD_LABELS.partnershipInterest}
+                                        >
+                                            {yesNo(selected.partnershipInterest)}
+                                        </DetailItem>
+                                    )}
+                                    <DetailItem label={FEEDBACK_FIELD_LABELS.productDemoInterest}>
+                                        {yesNo(selected.productDemoInterest)}
+                                    </DetailItem>
+                                    <DetailItem label="Last Updated">
                                         {formatDate(selected.updatedAt)}
-                                    </p>
-                                </div>
-                            </div>
+                                    </DetailItem>
+                                </dl>
+                            </section>
 
                             <DialogFooter className="gap-2">
                                 <button
@@ -814,14 +917,13 @@ export default function FeedbackPage() {
                                 <Trash2 size={32} />
                             </div>
                             <DialogHeader className="sm:text-center">
-                                <DialogTitle className="text-xl">Delete Feedback?</DialogTitle>
+                                <DialogTitle className="text-xl">Delete Submission?</DialogTitle>
                                 <DialogDescription>
-                                    Are you sure you want to delete &ldquo;{deleteTarget.subject}
-                                    &rdquo; from{' '}
+                                    Are you sure you want to delete the submission from{' '}
                                     <span className="font-semibold text-foreground">
                                         {deleteTarget.name}
-                                    </span>
-                                    ? This action cannot be undone.
+                                    </span>{' '}
+                                    (Ref. {deleteTarget.trackingId})? This action cannot be undone.
                                 </DialogDescription>
                             </DialogHeader>
                             <DialogFooter className="gap-2 sm:justify-center">

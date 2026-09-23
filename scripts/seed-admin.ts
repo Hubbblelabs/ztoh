@@ -1,13 +1,17 @@
+import 'dotenv/config';
 import mongoose from 'mongoose';
 import Admin from '../src/models/Admin';
 
+const MONGODB_URI = process.env.MONGODB_URI;
+
+if (!MONGODB_URI) {
+    console.error('MONGODB_URI is not set. Add it to .env (see .env.example) and try again.');
+    process.exit(1);
+}
+
 const seedAdmin = async () => {
     try {
-        // Clean URI if needed (remove empty appName)
-        const uri =
-            'mongodb+srv://kavinnandha:kavin4343@cluster0.ipg5jxa.mongodb.net/ztoh?appName=Cluster0';
-
-        await mongoose.connect(uri);
+        await mongoose.connect(MONGODB_URI);
         console.log('Connected to MongoDB');
 
         const email = 'admin@ztoh.org';

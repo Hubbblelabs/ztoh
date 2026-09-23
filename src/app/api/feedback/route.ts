@@ -7,9 +7,15 @@ import { checkRateLimit } from '@/lib/rateLimit';
 import { verifyTurnstileToken } from '@/lib/turnstile';
 import { escapeHtml, generateTrackingId } from '@/lib/utils';
 import {
-    FEEDBACK_TOPIC_LABELS,
-    FEEDBACK_TYPE_LABELS,
+    ACADEMIC_SUPPORT_LABELS,
+    CURRICULUM_LABELS,
+    EXAM_LABELS,
+    FEEDBACK_FIELD_LABELS,
+    JOB_TYPE_LABELS,
+    NEED_LABELS,
+    REGISTRATION_TYPE_LABELS,
     validateFeedbackInput,
+    type FeedbackField,
     type FeedbackInput,
 } from '@/lib/feedback';
 
@@ -89,15 +95,33 @@ async function notifyAdmin(feedback: IFeedback) {
             return;
         }
 
-        const typeLabel = FEEDBACK_TYPE_LABELS[feedback.type];
+        const typeLabel = REGISTRATION_TYPE_LABELS[feedback.registrationType];
+        const list = <T extends string>(values: T[], labels: Record<T, string>) =>
+            values.map((value) => labels[value]).join(', ');
+        const yesNo = (value?: boolean) => (value === undefined ? '' : value ? 'Yes' : 'No');
+
+        // Optional questions that were left blank are omitted
+        const answers: [FeedbackField, string | undefined][] = [
+            ['registrationType', typeLabel],
+            ['name', feedback.name],
+            ['phone', feedback.phone],
+            ['alternativePhone', feedback.alternativePhone],
+            ['whatsapp', feedback.whatsapp],
+            ['email', feedback.email],
+            ['address', feedback.address],
+            ['needs', list(feedback.needs, NEED_LABELS)],
+            ['curriculums', list(feedback.curriculums, CURRICULUM_LABELS)],
+            ['exams', list(feedback.exams, EXAM_LABELS)],
+            ['academicSupport', list(feedback.academicSupport, ACADEMIC_SUPPORT_LABELS)],
+            ['jobTypes', list(feedback.jobTypes, JOB_TYPE_LABELS)],
+            ['partnershipInterest', yesNo(feedback.partnershipInterest)],
+            ['productDemoInterest', yesNo(feedback.productDemoInterest)],
+        ];
         const details: [string, string][] = [
             ['Tracking Number', feedback.trackingId],
-            ['Type', typeLabel],
-            ['Topic', FEEDBACK_TOPIC_LABELS[feedback.topic]],
-            ['Rating', feedback.rating ? `${feedback.rating}/5` : 'Not rated'],
-            ['Name', feedback.name],
-            ['Email', feedback.email],
-            ['Subject', feedback.subject],
+            ...answers.flatMap(([field, value]): [string, string][] =>
+                value ? [[FEEDBACK_FIELD_LABELS[field], value]] : [],
+            ),
         ];
         const adminUrl = process.env.NEXTAUTH_URL
             ? `${process.env.NEXTAUTH_URL.replace(/\/$/, '')}/admin/feedback`
@@ -108,24 +132,19 @@ async function notifyAdmin(feedback: IFeedback) {
             from: `Zero To Hero <${fromEmail}>`,
             to: adminEmail,
             replyTo: feedback.email,
-            subject: `New feedback (${typeLabel}): ${feedback.subject}`,
+            subject: `New feedback form from ${feedback.name} (${typeLabel})`,
             text: [
                 ...details.map(([label, value]) => `${label}: ${value}`),
-                '',
-                'Message:',
-                feedback.message,
                 ...(adminUrl ? ['', `Review it in the admin panel: ${adminUrl}`] : []),
             ].join('\n'),
             html: `
-                <h3>New Feedback Received</h3>
+                <h3>New Feedback Form Submission</h3>
                 ${details
                     .map(
                         ([label, value]) =>
-                            `<p><strong>${label}:</strong> ${escapeHtml(value)}</p>`,
+                            `<p style="white-space: pre-wrap;"><strong>${label}:</strong> ${escapeHtml(value)}</p>`,
                     )
                     .join('')}
-                <p><strong>Message:</strong></p>
-                <p style="white-space: pre-wrap;">${escapeHtml(feedback.message)}</p>
                 ${adminUrl ? `<p><a href="${adminUrl}">Review it in the admin panel</a></p>` : ''}
             `,
         });

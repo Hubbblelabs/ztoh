@@ -18,6 +18,18 @@ export function escapeHtml(value: string): string {
     return value.replace(/[&<>"']/g, (char) => HTML_ESCAPES[char]);
 }
 
+// wa.me links need the full international number as digits only. Numbers entered without
+// a country code are assumed to be Indian (+91).
+export function toWhatsAppUrl(phone: string): string {
+    let digits = phone.replace(/\D/g, '');
+    if (!phone.trim().startsWith('+')) {
+        if (digits.startsWith('00')) digits = digits.slice(2);
+        else if (digits.length === 11 && digits.startsWith('0')) digits = digits.slice(1);
+        if (digits.length === 10) digits = `91${digits}`;
+    }
+    return `https://wa.me/${digits}`;
+}
+
 export function generateTrackingId(_type: 'contact' | 'join' | 'feedback'): string {
     // Format: YYYYMMDD-XXXX (e.g., 20231201-1234)
     const date = new Date();

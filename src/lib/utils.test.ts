@@ -1,6 +1,6 @@
 import { test, describe, afterEach } from 'node:test';
 import assert from 'node:assert';
-import { escapeHtml, generateTrackingId } from './utils.ts';
+import { escapeHtml, generateTrackingId, toWhatsAppUrl } from './utils.ts';
 
 describe('generateTrackingId', () => {
     const originalDate = global.Date;
@@ -73,5 +73,19 @@ describe('escapeHtml', () => {
 
     test('leaves plain text unchanged', () => {
         assert.strictEqual(escapeHtml('Great classes, thank you!'), 'Great classes, thank you!');
+    });
+});
+
+describe('toWhatsAppUrl', () => {
+    test('keeps numbers that already have a country code', () => {
+        assert.strictEqual(toWhatsAppUrl('+91 95643 21000'), 'https://wa.me/919564321000');
+        assert.strictEqual(toWhatsAppUrl('+1 (202) 555-0123'), 'https://wa.me/12025550123');
+        assert.strictEqual(toWhatsAppUrl('0091 95643 21000'), 'https://wa.me/919564321000');
+        assert.strictEqual(toWhatsAppUrl('919564321000'), 'https://wa.me/919564321000');
+    });
+
+    test('assumes India for local numbers', () => {
+        assert.strictEqual(toWhatsAppUrl('95643 21000'), 'https://wa.me/919564321000');
+        assert.strictEqual(toWhatsAppUrl('095643-21000'), 'https://wa.me/919564321000');
     });
 });

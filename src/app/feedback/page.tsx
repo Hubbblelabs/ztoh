@@ -1,19 +1,19 @@
 import type { Metadata } from 'next';
-import { Eye, Mail, MessageSquareHeart, PencilLine, Phone, Rocket } from 'lucide-react';
+import { Eye, Mail, MessageSquareHeart, PencilLine, Phone, PhoneCall } from 'lucide-react';
 import ScrollAnimation from '@/components/animations/ScrollAnimation';
 import FeedbackForm from './FeedbackForm';
 
 export const metadata: Metadata = {
-    title: 'Feedback & Suggestions | Zero to Hero',
+    title: 'Feedback Form | Zero to Hero',
     description:
-        "Share feedback and suggestions with Zero to Hero. Tell us what's working, what isn't, and how we can make learning with us even better.",
+        'Tell Zero to Hero what you need: demos, enquiries, curriculum and competitive exam support, academic resources, teaching jobs or institutional partnerships.',
 };
 
 const steps = [
     {
         icon: PencilLine,
-        title: 'You share',
-        text: 'Pick a type, rate your experience and tell us the details.',
+        title: 'You tell us',
+        text: 'Choose who you are, add your contact details and tick what you need.',
     },
     {
         icon: Eye,
@@ -21,9 +21,9 @@ const steps = [
         text: 'Every submission is read by our team and passed to the right people.',
     },
     {
-        icon: Rocket,
-        title: 'We improve',
-        text: 'Your ideas shape our classes, schedules and study material.',
+        icon: PhoneCall,
+        title: 'We get in touch',
+        text: 'We call or WhatsApp you to plan the next steps.',
     },
 ];
 
@@ -46,16 +46,17 @@ export default function FeedbackPage() {
                     </ScrollAnimation>
                     <ScrollAnimation delay={0.1}>
                         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-heading text-slate-900 mb-6">
-                            Feedback &amp;{' '}
+                            Feedback{' '}
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-secondary to-accent">
-                                Suggestions
+                                Form
                             </span>
                         </h1>
                     </ScrollAnimation>
                     <ScrollAnimation delay={0.2}>
                         <p className="text-lg text-slate-600">
-                            Your experience shapes how we teach. Tell us what&apos;s working, what
-                            isn&apos;t, and what you&apos;d love to see next.
+                            Tell us who you are and what you&apos;re looking for, from demos and
+                            enquiries to curriculum, exam and academic support. Our team will get in
+                            touch.
                         </p>
                     </ScrollAnimation>
                 </div>
