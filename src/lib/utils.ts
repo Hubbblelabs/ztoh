@@ -18,6 +18,13 @@ export function escapeHtml(value: string): string {
     return value.replace(/[&<>"']/g, (char) => HTML_ESCAPES[char]);
 }
 
+// Links to a homepage section. Off the homepage they must be root-relative to get there at
+// all; on it they stay bare hashes so the browser just scrolls, instead of the router
+// re-navigating to the route we are already on and replaying the page transition.
+export function sectionHref(pathname: string | null, hash: string): string {
+    return pathname === '/' ? hash : `/${hash}`;
+}
+
 // wa.me links need the full international number as digits only. Numbers entered without
 // a country code are assumed to be Indian (+91).
 export function toWhatsAppUrl(phone: string): string {

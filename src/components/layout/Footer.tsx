@@ -3,12 +3,16 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Mail, Phone, MapPin, ArrowRight, Send, Heart } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { sectionHref } from '@/lib/utils';
+import { Mail, Phone, MapPin, ArrowRight, Send } from 'lucide-react';
 import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from 'react-icons/fa';
 
 export default function Footer() {
     const [email, setEmail] = useState('');
     const [subscribed, setSubscribed] = useState(false);
+    const pathname = usePathname();
+    const hrefFor = (href: string) => (href.startsWith('#') ? sectionHref(pathname, href) : href);
 
     const handleNewsletter = (e: React.FormEvent) => {
         e.preventDefault();
@@ -114,7 +118,7 @@ export default function Footer() {
                                 ].map((item) => (
                                     <li key={item.name}>
                                         <Link
-                                            href={item.href}
+                                            href={hrefFor(item.href)}
                                             className="text-sm hover:text-secondary transition-colors flex items-center gap-2 group"
                                         >
                                             <ArrowRight
@@ -142,7 +146,7 @@ export default function Footer() {
                                 ].map((item) => (
                                     <li key={item}>
                                         <Link
-                                            href="#services"
+                                            href={hrefFor('#services')}
                                             className="text-sm hover:text-secondary transition-colors flex items-center gap-2 group"
                                         >
                                             <ArrowRight

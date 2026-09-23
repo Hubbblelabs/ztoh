@@ -421,7 +421,7 @@ export default function ReportsTab({ showToast }: ReportsTabProps) {
                     <FileText size={48} className="mx-auto mb-4 opacity-50" />
                     <p>No monthly reports found.</p>
                     <p className="text-sm mt-2">
-                        Click "Generate Reports" to create monthly reports for staff.
+                        Click &quot;Generate Reports&quot; to create monthly reports for staff.
                     </p>
                 </div>
             )}

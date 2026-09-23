@@ -60,7 +60,7 @@ export function DateRangePicker({
                     align={align}
                 >
                     <Calendar
-                        initialFocus
+                        autoFocus
                         mode="range"
                         defaultMonth={date?.from}
                         selected={date}
@@ -70,12 +70,6 @@ export function DateRangePicker({
                         className="w-full bg-transparent"
                         classNames={{
                             month: 'w-full space-y-4',
-                            head_row: 'w-full bg-muted/50 mt-2',
-                            row: 'w-full mt-2',
-                            table: 'w-full border-collapse space-y-1',
-                            head_cell:
-                                'text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]',
-                            cell: 'text-center text-sm p-0 mx-auto relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20',
                             day: 'h-9 w-9 p-0 mx-auto font-normal aria-selected:opacity-100',
                         }}
                     />

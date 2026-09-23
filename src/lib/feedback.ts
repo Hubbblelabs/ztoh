@@ -136,8 +136,7 @@ export type FeedbackField = keyof FeedbackInput;
 export type FeedbackErrors = Partial<Record<FeedbackField, string>>;
 
 export type FeedbackValidationResult =
-    | { success: true; data: FeedbackInput }
-    | { success: false; errors: FeedbackErrors };
+    { success: true; data: FeedbackInput } | { success: false; errors: FeedbackErrors };
 
 // Short labels for the admin panel and the notification email
 export const FEEDBACK_FIELD_LABELS: Record<FeedbackField, string> = {

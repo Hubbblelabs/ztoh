@@ -1,12 +1,14 @@
 import { defineConfig, globalIgnores } from 'eslint/config';
 import nextVitals from 'eslint-config-next/core-web-vitals';
 import nextTs from 'eslint-config-next/typescript';
-import prettier from 'eslint-plugin-prettier';
+// Turns off rules that clash with Prettier and reports formatting issues as lint errors.
+// It is a single flat config object, not an array, so it is not spread.
+import prettierRecommended from 'eslint-plugin-prettier/recommended';
 
 const eslintConfig = defineConfig([
     ...nextVitals,
     ...nextTs,
-    ...prettier,
+    prettierRecommended,
     // Override default ignores of eslint-config-next.
     globalIgnores([
         // Default ignores of eslint-config-next:

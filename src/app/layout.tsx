@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Script from 'next/script';
 import { Inter, Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/lib/utils';
@@ -7,7 +6,6 @@ import { ModalProvider } from '@/components/providers/ModalProvider';
 import { ToastProvider } from '@/components/providers/ToastProvider';
 import AuthSessionProvider from '@/components/providers/SessionProvider';
 import LayoutContent from '@/components/layout/LayoutContent';
-import Chatbot from '@/components/Chatbot';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
@@ -32,8 +30,14 @@ export default function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    // data-scroll-behavior keeps the CSS smooth scrolling on hash navigation between routes
     return (
-        <html lang="en" className="scroll-smooth" suppressHydrationWarning>
+        <html
+            lang="en"
+            className="scroll-smooth"
+            data-scroll-behavior="smooth"
+            suppressHydrationWarning
+        >
             <body
                 className={cn(
                     'min-h-screen bg-background font-sans antialiased flex flex-col',

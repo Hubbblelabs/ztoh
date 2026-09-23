@@ -1,6 +1,6 @@
 import { test, describe, afterEach } from 'node:test';
 import assert from 'node:assert';
-import { escapeHtml, generateTrackingId, toWhatsAppUrl } from './utils.ts';
+import { escapeHtml, generateTrackingId, sectionHref, toWhatsAppUrl } from './utils.ts';
 
 describe('generateTrackingId', () => {
     const originalDate = global.Date;
@@ -14,7 +14,7 @@ describe('generateTrackingId', () => {
     test('should generate tracking ID with correct date and random suffix', () => {
         // Mock Date
         const mockDate = new Date('2023-12-01T12:00:00Z');
-        // @ts-ignore
+        // @ts-expect-error - replacing the global Date with a stub for these tests
         global.Date = class extends originalDate {
             constructor() {
                 super();
@@ -37,7 +37,7 @@ describe('generateTrackingId', () => {
     test('should pad month and day correctly', () => {
         // Mock Date to January 1st
         const mockDate = new Date('2023-01-01T12:00:00Z');
-        // @ts-ignore
+        // @ts-expect-error - replacing the global Date with a stub for these tests
         global.Date = class extends originalDate {
             constructor() {
                 super();
@@ -87,5 +87,21 @@ describe('toWhatsAppUrl', () => {
     test('assumes India for local numbers', () => {
         assert.strictEqual(toWhatsAppUrl('95643 21000'), 'https://wa.me/919564321000');
         assert.strictEqual(toWhatsAppUrl('095643-21000'), 'https://wa.me/919564321000');
+    });
+});
+
+describe('sectionHref', () => {
+    test('keeps a bare hash on the homepage', () => {
+        assert.strictEqual(sectionHref('/', '#about'), '#about');
+    });
+
+    test('makes the link root-relative on every other page', () => {
+        assert.strictEqual(sectionHref('/feedback', '#about'), '/#about');
+        assert.strictEqual(sectionHref('/privacy-policy', '#contact'), '/#contact');
+        assert.strictEqual(sectionHref('/admin/feedback', '#services'), '/#services');
+    });
+
+    test('treats an unknown pathname as off the homepage', () => {
+        assert.strictEqual(sectionHref(null, '#about'), '/#about');
     });
 });

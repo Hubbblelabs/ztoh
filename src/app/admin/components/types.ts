@@ -7,12 +7,7 @@ export interface ContactRequest {
     message: string;
     status: 'pending' | 'accepted' | 'declined';
     teleCallingStatus:
-        | 'pending'
-        | 'called'
-        | 'no_answer'
-        | 'follow_up_needed'
-        | 'converted'
-        | 'not_interested';
+        'pending' | 'called' | 'no_answer' | 'follow_up_needed' | 'converted' | 'not_interested';
     notes: { content: string; createdAt: string }[];
     history: { action: string; details: string; performedBy: string; timestamp: string }[];
     createdAt: string;
@@ -27,12 +22,7 @@ export interface JoinRequest {
     mobile: string;
     status: 'pending' | 'accepted' | 'declined';
     teleCallingStatus:
-        | 'pending'
-        | 'called'
-        | 'no_answer'
-        | 'follow_up_needed'
-        | 'converted'
-        | 'not_interested';
+        'pending' | 'called' | 'no_answer' | 'follow_up_needed' | 'converted' | 'not_interested';
     notes: { content: string; createdAt: string }[];
     history: { action: string; details: string; performedBy: string; timestamp: string }[];
     createdAt: string;

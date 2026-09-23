@@ -248,7 +248,7 @@ export default function TestimonialsPage() {
                         <div className="mb-4 flex-grow">
                             <Quote className="w-6 h-6 text-slate-200 mb-2" />
                             <p className="text-muted-foreground text-sm italic line-clamp-4">
-                                "{testimonial.content}"
+                                &quot;{testimonial.content}&quot;
                             </p>
                         </div>
 

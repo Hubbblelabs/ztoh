@@ -5,7 +5,7 @@ import { Resend } from 'resend';
 import { verifyTurnstileToken } from '@/lib/turnstile';
 import Settings from '@/models/Settings';
 import { checkRateLimit } from '@/lib/rateLimit';
-import { generateTrackingId } from '@/lib/utils';
+import { escapeHtml, generateTrackingId } from '@/lib/utils';
 
 export async function POST(req: Request) {
     try {
@@ -62,6 +62,11 @@ export async function POST(req: Request) {
                 const adminEmail = settings?.emailSettings?.adminEmail || process.env.ADMIN_EMAIL;
                 const fromEmail = settings?.emailSettings?.fromEmail || process.env.FROM_EMAIL;
 
+                // Submitted text goes into HTML emails, so escape it first
+                const [safeName, safeEmail, safeMessage] = [name, email, message].map((value) =>
+                    escapeHtml(String(value)),
+                );
+
                 if (adminEmail && fromEmail) {
                     // Send email to Admin
                     await resend.emails.send({
@@ -72,10 +77,10 @@ export async function POST(req: Request) {
                         html: `
                             <h3>New Contact Request</h3>
                             <p><strong>Tracking Number:</strong> ${newContactRequest.trackingId}</p>
-                            <p><strong>Name:</strong> ${name}</p>
-                            <p><strong>Email:</strong> ${email}</p>
+                            <p><strong>Name:</strong> ${safeName}</p>
+                            <p><strong>Email:</strong> ${safeEmail}</p>
                             <p><strong>Message:</strong></p>
-                            <p>${message}</p>
+                            <p style="white-space: pre-wrap;">${safeMessage}</p>
                         `,
                     });
 
@@ -86,7 +91,7 @@ export async function POST(req: Request) {
                         subject: `We've received your message!`,
                         text: `Hi ${name},\n\nThank you for contacting Zero to Hero. We have received your message and will get back to you shortly.\n\nBest regards,\nThe Zero to Hero Team`,
                         html: `
-                        <h3>Hi ${name},</h3>
+                        <h3>Hi ${safeName},</h3>
                         <p>Thank you for contacting <strong>Zero to Hero</strong>.</p>
                         <p>We have received your message and will get back to you shortly.</p>
                         <p>Your tracking number is: <strong>${newContactRequest.trackingId}</strong></p>

@@ -33,12 +33,7 @@ export interface IJoinRequest extends Document {
 
     status: 'pending' | 'accepted' | 'declined';
     teleCallingStatus:
-        | 'pending'
-        | 'called'
-        | 'no_answer'
-        | 'follow_up_needed'
-        | 'converted'
-        | 'not_interested';
+        'pending' | 'called' | 'no_answer' | 'follow_up_needed' | 'converted' | 'not_interested';
     notes: { content: string; createdAt: Date }[];
     history: { action: string; details: string; performedBy: string; timestamp: Date }[];
 

@@ -3,13 +3,15 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, sectionHref } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useJoinUsModal } from '@/components/providers/ModalProvider';
 
 const navLinks = [
     { name: 'Home', href: '/' },
+    // Section links are resolved with sectionHref so they work from any page
     { name: 'About', href: '#about' },
     { name: 'Services', href: '#services' },
     { name: 'Testimonials', href: '#testimonials' },
@@ -20,6 +22,8 @@ export default function Header() {
     const [isOpen, setIsOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const { openJoinUsModal } = useJoinUsModal();
+    const pathname = usePathname();
+    const hrefFor = (href: string) => (href.startsWith('#') ? sectionHref(pathname, href) : href);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -69,7 +73,7 @@ export default function Header() {
                     {navLinks.map((link) => (
                         <Link
                             key={link.name}
-                            href={link.href}
+                            href={hrefFor(link.href)}
                             className="relative text-sm font-semibold text-slate-600 hover:text-primary transition-colors py-1 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:rounded-md"
                         >
                             {link.name}
@@ -115,7 +119,7 @@ export default function Header() {
                             {navLinks.map((link) => (
                                 <Link
                                     key={link.name}
-                                    href={link.href}
+                                    href={hrefFor(link.href)}
                                     className="text-lg font-semibold text-slate-700 hover:text-primary hover:pl-2 transition-all"
                                     onClick={() => setIsOpen(false)}
                                 >

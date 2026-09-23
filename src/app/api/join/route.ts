@@ -5,7 +5,7 @@ import { Resend } from 'resend';
 import { verifyTurnstileToken } from '@/lib/turnstile';
 import Settings from '@/models/Settings';
 import { checkRateLimit } from '@/lib/rateLimit';
-import { generateTrackingId } from '@/lib/utils';
+import { escapeHtml, generateTrackingId } from '@/lib/utils';
 
 export async function POST(request: Request) {
     try {
@@ -149,7 +149,7 @@ export async function POST(request: Request) {
         }
 
         // Build the request data object explicitly
-        const requestData: any = {
+        const requestData: Record<string, unknown> = {
             type,
             email,
             name,
@@ -195,20 +195,24 @@ export async function POST(request: Request) {
             try {
                 const resend = new Resend(process.env.RESEND_API_KEY);
 
-                // Format details for email
-                const detailsHtml = Object.entries(body)
+                // Format details for email. Built from the validated fields rather than the raw
+                // body, and escaped, so submitted text can't inject markup into the email.
+                const shownSeparately = ['type', 'name', 'email', 'attachments'];
+                const internalFields = ['trackingId', 'status', 'teleCallingStatus'];
+                const detailsHtml = Object.entries(requestData)
                     .filter(
-                        ([key]) =>
-                            key !== 'type' &&
-                            key !== 'name' &&
-                            key !== 'email' &&
-                            key !== 'token' &&
-                            key !== 'attachments',
-                    )
-                    .map(
                         ([key, value]) =>
-                            `<p><strong>${key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())}:</strong> ${value}</p>`,
+                            !shownSeparately.includes(key) &&
+                            !internalFields.includes(key) &&
+                            value != null &&
+                            value !== '',
                     )
+                    .map(([key, value]) => {
+                        const label = key
+                            .replace(/([A-Z])/g, ' $1')
+                            .replace(/^./, (str) => str.toUpperCase());
+                        return `<p><strong>${label}:</strong> ${escapeHtml(String(value))}</p>`;
+                    })
                     .join('');
 
                 const settings = await Settings.findOne();
@@ -217,7 +221,7 @@ export async function POST(request: Request) {
 
                 // Prepare attachments for Resend
                 const emailAttachments =
-                    attachments?.map((att: any) => {
+                    attachments?.map((att: { name: string; content: string }) => {
                         // Extract base64 content (remove data:image/png;base64, prefix)
                         const base64Content = att.content.split(',')[1] || att.content;
                         return {
@@ -238,8 +242,8 @@ export async function POST(request: Request) {
                         html: `
                         <h3>New ${type === 'student' ? 'Student' : 'Teacher'} Application</h3>
                         <p><strong>Tracking Number:</strong> ${joinRequest.trackingId}</p>
-                        <p><strong>Name:</strong> ${name}</p>
-                        <p><strong>Email:</strong> ${email}</p>
+                        <p><strong>Name:</strong> ${escapeHtml(String(name))}</p>
+                        <p><strong>Email:</strong> ${escapeHtml(String(email))}</p>
                         <p><strong>Type:</strong> ${type}</p>
                         <hr>
                         <h4>Details:</h4>
@@ -254,7 +258,7 @@ export async function POST(request: Request) {
                         to: email,
                         subject: `Application Received - Zero to Hero`,
                         html: `
-                        <h3>Hi ${name},</h3>
+                        <h3>Hi ${escapeHtml(String(name))},</h3>
                         <p>Thank you for applying to join <strong>Zero to Hero</strong> as a ${type}.</p>
                         <p>We have received your application and our team will review it shortly.</p>
                         <p>Your tracking number is: <strong>${joinRequest.trackingId}</strong></p>
